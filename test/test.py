@@ -9,7 +9,7 @@ def draw():
 	p3.background(' ')
 	i += 1
 	p3.stroke('¥')
-	p3.fill('@')
+	p3.fill('')
 	p3.rect(2 + i, 2, 20, 10)
 	if(i + 20 > p3.get_width()):
 		i = 0
