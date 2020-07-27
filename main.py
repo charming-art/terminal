@@ -1,44 +1,42 @@
-from charming import charming as cm
+from charming import Charming
+
+app = Charming()
 
 x = 0
 y = 0
-colors = [cm.WHITE, cm.YELLOW, cm.BLUE, cm.RED]
-activeIndex = 0
 
 
-@cm.setup
+@app.setup
 def setup():
-    cm.size(30, 30)
+    app.size(30, 30)
 
 
-@cm.draw
+@app.draw
 def draw():
-    cm.background(' ', cm.WHITE)
-    cm.corner('@', cm.RED)
-    cm.stroke('@', cm.BLUE)
-    cm.fill('', cm.YELLOW)
-    cm.rect(x, y, 10, 5)
+    app.background(' ', app.WHITE)
+    app.stroke('@', app.BLUE)
+    app.fill('', app.YELLOW)
+    app.rect(x, y, 10, 5)
 
 
-@cm.keyPressed
+@app.keyPressed
 def keyPressed():
     global x, y
-    if cm.key == cm.RIGHT:
+    if app.key == app.RIGHT:
         x += 1
-    elif cm.key == cm.LEFT:
+    elif app.key == app.LEFT:
         x -= 1
-    elif cm.key == cm.UP:
+    elif app.key == app.UP:
         y -= 1
-    elif cm.key == cm.DOWN:
+    elif app.key == app.DOWN:
         y += 1
 
 
-@cm.mouseClicked
+@app.mouseClicked
 def mouseClicked():
-    global x, y, activeIndex
-    x = cm.mouseX
-    y = cm.mouseY
-    activeIndex = (activeIndex + 1) % len(colors)
+    global x, y
+    x = app.mouseX
+    y = app.mouseY
 
 
-cm.run()
+app.run()

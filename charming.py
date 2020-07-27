@@ -6,17 +6,14 @@ import curses
 class Charming:
 
     def __init__(self):
-        self.win = curses.initscr()
-        self.win.keypad(1)  # Enable arrow keys
-        self.win.nodelay(1)  # Do not wait for keypress
 
         self.setup_callback = None
         self.draw_callback = None
         self.keyPressed_callback = None
-        self.sleep_time = 0.1
+        self.sleep_time = 0
 
-        self.width = 100
-        self.height = 100
+        self.width = 30
+        self.height = 30
         self.buffer = []
 
         self.key = -1
@@ -32,12 +29,10 @@ class Charming:
         # chars
         self.fill_ch = ' '
         self.stroke_ch = '*'
-        self.corner_ch = '*'
 
         # colors
         self.fill_color = 0
         self.stroke_color = 0
-        self.corner_color = 0
 
         self.RIGHT = 261
         self.LEFT = 260
@@ -51,12 +46,13 @@ class Charming:
             self.width)] for _ in range(self.height)]
 
     def rect(self, x, y, width, height):
-        for i in range(x, x + width):
-            for j in range(y, y + height):
-                # corner
-                if (i == x or i == x + width - 1) and (j == y or j == y + height - 1):
-                    self.buffer[j][i] = (self.corner_ch, self.corner_color)
-                elif (i == x or i == x + width - 1) or (j == y or j == y + height - 1):
+        startX = max(0, x)
+        endX = min(self.width, x + width)
+        startY = max(0, y)
+        endY = min(self.height, y + height)
+        for i in range(startX, endX):
+            for j in range(startY, endY):
+                if (i == startX or i == endX - 1) or (j == startY or j == endY - 1):
                     self.buffer[j][i] = (self.stroke_ch, self.stroke_color)
                 else:
                     self.buffer[j][i] = (self.fill_ch, self.fill_color)
@@ -73,11 +69,10 @@ class Charming:
         self.stroke_ch = ch
         self.stroke_color = color
 
-    def corner(self, ch, color):
-        self.corner_ch = ch
-        self.corner_color = color
-
     def setup(self, foo):
+        self.stdscr = curses.initscr()
+        self.screenHeight, self.screenWidth = self.stdscr.getmaxyx()
+
         curses.start_color()  # Enables colors
         curses.init_pair(self.WHITE, curses.COLOR_WHITE, curses.COLOR_BLACK)
         curses.init_pair(self.RED, curses.COLOR_RED, curses.COLOR_BLACK)
@@ -87,6 +82,7 @@ class Charming:
         curses.cbreak()  # Read keys instantaneously
         curses.noecho()  # Do not print stuff when keys are pressed
         curses.mousemask(1)
+
         self.setup_callback = foo
 
     def keyPressed(self, foo):
@@ -100,8 +96,14 @@ class Charming:
 
     def run(self):
         self.setup_callback()
-        while True:
 
+        x = int((self.screenWidth - self.width) / 2)
+        y = int((self.screenHeight - self.height) / 2)
+        self.win = curses.newwin(self.height + 2, self.width + 2, y, x)
+        self.win.keypad(1)  # Enable arrow keys
+        self.win.nodelay(1)  # Do not wait for keypress
+
+        while True:
             # keydown event
             self.key = self.win.getch()
             if self.key != -1:
@@ -110,8 +112,8 @@ class Charming:
             # mouse event
             if self.key == curses.KEY_MOUSE:
                 _, mx, my, _, _ = curses.getmouse()
-                self.mouseX = mx
-                self.mouseY = my
+                self.mouseX = mx - x
+                self.mouseY = my - y
                 self.mouseClicked_callback()
 
             # draw
@@ -122,7 +124,4 @@ class Charming:
                     self.win.addstr(
                         i, j, ch, curses.color_pair(color))
 
-            time.sleep(self.sleep_time)
-
-
-charming = Charming()
+            # time.sleep(self.sleep_time)
