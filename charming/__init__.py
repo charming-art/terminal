@@ -1,1 +1,2 @@
-from .charming import Charming
+def hello():
+    print('hello world')
