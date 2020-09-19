@@ -112,7 +112,7 @@ python3 sketch.py
 - noStroke()
 - stroke()
 
-### Creating && Reading
+#### Creating && Reading
 
 - color()
 - ch()
