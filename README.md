@@ -36,7 +36,7 @@ python3 sketch.py
 - setup()
 - draw()
 - run()
-- noLoop()
+- no_loop()
 - loop()
 - redraw()
 - push()
@@ -44,7 +44,7 @@ python3 sketch.py
 
 ### Shape
 
-- createShape()
+- create_shape()
 - CShape()
 
 #### 2D Primitives
@@ -61,45 +61,45 @@ python3 sketch.py
 
 #### Attributes
 
-- ellipseMode()
-- rectMode()
-- strokeWeight()
+- ellipse_mode()
+- rect_mode()
+- stroke_weight()
 
 #### Vertex
 
-- beginContour()
-- beginShape()
-- bezierVertex()
-- curveVertex()
-- endContour()
-- endShape()
-- quadraticVertex()
+- begin_contour()
+- begin_shape()
+- bezier_vertex()
+- curve_vertex()
+- end_contour()
+- end_shape()
+- quadratic_vertex()
 - vertex()
 
 #### Curves
 
 - bezier()
-- bezierDetail()
-- bezierPoint()
-- bezierTangent()
+- bezier_detail()
+- bezier_point()
+- bezier_tangent()
 - curve()
-- curveDetail()
-- curvePoint()
-- curveTangent()
-- curveTightness()
+- curve_detail()
+- curve_point()
+- curve_tangent()
+- curve_tightness()
 
 ### Transform
 
-- applyMatrix()
-- popMatrix()
+- apply_matrix()
+- pop_matrix()
 - translate()
 - scale()
 - rotate()
-- shearX()
-- shearX()
-- shearY()
-- rotateX()
-- rotateY()
+- shear_x()
+- shear_x()
+- shear_y()
+- rotate_x()
+- rotate_y()
   
 ### Color
 
@@ -108,8 +108,8 @@ python3 sketch.py
 - background()
 - clear()
 - fill()
-- noFill()
-- noStroke()
+- no_fill()
+- no_stroke()
 - stroke()
 
 #### Creating && Reading
@@ -124,12 +124,12 @@ python3 sketch.py
 #### Keyboard
 
 - key
-- keyCode
-- keyTyped()
+- key_code
+- key_typed()
   
 #### Mouse
 
-- mouseClickd()
+- mouse_clickd()
 - mouseX
 - mouseY
 - pmouseX
@@ -141,20 +141,19 @@ python3 sketch.py
 - cursorY
 - pcursorX
 - pcursorY
-- cursorMoved()
+- cursor_moved()
 
 ### Environment
 
 - delay()
 - cursor()
-- windowWidth: the cols of the termianl
-- windowHeight: the lines of the terminal
-- windowResized()
-- frameRate()
-- frameRate
-- fullScreen
-- frameCount
-- noCursor()
+- window_width: the cols of the termianl
+- window_height: the lines of the terminal
+- window_resized()
+- frame_rate()
+- full_screen
+- frame_count
+- no_cursor()
 - height
 - size()
 - width
@@ -206,40 +205,40 @@ CVector
 #### Random
 
 - noise()
-- noiseDetail()
-- noiseSeed()
+- noise_detail()
+- noise_seed()
 - random()
-- randomGaussian()
-- randomSeed()
+- random_gaussian()
+- random_seed()
 
 ### Typography
 
 - text()
-- textWidth()
-- textAlign()
-- textLeading()
-- textSize()
-- textHeight()
+- text_width()
+- text_align()
+- text_leading()
+- text_size()
+- text_height()
 
 ### Image
 
-- createImage()
-- PImage
+- create_image()
+- CImage
   
 #### Loading & Displaying
 
 - image()
-- imageMode()
-- loadImage()
-- noTint()
-- requestImage()
+- image_mode()
+- load_image()
+- no_tint()
+- request_image()
 - tint()
   
 #### Textures
 
 - texture()
-- textureMode()
-- textureWrap()
+- texture_mode()
+- texture_wrap()
   
 #### Pixels
 
@@ -247,7 +246,7 @@ CVector
 - copy()
 - filter()
 - get()
-- loadPixels()
+- load_pixels()
 - pixels[]
 - set()
-- updatePixels()
+- update_pixels()
