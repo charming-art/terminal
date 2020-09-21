@@ -186,11 +186,11 @@ Try it one an online editor.
 
 ### Constants
 
-- [ ] HALF_PI
-- [ ] PI
-- [ ] QUARTER_PI
-- [ ] TAU
-- [ ] TWO_PI
+- [x] HALF_PI
+- [x] PI
+- [x] QUARTER_PI
+- [x] TAU
+- [x] TWO_PI
 
 ### Math
 
