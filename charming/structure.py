@@ -1,22 +1,26 @@
-from .globals import renderer
-
-hooks_map = {}
-
-
-def add_hook(name, hook):
-    global hooks_map
-    # Todo: params check
-    hooks_map[name] = hook
+from . import sketch
 
 
 def setup(hook):
-    add_hook('setup', hook)
+    sketch.add_hook('setup', hook)
 
 
 def draw(hook):
-    add_hook('draw', hook)
+    sketch.add_hook('draw', hook)
 
 
 def run():
-    renderer.config(hooks_map)
-    renderer.run()
+    sketch.run()
+
+
+def no_loop():
+    sketch.is_loop = False
+
+
+def loop():
+    sketch.is_loop = True
+
+
+def redraw():
+    draw_hook = sketch.hooks_map['draw']
+    draw_hook()

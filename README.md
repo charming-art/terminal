@@ -56,12 +56,12 @@ Try it one an online editor.
 
 ### Structure
 
-- [ ] setup()
-- [ ] draw()
-- [ ] run()
-- [ ] no_loop()
-- [ ] loop()
-- [ ] redraw()
+- [x] setup()
+- [x] draw()
+- [x] run()
+- [x] no_loop()
+- [x] loop()
+- [x] redraw()
 - [ ] push()
 - [ ] pop()
 
