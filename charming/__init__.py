@@ -12,3 +12,6 @@ from .structure import no_loop
 from .structure import loop
 
 from .environment import frame_rate
+from .environment import size
+from .environment import get_width
+from .environment import get_height

@@ -146,24 +146,24 @@ Try it one an online editor.
 
 #### Keyboard
 
-- [ ] key
-- [ ] key_code
+- [ ] get_key()
+- [ ] get_key_code()
 - [ ] key_typed()
   
 #### Mouse
 
 - [ ] mouse_clickd()
-- [ ] mouseX
-- [ ] mouseY
-- [ ] pmouseX
-- [ ] pmouseY
+- [ ] get_mouseX()
+- [ ] get_mouseY()
+- [ ] get_pmouseX()
+- [ ] get_pmouseY()
   
 #### Cursor
 
-- [ ] cursorX
-- [ ] cursorY
-- [ ] pcursorX
-- [ ] pcursorY
+- [ ] get_cursorX()
+- [ ] get_cursorY()
+- [ ] get_pcursorX()
+- [ ] get_pcursorY()
 - [ ] cursor_moved()
 
 #### Window
@@ -174,15 +174,16 @@ Try it one an online editor.
 
 - [ ] delay()
 - [ ] cursor()
-- [ ] window_width: the cols of the termianl
-- [ ] window_height: the lines of the terminal
+- [ ] get_window_width(): the cols of the termianl
+- [ ] get_window_height(): the lines of the terminal
 - [ ] frame_rate()
 - [ ] full_screen
-- [ ] frame_count
+- [ ] get_frame_count()
+- [ ] get_frame_rate()
 - [ ] no_cursor()
-- [ ] height
-- [ ] size()
-- [ ] width
+- [x] get_height()
+- [x] size()
+- [x] get_width()
 
 ### Constants
 
