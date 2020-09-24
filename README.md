@@ -149,6 +149,7 @@ Try it one an online editor.
 - [ ] get_key()
 - [ ] get_key_code()
 - [ ] key_typed()
+- [ ] is_key_pressed()
   
 #### Mouse
 
@@ -157,6 +158,7 @@ Try it one an online editor.
 - [ ] get_mouseY()
 - [ ] get_pmouseX()
 - [ ] get_pmouseY()
+- [ ] is_mouse_pressed()
   
 #### Cursor
 

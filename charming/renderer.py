@@ -18,10 +18,13 @@ class Renderer(object):
             self.context = CursesContext()
 
     def setup(self):
-        self.context.open()
+        self.context.open(self.size)
 
     def draw(self):
         pass
 
     def listen(self):
         pass
+
+    def close(self):
+        self.context.close()
