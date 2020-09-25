@@ -28,4 +28,6 @@ def run():
             renderer.listen()
             time.sleep(1 / frame_rate)
     except:
+        pass
+    finally:
         renderer.close()

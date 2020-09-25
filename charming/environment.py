@@ -15,6 +15,12 @@ def size(_width, _height):
     sketch.renderer.size = (int(_width), int(_height))
 
 
+def full_screen():
+    global width, height
+    size(sketch.renderer.context.window_width,
+         sketch.renderer.context.window_height)
+
+
 def get_width():
     return width
 

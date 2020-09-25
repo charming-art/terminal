@@ -15,3 +15,4 @@ from .environment import frame_rate
 from .environment import size
 from .environment import get_width
 from .environment import get_height
+from .environment import full_screen

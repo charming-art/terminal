@@ -3,7 +3,7 @@ import charming as app
 
 @app.setup
 def setup():
-    app.size(10, 10)
+    app.size(106, 100)
 
 
 @app.draw

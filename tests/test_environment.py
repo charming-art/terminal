@@ -2,7 +2,7 @@ import charming as app
 
 @app.setup
 def setup():
-    app.size(100, 100)
+    app.full_screen()
     app.frame_rate(1)
 
 
