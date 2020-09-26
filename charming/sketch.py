@@ -1,6 +1,7 @@
 import time
 from .renderer import Renderer
 
+
 hooks_map = {}
 frame_rate = 30
 is_loop = True
@@ -27,7 +28,7 @@ def run():
                 renderer.draw()
             renderer.listen()
             time.sleep(1 / frame_rate)
-    except:
-        pass
+    except Exception as e:
+        print(e)
     finally:
         renderer.close()

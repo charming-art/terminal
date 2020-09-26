@@ -28,3 +28,11 @@ class Renderer(object):
 
     def close(self):
         self.context.close()
+
+    @property
+    def window_width(self):
+        return self.context.window_width
+
+    @property
+    def window_height(self):
+        return self.context.window_height

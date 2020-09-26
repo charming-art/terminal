@@ -54,8 +54,8 @@ class CursesContext(Context):
         pad_y = -y if y < 0 else 0
         win_x = 0 if x < 0 else x
         win_y = 0 if y < 0 else y
-        win_width = self.window_width if x < 0 else box_width
-        win_height = self.window_height if y < 0 else box_height
+        win_width = self.window_width if x <= 0 else box_width
+        win_height = self.window_height if y <= 0 else box_height
 
         self._pad.refresh(pad_y, pad_x, win_y, win_x,
                           win_y + win_height - 1, win_x + win_width - 1)
