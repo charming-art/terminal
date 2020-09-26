@@ -1,5 +1,6 @@
 from . import sketch
 
+
 def frame_rate(_frame_rate):
     sketch.frame_rate = _frame_rate
 
@@ -27,3 +28,19 @@ def get_width():
 
 def get_height():
     return sketch.renderer.size[1]
+
+
+def get_frame_rate():
+    return sketch.frame_rate
+
+
+def get_frame_count():
+    return sketch.frame_count
+
+
+def no_cursor():
+    sketch.renderer.no_cursor()
+
+
+def cursor():
+    sketch.renderer.cursor()

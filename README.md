@@ -174,15 +174,15 @@ Try it one an online editor.
 
 ### Environment
 
-- [ ] delay()
-- [ ] cursor()
-- [ ] get_window_width(): the cols of the termianl
-- [ ] get_window_height(): the lines of the terminal
-- [ ] frame_rate()
-- [ ] full_screen
-- [ ] get_frame_count()
-- [ ] get_frame_rate()
-- [ ] no_cursor()
+- [x] delay()
+- [x] cursor()
+- [x] get_window_width(): the cols of the termianl
+- [x] get_window_height(): the lines of the terminal
+- [x] frame_rate()
+- [x] full_screen
+- [x] get_frame_count()
+- [x] get_frame_rate()
+- [x] no_cursor()
 - [x] get_height()
 - [x] size()
 - [x] get_width()

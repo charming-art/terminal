@@ -11,12 +11,26 @@ class Context(metaclass=ABCMeta):
     def close(self):
         """ close the drawing context and restore state of canvas """
 
+    @abstractclassmethod
+    def no_cursor(self):
+        """ hide cursor """
+
+    @abstractclassmethod
+    def cursor(self):
+        """ show cursor """
+
 
 class WindowsContext(Context):
     def open(self, size):
         print('hello windows context')
 
     def close(self):
+        pass
+
+    def no_cursor(self):
+        pass
+
+    def cursor(self):
         pass
 
 
@@ -66,10 +80,22 @@ class CursesContext(Context):
         self.curses.echo()
         self.curses.endwin()
 
+    def no_cursor(self):
+        self.curses.curs_set(0)
+
+    def cursor(self):
+        self.curses.curs_set(1)
+
 
 class BrowserContext(Context):
     def open(self, size):
         print('hello browser context')
 
     def close(self):
+        pass
+
+    def no_cursor(self):
+        pass
+
+    def cursor(self):
         pass

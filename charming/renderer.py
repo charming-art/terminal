@@ -36,3 +36,9 @@ class Renderer(object):
     @property
     def window_height(self):
         return self.context.window_height
+
+    def no_cursor(self):
+        self.context.no_cursor()
+
+    def cursor(self):
+        self.context.cursor()
