@@ -34,4 +34,5 @@ def run():
     except Exception as e:
         print(e)
     finally:
+        # pass
         renderer.close()
