@@ -27,10 +27,8 @@ class Renderer(object):
         area = self._get_pad_area()
         self.context.draw(self.buffer, area)
 
-    def listen(self):
-        self.context.get_event()
-        if self.context.has_resized:
-            self.context.resize()
+    def get_events(self):
+        return self.context.get_events()
 
     def close(self):
         self.context.close()

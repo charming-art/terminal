@@ -9,10 +9,6 @@ renderer = Renderer()
 frame_count = 0
 
 
-def add_hook(name, hook):
-    hooks_map[name] = hook
-
-
 def run():
     try:
         global frame_count
@@ -28,7 +24,8 @@ def run():
             if is_loop:
                 draw_hook()
                 renderer.draw()
-            renderer.listen()
+            events = renderer.get_events()
+            handle_events(events)
             frame_count += 1
             time.sleep(1 / frame_rate)
     except Exception as e:
@@ -36,3 +33,12 @@ def run():
     finally:
         # pass
         renderer.close()
+
+def add_hook(name, hook):
+    hooks_map[name] = hook
+
+
+def handle_events(events):
+    pass
+
+

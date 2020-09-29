@@ -1,5 +1,9 @@
-from abc import ABCMeta, abstractclassmethod
 import sys
+from abc import ABCMeta, abstractclassmethod
+from .event import MouseEvent
+from .event import KeyboardEvent
+from .event import WindowEvent
+from .event import CursorEvent
 
 
 class Context(metaclass=ABCMeta):
@@ -20,7 +24,7 @@ class Context(metaclass=ABCMeta):
         """ show cursor """
 
     @abstractclassmethod
-    def get_event(self):
+    def get_events(self):
         """ get event: mouse event, keyboard event, cursor event """
 
     @abstractclassmethod
@@ -36,116 +40,137 @@ class Context(metaclass=ABCMeta):
         """ draw buffer to screen """
 
 
-class WindowsContext(Context):
-    def open(self, size):
-        print('hello windows context')
+if sys.platform == "win32":
+    class WindowsContext(Context):
+        def open(self, size):
+            print('hello windows context')
 
-    def close(self):
-        pass
+        def close(self):
+            pass
 
-    def no_cursor(self):
-        pass
+        def no_cursor(self):
+            pass
 
-    def cursor(self):
-        pass
+        def cursor(self):
+            pass
 
-    def get_event(self):
-        pass
+        def get_events(self):
+            pass
 
-    def resize(self):
-        pass
+        def resize(self):
+            pass
 
-    def clear(self):
-        pass
+        def clear(self):
+            pass
 
-    def draw(self, buffer, area):
-        pass
+        def draw(self, buffer, area):
+            pass
 
+elif sys.platform == "brython":
+    class BrowserContext(Context):
 
-class CursesContext(Context):
+        def open(self, size):
+            print('hello browser context')
+
+        def close(self):
+            pass
+
+        def no_cursor(self):
+            pass
+
+        def cursor(self):
+            pass
+
+        def get_events(self):
+            pass
+
+        def resize(self):
+            pass
+
+        def clear(self):
+            pass
+
+        def draw(self, buffer, area):
+            pass
+
+else:
     import curses
 
-    _screen = None
+    class CursesContext(Context):
 
-    _pad = None
+        _screen = None
 
-    window_width = 0
+        _pad = None
 
-    window_height = 0
+        window_width = 0
 
-    has_resized = False
+        window_height = 0
 
-    def __init__(self):
-        self._screen = self.curses.initscr()
-        self._screen.keypad(1)
-        self._screen.nodelay(1)
-        self.curses.noecho()
-        self.curses.cbreak()
-        self.window_width = self._screen.getmaxyx()[1]
-        self.window_height = self._screen.getmaxyx()[0]
-        self._screen.refresh()
+        has_resized = False
 
-    def open(self, size):
-        content_width, content_height = size
-        self._pad = self.curses.newpad(content_height + 2,  content_width + 2)
-        self._pad.border()
+        def __init__(self):
+            self._screen = curses.initscr()
+            self._screen.keypad(1)
+            self._screen.nodelay(1)
+            self.window_width = self._screen.getmaxyx()[1]
+            self.window_height = self._screen.getmaxyx()[0]
+            self._screen.refresh()
 
-    def close(self):
-        self._screen.keypad(0)
-        self.curses.nocbreak()
-        self.curses.echo()
-        self.curses.endwin()
+            curses.noecho()
+            curses.cbreak()
 
-    def no_cursor(self):
-        self.curses.curs_set(0)
+            # Enable mouse events
+            curses.mousemask(curses.ALL_MOUSE_EVENTS |
+                             curses.REPORT_MOUSE_POSITION)
 
-    def cursor(self):
-        self.curses.curs_set(1)
+        def open(self, size):
+            content_width, content_height = size
+            self._pad = curses.newpad(
+                content_height + 2,  content_width + 2)
+            self._pad.border()
 
-    def get_event(self):
-        key = 0
-        while key != -1:
-            key = self._screen.getch()
-            if key == self.curses.KEY_RESIZE:
-                self.has_resized = True
+        def close(self):
+            self._screen.keypad(0)
+            curses.nocbreak()
+            curses.echo()
+            curses.endwin()
 
-    def resize(self):
-        self.curses.update_lines_cols()
-        self.window_width = self._screen.getmaxyx()[1]
-        self.window_height = self._screen.getmaxyx()[0]
+        def no_cursor(self):
+            curses.curs_set(0)
 
-    def clear(self):
-        self._screen.clear()
-        self._screen.refresh()
+        def cursor(self):
+            curses.curs_set(1)
 
-    def draw(self, buffer, area):
-        pad_x, pad_y, win_x, win_y, win_width, win_height = area
-        self.clear()
-        self._pad.refresh(pad_y, pad_x, win_y, win_x,
-                          win_y + win_height - 1, win_x + win_width - 1)
+        def get_events(self):
+            key = 0
+            event_queue = []
+            cursor_keys = [curses.KEY_LEFT, curses.KEY_RIGHT,
+                           curses.KEY_DOWN, curses.KEY_UP]
+            while key != -1:
+                key = self._screen.getch()
+                if key == curses.KEY_RESIZE:
+                    event_queue.append(WindowEvent())
+                elif key == curses.KEY_MOUSE:
+                    _, x, y, _, bstate = curses.getmouse()
+                    event_queue.append(MouseEvent(x, y, bstate))
+                elif key in cursor_keys:
+                    event_queue.append(CursorEvent(key))
+                else:
+                    event_queue.append(KeyboardEvent(key))
 
+            return event_queue
 
-class BrowserContext(Context):
-    def open(self, size):
-        print('hello browser context')
+        def resize(self):
+            curses.update_lines_cols()
+            self.window_width = self._screen.getmaxyx()[1]
+            self.window_height = self._screen.getmaxyx()[0]
 
-    def close(self):
-        pass
+        def clear(self):
+            self._screen.clear()
+            self._screen.refresh()
 
-    def no_cursor(self):
-        pass
-
-    def cursor(self):
-        pass
-
-    def get_event(self):
-        pass
-
-    def resize(self):
-        pass
-
-    def clear(self):
-        pass
-
-    def draw(self, buffer, area):
-        pass
+        def draw(self, buffer, area):
+            pad_x, pad_y, win_x, win_y, win_width, win_height = area
+            self.clear()
+            self._pad.refresh(pad_y, pad_x, win_y, win_x,
+                              win_y + win_height - 1, win_x + win_width - 1)
