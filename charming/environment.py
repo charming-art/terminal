@@ -44,3 +44,7 @@ def no_cursor():
 
 def cursor():
     sketch.renderer.cursor()
+
+
+def window_resized(hook):
+    sketch.add_hook('window_resized', hook)

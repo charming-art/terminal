@@ -146,18 +146,18 @@ Try it one an online editor.
 
 #### Keyboard
 
-- [ ] get_key()
+- [x] get_key()
 - [ ] get_key_code()
-- [ ] key_typed()
+- [x] key_typed()
 - [ ] is_key_pressed()
   
 #### Mouse
 
-- [ ] mouse_clickd()
-- [ ] get_mouseX()
-- [ ] get_mouseY()
-- [ ] get_pmouseX()
-- [ ] get_pmouseY()
+- [x] mouse_clickd()
+- [x] get_mouseX()
+- [x] get_mouseY()
+- [x] get_pmouseX()
+- [x] get_pmouseY()
 - [ ] is_mouse_pressed()
   
 #### Cursor
@@ -170,7 +170,7 @@ Try it one an online editor.
 
 #### Window
 
-- [ ] window_resized()
+- [x] window_resized()
 
 ### Environment
 

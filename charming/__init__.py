@@ -22,3 +22,12 @@ from .environment import get_frame_count
 from .environment import get_frame_rate
 from .environment import no_cursor
 from .environment import cursor
+from .environment import window_resized
+
+from .event import get_mouse_x
+from .event import get_mouse_y
+from .event import get_pmouse_x
+from .event import get_pmouse_y
+from .event import get_key
+from .event import mouse_clicked
+from .event import key_typed

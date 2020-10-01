@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractclassmethod
 from .event import MouseEvent
 from .event import KeyboardEvent
 from .event import WindowEvent
-from .event import CursorEvent
+
 
 
 class Context(metaclass=ABCMeta):
@@ -115,6 +115,7 @@ else:
             self.window_width = self._screen.getmaxyx()[1]
             self.window_height = self._screen.getmaxyx()[0]
             self._screen.refresh()
+            self._screen.leaveok(False)
 
             curses.noecho()
             curses.cbreak()
@@ -142,28 +143,24 @@ else:
             curses.curs_set(1)
 
         def get_events(self):
-            key = 0
             event_queue = []
-            cursor_keys = [curses.KEY_LEFT, curses.KEY_RIGHT,
-                           curses.KEY_DOWN, curses.KEY_UP]
+            key = self._screen.getch()
             while key != -1:
-                key = self._screen.getch()
                 if key == curses.KEY_RESIZE:
                     event_queue.append(WindowEvent())
                 elif key == curses.KEY_MOUSE:
                     _, x, y, _, bstate = curses.getmouse()
                     event_queue.append(MouseEvent(x, y, bstate))
-                elif key in cursor_keys:
-                    event_queue.append(CursorEvent(key))
                 else:
                     event_queue.append(KeyboardEvent(key))
-
+                key = self._screen.getch()
             return event_queue
 
         def resize(self):
             curses.update_lines_cols()
             self.window_width = self._screen.getmaxyx()[1]
             self.window_height = self._screen.getmaxyx()[0]
+            self.clear()
 
         def clear(self):
             self._screen.clear()
@@ -171,6 +168,5 @@ else:
 
         def draw(self, buffer, area):
             pad_x, pad_y, win_x, win_y, win_width, win_height = area
-            self.clear()
             self._pad.refresh(pad_y, pad_x, win_y, win_x,
                               win_y + win_height - 1, win_x + win_width - 1)
