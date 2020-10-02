@@ -31,3 +31,30 @@ from .event import get_pmouse_y
 from .event import get_key
 from .event import mouse_clicked
 from .event import key_typed
+
+
+from .cmath import abs
+from .cmath import ceil
+from .cmath import constrain
+from .cmath import dist
+from .cmath import exp
+from .cmath import floor
+from .cmath import lerp
+from .cmath import log
+from .cmath import mag
+from .cmath import max
+from .cmath import min
+from .cmath import norm
+from .cmath import pow
+from .cmath import round
+from .cmath import sq
+from .cmath import sqrt
+from .cmath import acos
+from .cmath import asin
+from .cmath import atan
+from .cmath import atan2
+from .cmath import cos
+from .cmath import degrees
+from .cmath import radians
+from .cmath import sin
+from .cmath import tan
