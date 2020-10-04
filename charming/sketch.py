@@ -1,5 +1,9 @@
 import time
+import logging
 from .renderer import Renderer
+
+logging.basicConfig(filename='charming.log', level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 hooks_map = {
     'setup': lambda: None,
@@ -45,7 +49,7 @@ def run():
             frame_count += 1
             time.sleep(1 / frame_rate)
     except Exception as e:
-        print(e)
+        logger.debug(e)
     finally:
         renderer.close()
 

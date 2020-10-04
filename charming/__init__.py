@@ -58,3 +58,5 @@ from .cmath import degrees
 from .cmath import radians
 from .cmath import sin
 from .cmath import tan
+
+from .shape import line

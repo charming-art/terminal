@@ -75,7 +75,7 @@ Try it one an online editor.
 - [ ] arc()
 - [ ] circle()
 - [ ] ellipse()
-- [ ] line()
+- [x] line()
 - [ ] point()
 - [ ] quad()
 - [ ] rect()

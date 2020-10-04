@@ -5,7 +5,6 @@ from .event import KeyboardEvent
 from .event import WindowEvent
 
 
-
 class Context(metaclass=ABCMeta):
     @abstractclassmethod
     def open(self, size):
@@ -168,5 +167,14 @@ else:
 
         def draw(self, buffer, area):
             pad_x, pad_y, win_x, win_y, win_width, win_height = area
+
+            content_width = win_width - 2
+            x_offset = 1
+            y_offset = 1
+            for i, color in enumerate(buffer):
+                x = i % content_width + x_offset
+                y = i // content_width + y_offset
+                self._pad.addch(y, x, color.ch)
+
             self._pad.refresh(pad_y, pad_x, win_y, win_x,
                               win_y + win_height - 1, win_x + win_width - 1)
