@@ -1,7 +1,7 @@
 import functools
 
-from .sketch import renderer
-from .renderer import Point
+from .app import renderer
+from .core import Point
 
 
 class CShape(object):

@@ -3,6 +3,7 @@ import charming as app
 
 @app.setup
 def setup():
+    # app.size(30, 20)
     app.full_screen()
 
 

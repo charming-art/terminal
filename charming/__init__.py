@@ -60,3 +60,5 @@ from .cmath import sin
 from .cmath import tan
 
 from .shape import line
+
+from .helpers import log

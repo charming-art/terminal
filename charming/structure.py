@@ -1,4 +1,4 @@
-from . import sketch
+from .app import sketch
 
 
 def setup(hook):
