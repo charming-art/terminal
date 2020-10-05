@@ -155,6 +155,8 @@ def map(value, start1, stop1, start2, stop2):
     >>> map(1.5, 1, 2, 10, 20)
     15.0
     '''
+    if start1 == stop1:
+        return value
     t = (value - start1) / (stop1 - start1)
     return start2 * (1 - t) + stop2 * t
 
@@ -239,7 +241,7 @@ def round(n):
 
 def sq(n):
     '''
-    Squares a number (multiplies a number by itself). 
+    Squares a number (multiplies a number by itself).
 
     Example:
 
@@ -251,7 +253,7 @@ def sq(n):
 
 def sqrt(n):
     '''
-    Calculates the square root of a number. 
+    Calculates the square root of a number.
 
     Example:
 
@@ -297,3 +299,29 @@ def sin(n):
 
 def tan(n):
     return math.tan(n)
+
+
+##### Matrix #####
+
+class Matrix(object):
+
+    def __init__(self, matrix):
+        self.matrix = matrix
+        self.row = len(matrix)
+        self.col = 0 if self.row == 0 else len(matrix[0])
+
+    def __mul__(self, other):
+        new_matrix = Matrix([[0 for _ in range(other.col)] for _ in range(self.row)])
+        for i in range(self.row):
+            for j in range(other.col):
+                new_matrix[i][j] = sum(
+                    [self[i][k] * other[k][j] for k in range(self.col)])
+        return new_matrix
+
+    def __getitem__(self, n):
+        return self.matrix[n]
+
+    def __str__(self):
+        return self.matrix.__str__()
+    
+    __repr__ = __str__

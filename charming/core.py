@@ -4,9 +4,16 @@ import math
 import sys
 from collections import namedtuple
 from abc import ABCMeta, abstractclassmethod
+from . import constants
+from .cmath import map
+from .cmath import Matrix
 
 
 logger = logging.getLogger(__name__)
+
+Point = namedtuple('Point', ['x', 'y'])
+Color = namedtuple('Color', ['ch', 'fg', 'bg'])
+Vertex = namedtuple('Vertex', ['x', 'y', 'color'])
 
 
 class Sketch(object):
@@ -25,7 +32,7 @@ class Sketch(object):
     pmouse_x = 0
     pmouse_y = 0
 
-    _hooks_map = {
+    hooks_map = {
         'setup': lambda: None,
         'draw': lambda: None,
         'mouse_clicked': lambda: None,
@@ -39,8 +46,8 @@ class Sketch(object):
 
     def run(self):
         try:
-            setup_hook = self._hooks_map['setup']
-            draw_hook = self._hooks_map['draw']
+            setup_hook = self.hooks_map['setup']
+            draw_hook = self.hooks_map['draw']
 
             if not setup_hook or not draw_hook:
                 return
@@ -67,7 +74,7 @@ class Sketch(object):
             self.context.close()
 
     def add_hook(self, name, hook):
-        self._hooks_map[name] = hook
+        self.hooks_map[name] = hook
 
     def _handle_event(self, e):
         if e.type == 'mouse':
@@ -75,19 +82,15 @@ class Sketch(object):
             self.pmouse_y = self.mouse_y
             self.mouse_x = e.x
             self.mouse_y = e.y
-            mouse_hook = self._hooks_map['mouse_clicked']
+            mouse_hook = self.hooks_map['mouse_clicked']
             mouse_hook()
         elif e.type == "window":
-            window_hook = self._hooks_map['window_resized']
+            window_hook = self.hooks_map['window_resized']
             window_hook()
         elif e.type == "keyboard":
             self.key = e.key
-            keyTyped_hook = self._hooks_map['key_typed']
+            keyTyped_hook = self.hooks_map['key_typed']
             keyTyped_hook()
-
-
-Point = namedtuple('Point', ['x', 'y'])
-Color = namedtuple('Color', ['ch', 'fg', 'bg'])
 
 
 class Renderer(object):
@@ -100,9 +103,7 @@ class Renderer(object):
     stroke_weight = 1
     is_stroke_enabled = True
     is_fill_enabled = True
-
-    def __init__(self):
-        pass
+    transform_matrix_stack = []
 
     def setup(self, size):
         self.size = size
@@ -111,66 +112,102 @@ class Renderer(object):
         self._reset_frame_buffer()
         while len(self.shape_queue) > 0:
             shape = self.shape_queue.pop(0)
-            vertices = self._vertex_processing(shape)
-            primitives = self._primitive_assembly(vertices)
-            fragments = self._rasterization(primitives)
-            fragments_clipped = self._clipping(fragments)
-            self._fragment_processing(fragments_clipped)
+            self._render_shape(shape)
+        self.transform_matrix_stack.clear()
 
     def add_shape(self, shape):
         if shape.is_auto:
             shape.fill_color = self.fill_color
             shape.stroke_color = self.stroke_color
             shape.stroke_weight = self.stroke_weight
+            shape.transform_matrix_stack = [
+                m for m in self.transform_matrix_stack]
         self.shape_queue.append(shape)
 
     def _reset_frame_buffer(self):
         width, height = self.size
         self.frame_buffer = [Color(' ', 0, 0) for _ in range(width * height)]
 
-    def _vertex_processing(self, shape):
-        return shape.vertices
+    def _render_shape(self, shape):
+        vertex_color = shape.stroke_color if self.is_stroke_enabled else shape.fill_color
+        vertices = self._vertex_processing(
+            shape.points,
+            vertex_color,
+            shape.transform_matrix_stack)
 
-    def _primitive_assembly(self, vertices):
-        primitives = [vertices]
+        primitives = self._primitive_assembly(
+            vertices,
+            shape.primitive_type,
+            shape.close_mode)
+
+        fragments = self._rasterization(primitives, shape.fill_color)
+
+        fragments_clipped = self._clipping(fragments)
+
+        self._fragment_processing(fragments_clipped)
+
+    def _vertex_processing(self, points, stroke_color, transform_matrix_stack):
+        # transform
+        matrix_points = [Matrix([[p.x], [p.y], [1]]) for p in points]
+        while len(transform_matrix_stack) > 0:
+            matrix = transform_matrix_stack.pop()
+            matrix_points = [matrix * p for p in matrix_points]
+        transformed_points = [Point(p[0][0], p[1][0]) for p in matrix_points]
+
+        # screen map && color
+        vertices = [Vertex(int(p.x), int(p.y), stroke_color)
+                    for p in transformed_points]
+        return vertices
+
+    def _primitive_assembly(self, vertices, primitive_type, close_mode):
+        if primitive_type == constants.POLYGON:
+            if close_mode == constants.CLOSE:
+                vertices.append(vertices[0])
+            primitives = [vertices]
+        elif primitive_type == constants.POINTS:
+            primitives = [[v] for v in vertices]
         return primitives
 
-    def _rasterization(self, primitives):
+    def _rasterization(self, primitives, fill_color):
+
         fragments = []
+
         for vertices in primitives:
-            points = None
+            pixels = self._scan_line_filling(vertices, fill_color)
+
             for i, _ in enumerate(vertices):
                 if i < len(vertices) - 1:
-                    points = self._draw_line(vertices[i], vertices[i + 1])
-            fragments.append(points)
+                    pixels += self._draw_line(vertices[i], vertices[i + 1])
+
+            fragments.append(pixels)
+
         return fragments
 
     def _clipping(self, fragments):
         fragments_clipped = []
-        for points in fragments:
+
+        def is_in(p):
             content_width, content_height = self.size
+            return p.x >= 0 and p.x < content_width and p.y >= 0 and p.y < content_height
 
-            def is_in(p):
-                return p.x >= 0 and p.x < content_width and p.y >= 0 and p.y < content_height
+        for pixels in fragments:
+            pixels_clipped = [p for p in pixels if is_in(p)]
+            fragments_clipped.append(pixels_clipped)
 
-            points_clipped = [p for p in points if is_in(p)]
-            fragments_clipped.append(points_clipped)
         return fragments_clipped
 
     def _fragment_processing(self, fragemnts):
-        for points in fragemnts:
-            for p in points:
+        for pixels in fragemnts:
+            for p in pixels:
                 index = p.x + p.y * self.size[0]
-                self.frame_buffer[index] = Color('@', 0, 0)
+                self.frame_buffer[index] = p.color
+
+    def _scan_line_filling(self, polygon, fill_color):
+
+        return []
 
     def _draw_line(self, p1, p2):
-        points = []
-
-        def map(value, start1, stop1, start2, stop2):
-            if start1 == stop1:
-                return value
-            t = (value - start1) / (stop1 - start1)
-            return start2 * (1 - t) + stop2 * t
+        pixels = []
 
         def round(value):
             return math.floor(value) if value - math.floor(value) < 0.5 else math.ceil(value)
@@ -183,15 +220,15 @@ class Renderer(object):
             end_x = max(p1.x, p2.x)
             for x in range(start_x, end_x + 1):
                 y = map(x, p1.x, p2.x, p1.y, p2.y)
-                points.append(Point(x, round(y)))
+                pixels.append(Vertex(x, round(y), p1.color))
         else:
             start_y = min(p1.y, p2.y)
             end_y = max(p1.y, p2.y)
             for y in range(start_y, end_y + 1):
                 x = map(y, p1.y, p2.y, p1.x, p2.x)
-                points.append(Point(round(x), y))
+                pixels.append(Vertex(round(x), y, p1.color))
 
-        return points
+        return pixels
 
 
 class Context(metaclass=ABCMeta):
@@ -335,8 +372,8 @@ else:
                     event_queue.append(WindowEvent())
                 elif key == curses.KEY_MOUSE:
                     _, x, y, _, bstate = curses.getmouse()
-                    x -= (-self._pad_x + 1)
-                    y -= (-self._pad_y + 1)
+                    x -= (self._canvas_x - self._pad_x + 1)
+                    y -= (self._canvas_y - self._pad_y + 1)
                     x_in = x >= 0 and x < self._canvas_width - 1
                     y_in = y >= 0 and y < self._canvas_height - 1
                     if x_in and y_in:

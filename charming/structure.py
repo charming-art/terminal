@@ -1,4 +1,7 @@
 from .app import sketch
+from .app import renderer
+
+pointer_stack = []
 
 
 def setup(hook):
@@ -24,3 +27,15 @@ def loop():
 def redraw():
     draw_hook = sketch.hooks_map['draw']
     draw_hook()
+
+
+def push():
+    global pointer_stack
+    pointer_stack.append(len(renderer.transform_matrix_stack))
+
+
+def pop():
+    global pointer_stack
+    pointer = pointer_stack.pop()
+    while len(renderer.transform_matrix_stack) > pointer:
+        renderer.transform_matrix_stack.pop()

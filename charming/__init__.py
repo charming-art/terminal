@@ -3,6 +3,8 @@ from .constants import HALF_PI
 from .constants import QUARTER_PI
 from .constants import TAU
 from .constants import TWO_PI
+from .constants import CLOSE
+from .constants import POINTS
 
 from .structure import setup
 from .structure import draw
@@ -10,6 +12,8 @@ from .structure import run
 from .structure import redraw
 from .structure import no_loop
 from .structure import loop
+from .structure import push
+from .structure import pop
 
 from .environment import frame_rate
 from .environment import size
@@ -60,5 +64,15 @@ from .cmath import sin
 from .cmath import tan
 
 from .shape import line
+from .shape import begin_shape
+from .shape import end_shape
+from .shape import vertex
+
+from .color import stroke
+from .color import fill
+
+from .transform import translate
+from .transform import scale
+from .transform import rotate
 
 from .helpers import log

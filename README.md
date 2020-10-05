@@ -34,8 +34,10 @@ python3 sketch.py
 <!-- index.html -->
 <html>
     <head>
+        <link rel="stylesheet" href="xterm.css" />
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.8.10/brython.min.js"></script>
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.8.10/brython_stdlib.js"></script>
+        <script src="xterm.js"></script>
         <script type="text/python" src="charming.py"></script>
     <head>
     <body onload="brython()">
@@ -62,8 +64,8 @@ Try it one an online editor.
 - [x] no_loop()
 - [x] loop()
 - [x] redraw()
-- [ ] push()
-- [ ] pop()
+- [x] push()
+- [x] pop()
 
 ### Shape
 
@@ -115,14 +117,11 @@ Try it one an online editor.
 
 - [ ] apply_matrix()
 - [ ] pop_matrix()
-- [ ] translate()
-- [ ] scale()
-- [ ] rotate()
-- [ ] shear_x()
+- [x] translate()
+- [x] scale()
+- [x] rotate()
 - [ ] shear_x()
 - [ ] shear_y()
-- [ ] rotate_x()
-- [ ] rotate_y()
   
 ### Color
 
