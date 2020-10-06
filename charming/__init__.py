@@ -14,6 +14,7 @@ from .structure import no_loop
 from .structure import loop
 from .structure import push
 from .structure import pop
+from .structure import save
 
 from .environment import frame_rate
 from .environment import size
@@ -70,9 +71,14 @@ from .shape import vertex
 
 from .color import stroke
 from .color import fill
+from .color import ch
+from .color import fg
+from .color import bg
 
 from .transform import translate
 from .transform import scale
 from .transform import rotate
+from .transform import shear_x
+from .transform import shear_y
 
 from .helpers import log

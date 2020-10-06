@@ -66,6 +66,7 @@ Try it one an online editor.
 - [x] redraw()
 - [x] push()
 - [x] pop()
+- [x] save()
 
 ### Shape
 
@@ -115,13 +116,11 @@ Try it one an online editor.
 
 ### Transform
 
-- [ ] apply_matrix()
-- [ ] pop_matrix()
 - [x] translate()
 - [x] scale()
 - [x] rotate()
-- [ ] shear_x()
-- [ ] shear_y()
+- [x] shear_x()
+- [x] shear_y()
   
 ### Color
 
@@ -129,17 +128,17 @@ Try it one an online editor.
 
 - [ ] background()
 - [ ] clear()
-- [ ] fill()
+- [x] fill()
 - [ ] no_fill()
 - [ ] no_stroke()
-- [ ] stroke()
+- [x] stroke()
 
 #### Creating && Reading
 
 - [ ] color()
-- [ ] ch()
-- [ ] bg()
-- [ ] fg()
+- [x] ch()
+- [x] bg()
+- [x] fg()
   
 ### Events
 

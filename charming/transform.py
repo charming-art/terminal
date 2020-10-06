@@ -2,6 +2,7 @@ import functools
 from .app import renderer
 from .cmath import sin
 from .cmath import cos
+from .cmath import tan
 from .cmath import Matrix
 
 
@@ -56,6 +57,36 @@ def rotate(x):
     matrix = Matrix([
         [cos(x), -sin(x), 0],
         [sin(x), cos(x), 0],
+        [0, 0, 1]
+    ])
+    return matrix
+
+
+@_push_on_return
+def shear_x(x):
+    '''
+    x'   1 cotx 0   x
+    y' = 0 1    0 * y
+    1    0 0    1   1
+    '''
+    matrix = Matrix([
+        [1, 1 / tan(x), 0],
+        [0, 1, 0],
+        [0, 0, 1]
+    ])
+    return matrix
+
+
+@_push_on_return
+def shear_y(x):
+    '''
+    x'   1    0 0   x
+    y' = cotx 1 0 * y
+    1    0    0 1   1
+    '''
+    matrix = Matrix([
+        [1, 0, 0],
+        [1 / tan(x), 1, 0],
         [0, 0, 1]
     ])
     return matrix

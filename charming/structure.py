@@ -1,7 +1,8 @@
 from .app import sketch
 from .app import renderer
+from contextlib import contextmanager
 
-pointer_stack = []
+state_stack = []
 
 
 def setup(hook):
@@ -30,12 +31,29 @@ def redraw():
 
 
 def push():
-    global pointer_stack
-    pointer_stack.append(len(renderer.transform_matrix_stack))
+    global state_stack
+    state_stack.append({
+        "transform_pointer": len(renderer.transform_matrix_stack),
+        "stroke_color": renderer.stroke_color,
+        "fill_color": renderer.fill_color,
+        "is_stroke_enabled": renderer.is_stroke_enabled,
+        "is_fill_enabled": renderer.is_fill_enabled
+    })
 
 
 def pop():
-    global pointer_stack
-    pointer = pointer_stack.pop()
-    while len(renderer.transform_matrix_stack) > pointer:
+    global state_stack
+    state = state_stack.pop()
+    while len(renderer.transform_matrix_stack) > state['transform_pointer']:
         renderer.transform_matrix_stack.pop()
+    renderer.stroke_color = state['stroke_color']
+    renderer.fill_color = state['fill_color']
+    renderer.is_stroke_enabled = state['is_stroke_enabled']
+    renderer.is_fill_enabled = state['is_fill_enabled']
+
+
+@contextmanager
+def save():
+    push()
+    yield
+    pop()
