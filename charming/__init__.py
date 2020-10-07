@@ -71,6 +71,8 @@ from .shape import vertex
 
 from .color import stroke
 from .color import fill
+from .color import no_stroke
+from .color import no_fill
 from .color import ch
 from .color import fg
 from .color import bg

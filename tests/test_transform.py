@@ -15,13 +15,13 @@ def draw():
         rect(0, 0, 5, 5)
 
         with app.save():
-            app.rotate(app.PI / 3)
-            app.scale(0.5)
+            # app.rotate(app.PI / 3)
+            app.scale(1.5)
             app.stroke('B')
             rect(0, 0, 5, 5)
 
     app.stroke('Q')
-    app.shear_y(app.PI / 4)
+    app.shear_x(app.PI / 6)
     rect(0, 0, 5, 5)
     app.no_loop()
 

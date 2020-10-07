@@ -13,6 +13,7 @@ TAU = PI * 2
 TWO_PI = PI * 2
 
 # Primitive types
+
 POLYGON = 0
 
 POINTS = 1
@@ -31,18 +32,18 @@ CLOSE = 1
 
 # Colors
 
-COLOR_BLACK = 0
+BLACK = 0
 
-COLOR_BLUE = 1
+BLUE = 1
 
-COLOR_CYAN = 2
+CYAN = 2
 
-COLOR_GREEN = 3
+GREEN = 3
 
-COLOR_MAGENTA = 4
+MAGENTA = 4
 
-COLOR_RED = 5
+RED = 5
 
-COLOR_WHITE = 6
+WHITE = 6
 
-COLOR_YELLOW = 7
+YELLOW = 7

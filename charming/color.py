@@ -3,11 +3,21 @@ from .core import Color
 
 
 def stroke(ch, fg=0, bg=0):
+    renderer.is_stroke_enabled = True
     renderer.stroke_color = Color(ch, fg, bg)
 
 
 def fill(ch, fg=0, bg=0):
+    renderer.is_fill_enabled = True
     renderer.fill_color = Color(ch, fg, bg)
+
+
+def no_stroke():
+    renderer.is_stroke_enabled = False
+
+
+def no_fill():
+    renderer.is_fill_enabled = False
 
 
 def ch(color):

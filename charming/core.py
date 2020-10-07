@@ -45,6 +45,7 @@ class Sketch(object):
         self.context = context
 
     def run(self):
+        error = None
         try:
             setup_hook = self.hooks_map['setup']
             draw_hook = self.hooks_map['draw']
@@ -70,8 +71,10 @@ class Sketch(object):
                 time.sleep(1 / self.frame_rate)
         except Exception as e:
             logger.debug(e)
+            error = e
         finally:
             self.context.close()
+            print(error)
 
     def add_hook(self, name, hook):
         self.hooks_map[name] = hook
@@ -120,6 +123,8 @@ class Renderer(object):
             shape.fill_color = self.fill_color
             shape.stroke_color = self.stroke_color
             shape.stroke_weight = self.stroke_weight
+            shape.is_fill_enabled = self.is_fill_enabled
+            shape.is_stroke_enabled = self.is_stroke_enabled
             shape.transform_matrix_stack = [
                 m for m in self.transform_matrix_stack]
         self.shape_queue.append(shape)
@@ -129,10 +134,10 @@ class Renderer(object):
         self.frame_buffer = [Color(' ', 0, 0) for _ in range(width * height)]
 
     def _render_shape(self, shape):
-        vertex_color = shape.stroke_color if self.is_stroke_enabled else shape.fill_color
+
         vertices = self._vertex_processing(
             shape.points,
-            vertex_color,
+            shape.stroke_color,
             shape.transform_matrix_stack)
 
         primitives = self._primitive_assembly(
@@ -140,7 +145,11 @@ class Renderer(object):
             shape.primitive_type,
             shape.close_mode)
 
-        fragments = self._rasterization(primitives, shape.fill_color)
+        fragments = self._rasterization(
+            primitives,
+            shape.fill_color,
+            shape.is_stroke_enabled,
+            shape.is_fill_enabled)
 
         fragments_clipped = self._clipping(fragments)
 
@@ -168,17 +177,25 @@ class Renderer(object):
             primitives = [[v] for v in vertices]
         return primitives
 
-    def _rasterization(self, primitives, fill_color):
-
+    def _rasterization(self, primitives, fill_color, is_stroke_enabled, is_fill_enabled):
         fragments = []
 
         for vertices in primitives:
-            pixels = self._scan_line_filling(vertices, fill_color)
+            pixels = []
+            # fill polygon
+            if is_fill_enabled and len(vertices) > 2:
+                pixels += self._scan_line_filling(vertices, fill_color)
 
-            for i, _ in enumerate(vertices):
-                if i < len(vertices) - 1:
-                    pixels += self._draw_line(vertices[i], vertices[i + 1])
-
+            # stroke polygon
+            if is_stroke_enabled:
+                if len(vertices) == 1:
+                    pixels += vertices
+                else:
+                    for i, _ in enumerate(vertices):
+                        if i < len(vertices) - 1:
+                            pixels += self._draw_line(
+                                vertices[i],
+                                vertices[i + 1])
             fragments.append(pixels)
 
         return fragments
@@ -203,30 +220,49 @@ class Renderer(object):
                 self.frame_buffer[index] = p.color
 
     def _scan_line_filling(self, polygon, fill_color):
+        pixels = []
+        edges = [sorted([v, polygon[i + 1]], key=lambda v: v.y)
+                 for i, v in enumerate(polygon)
+                 if i < len(polygon) - 1 and v.y != polygon[i + 1].y]
+        ymin = min(polygon, key=lambda p: p.y).y
+        ymax = max(polygon, key=lambda p: p.y).y
 
-        return []
+        for y in range(ymin, ymax + 1):
+            intersections = [round(map(y, e[0].y, e[1].y, e[0].x, e[1].x))
+                             for e in edges
+                             if y >= e[0].y and y <= e[1].y]
+            if len(intersections) == 1:
+                pixels += [Vertex(intersections[0], y, fill_color)]
+            else:
+                intersections_sorted = sorted(intersections)
+                is_draw = True
+                for i, x0 in enumerate(intersections_sorted):
+                    if is_draw and i < len(intersections_sorted) - 1:
+                        x1 = intersections_sorted[i + 1]
+                        pixels += self._draw_line(
+                            Vertex(x0, y, fill_color),
+                            Vertex(x1, y, fill_color))
+                    is_draw = not is_draw
+        return pixels
 
-    def _draw_line(self, p1, p2):
+    def _draw_line(self, v1, v2):
         pixels = []
 
-        def round(value):
-            return math.floor(value) if value - math.floor(value) < 0.5 else math.ceil(value)
-
-        dx = abs(p1.x - p2.x)
-        dy = abs(p1.y - p2.y)
+        dx = abs(v1.x - v2.x)
+        dy = abs(v1.y - v2.y)
 
         if dx >= dy:
-            start_x = min(p1.x, p2.x)
-            end_x = max(p1.x, p2.x)
+            start_x = min(v1.x, v2.x)
+            end_x = max(v1.x, v2.x)
             for x in range(start_x, end_x + 1):
-                y = map(x, p1.x, p2.x, p1.y, p2.y)
-                pixels.append(Vertex(x, round(y), p1.color))
+                y = map(x, v1.x, v2.x, v1.y, v2.y)
+                pixels.append(Vertex(x, round(y), v1.color))
         else:
-            start_y = min(p1.y, p2.y)
-            end_y = max(p1.y, p2.y)
+            start_y = min(v1.y, v2.y)
+            end_y = max(v1.y, v2.y)
             for y in range(start_y, end_y + 1):
-                x = map(y, p1.y, p2.y, p1.x, p2.x)
-                pixels.append(Vertex(round(x), y, p1.color))
+                x = map(y, v1.y, v2.y, v1.x, v2.x)
+                pixels.append(Vertex(round(x), y, v1.color))
 
         return pixels
 

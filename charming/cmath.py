@@ -156,7 +156,7 @@ def map(value, start1, stop1, start2, stop2):
     15.0
     '''
     if start1 == stop1:
-        return value
+        return start2
     t = (value - start1) / (stop1 - start1)
     return start2 * (1 - t) + stop2 * t
 

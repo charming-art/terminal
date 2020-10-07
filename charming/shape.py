@@ -18,6 +18,8 @@ class CShape(object):
     primitive_type = POLYGON
     close_mode = OPEN
     transform_matrix_stack = []
+    is_stroke_enabled = True
+    is_fill_enabled = True
 
     def __init__(self, points=[], is_auto=True, primitive_type=POLYGON, close_mode=CLOSE):
         self.points = points
@@ -26,7 +28,7 @@ class CShape(object):
         self.close_mode = close_mode
 
 
-def set_render_parameters(foo):
+def _add_on_return(foo):
     @functools.wraps(foo)
     def wrapped(*args, **kw):
         shape = foo(*args, **kw)
@@ -36,7 +38,7 @@ def set_render_parameters(foo):
 #### primitives #####
 
 
-@set_render_parameters
+@_add_on_return
 def line(x1, y1, x2, y2):
     return CShape(points=[Point(x1, y1), Point(x2, y2)])
 
@@ -48,7 +50,7 @@ def begin_shape(primitive_type=POLYGON):
     _current_shape = CShape(primitive_type=primitive_type)
 
 
-@set_render_parameters
+@_add_on_return
 def end_shape(close_mode=OPEN):
     global _current_shape
     _current_shape.close_mode = close_mode
