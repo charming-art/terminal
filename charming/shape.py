@@ -1,31 +1,42 @@
 import functools
-
+import logging
 from .app import renderer
 from .core import Point
 from .constants import POLYGON
 from .constants import OPEN
 from .constants import CLOSE
 
-
 _current_shape = None
 
 
 class CShape(object):
 
-    fill_color = None
-    stroke_color = None
-    stroke_weight = None
-    primitive_type = POLYGON
-    close_mode = OPEN
-    transform_matrix_stack = []
-    is_stroke_enabled = True
-    is_fill_enabled = True
-
-    def __init__(self, points=[], is_auto=True, primitive_type=POLYGON, close_mode=CLOSE):
-        self.points = points
+    def __init__(self, points=None, is_auto=True, primitive_type=POLYGON, close_mode=CLOSE):
+        self.points = [] if points == None else points
         self.is_auto = is_auto
         self.primitive_type = primitive_type
         self.close_mode = close_mode
+        self.fill_color = None
+        self.stroke_color = None
+        self.stroke_weight = None
+        self.transform_matrix_stack = []
+        self.is_stroke_enabled = True
+        self.is_fill_enabled = True
+
+    def __str__(self):
+        attrs = {
+            'fill_color': self.fill_color,
+            'stroke_color': self.stroke_color,
+            'primitive_type': self.primitive_type,
+            'close_mode': self.close_mode,
+            'is_stroke_enabled': self.is_stroke_enabled,
+            'is_fill_enabled': self.is_fill_enabled,
+            'stroke_weight': self.stroke_weight,
+            'points': self.points
+        }
+        return attrs.__str__()
+
+    __repr__ = __str__
 
 
 def _add_on_return(foo):

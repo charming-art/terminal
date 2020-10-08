@@ -17,32 +17,28 @@ Vertex = namedtuple('Vertex', ['x', 'y', 'color'])
 
 
 class Sketch(object):
-    renderer = None
-    context = None
-
-    frame_rate = 30
-    is_loop = True
-    frame_count = 0
-    size = (0, 0)
-
-    key = 0
-    key_code = 0
-    mouse_x = 0
-    mouse_y = 0
-    pmouse_x = 0
-    pmouse_y = 0
-
-    hooks_map = {
-        'setup': lambda: None,
-        'draw': lambda: None,
-        'mouse_clicked': lambda: None,
-        'key_typed': lambda: None,
-        'window_resized': lambda: None,
-    }
 
     def __init__(self, renderer, context):
         self.renderer = renderer
         self.context = context
+
+        self.frame_rate = 30
+        self.is_loop = True
+        self.frame_count = 0
+        self.size = (10, 10)
+        self.key = 0
+        self.key_code = 0
+        self.mouse_x = 0
+        self.mouse_y = 0
+        self.pmouse_x = 0
+        self.pmouse_y = 0
+        self.hooks_map = {
+            'setup': lambda: None,
+            'draw': lambda: None,
+            'mouse_clicked': lambda: None,
+            'key_typed': lambda: None,
+            'window_resized': lambda: None,
+        }
 
     def run(self):
         error = None
@@ -98,21 +94,22 @@ class Sketch(object):
 
 class Renderer(object):
 
-    size = (10, 10)
-    frame_buffer = []
-    shape_queue = []
-    fill_color = Color(' ', 0, 0)
-    stroke_color = Color('*', 0, 0)
-    stroke_weight = 1
-    is_stroke_enabled = True
-    is_fill_enabled = True
-    transform_matrix_stack = []
+    def __init__(self):
+        self.frame_buffer = []
+        self.shape_queue = []
+        self.fill_color = Color(' ', 0, 0)
+        self.stroke_color = Color('*', 0, 0)
+        self.stroke_weight = 1
+        self.is_stroke_enabled = True
+        self.is_fill_enabled = True
+        self.transform_matrix_stack = []
+        self.size = (10, 10)
 
     def setup(self, size):
         self.size = size
+        self._reset_frame_buffer()
 
     def render(self):
-        self._reset_frame_buffer()
         while len(self.shape_queue) > 0:
             shape = self.shape_queue.pop(0)
             self._render_shape(shape)
@@ -220,17 +217,34 @@ class Renderer(object):
                 self.frame_buffer[index] = p.color
 
     def _scan_line_filling(self, polygon, fill_color):
+        '''
+        https://www.cs.uic.edu/~jbell/CourseNotes/ComputerGraphics/PolygonFilling.html
+        '''
         pixels = []
-        edges = [sorted([v, polygon[i + 1]], key=lambda v: v.y)
+        edges_horizontal = [(v, polygon[i + 1]) for i, v in enumerate(polygon)
+                            if i < len(polygon) - 1 and v.y == polygon[i + 1].y]
+        edges = [(v, polygon[i + 1])
                  for i, v in enumerate(polygon)
                  if i < len(polygon) - 1 and v.y != polygon[i + 1].y]
         ymin = min(polygon, key=lambda p: p.y).y
         ymax = max(polygon, key=lambda p: p.y).y
 
+        def has_intersect(e, y):
+            v1, v2 = e
+            if v1.y > v2.y:
+                return y <= v1.y and y > v2.y
+            else:
+                return y >= v1.y and y < v2.y
+
+        for e in edges_horizontal:
+            y = e[0].y
+            pixels += self._draw_line(
+                Vertex(e[0].x, y, fill_color),
+                Vertex(e[1].x, y, fill_color))
+
         for y in range(ymin, ymax + 1):
             intersections = [round(map(y, e[0].y, e[1].y, e[0].x, e[1].x))
-                             for e in edges
-                             if y >= e[0].y and y <= e[1].y]
+                             for e in edges if has_intersect(e, y)]
             if len(intersections) == 1:
                 pixels += [Vertex(intersections[0], y, fill_color)]
             else:
@@ -339,28 +353,6 @@ else:
 
     class CursesContext(Context):
 
-        _screen = None
-
-        _pad = None
-
-        _pad_x = 0
-
-        _pad_y = 0
-
-        _pad_width = 0
-
-        _pad_height = 0
-
-        _canvas_x = 0
-
-        _canvas_y = 0
-
-        _canvas_width = 0
-
-        _canvas_height = 0
-
-        window_width = 0
-
         window_height = 0
 
         def __init__(self):
@@ -465,8 +457,6 @@ class WindowEvent(Event):
 
 
 class MouseEvent(Event):
-    x = 0
-    y = 0
     mouse_type = ""
 
     def __init__(self, x, y, type):
@@ -477,7 +467,6 @@ class MouseEvent(Event):
 
 
 class KeyboardEvent(Event):
-    key = 0
 
     def __init__(self, key):
         super(KeyboardEvent, self).__init__('keyboard')
