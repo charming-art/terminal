@@ -47,3 +47,19 @@ RED = 5
 WHITE = 6
 
 YELLOW = 7
+
+# Rect && Ellipse
+CORNER = 0
+
+CORNERS = 1
+
+CENTER = 2
+
+RADIUS = 3
+
+# Arc
+
+CHORD = 1
+
+PIE = 2
+

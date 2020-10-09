@@ -1,12 +1,12 @@
 from .app import sketch
 
 
-def frame_rate(_frame_rate):
-    sketch.frame_rate = _frame_rate
+def frame_rate(frame_rate):
+    sketch.frame_rate = frame_rate
 
 
-def size(_width, _height):
-    sketch.size = (int(_width), int(_height))
+def size(width, height):
+    sketch.size = (int(width), int(height))
 
 
 def full_screen():

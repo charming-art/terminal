@@ -75,20 +75,20 @@ Try it one an online editor.
 
 #### 2D Primitives
 
-- [ ] arc()
-- [ ] circle()
-- [ ] ellipse()
+- [x] arc()
+- [x] circle()
+- [x] ellipse()
 - [x] line()
-- [ ] point()
-- [ ] quad()
-- [ ] rect()
-- [ ] square()
-- [ ] triangle()
+- [x] point()
+- [x] quad()
+- [x] rect()
+- [x] square()
+- [x] triangle()
 
 #### Attributes
 
-- [ ] ellipse_mode()
-- [ ] rect_mode()
+- [x] ellipse_mode()
+- [x] rect_mode()
 - [ ] stroke_weight()
 
 #### Vertex
@@ -126,16 +126,15 @@ Try it one an online editor.
 
 #### Settings
 
-- [ ] background()
-- [ ] clear()
+- [x] background()
 - [x] fill()
-- [ ] no_fill()
-- [ ] no_stroke()
+- [x] no_fill()
+- [x] no_stroke()
 - [x] stroke()
 
 #### Creating && Reading
 
-- [ ] color()
+- [x] color()
 - [x] ch()
 - [x] bg()
 - [x] fg()

@@ -5,6 +5,12 @@ from .constants import TAU
 from .constants import TWO_PI
 from .constants import CLOSE
 from .constants import POINTS
+from .constants import CORNERS
+from .constants import CORNER
+from .constants import CENTER
+from .constants import RADIUS
+from .constants import CHORD
+from .constants import PIE
 
 from .structure import setup
 from .structure import draw
@@ -63,11 +69,21 @@ from .cmath import degrees
 from .cmath import radians
 from .cmath import sin
 from .cmath import tan
+from .cmath import CVector
 
 from .shape import line
+from .shape import rect
+from .shape import square
+from .shape import quad
+from .shape import point
+from .shape import arc
+from .shape import circle
+from .shape import ellipse
 from .shape import begin_shape
 from .shape import end_shape
 from .shape import vertex
+from .shape import rect_mode
+from .shape import ellipse_mode
 
 from .color import stroke
 from .color import fill
@@ -76,6 +92,8 @@ from .color import no_fill
 from .color import ch
 from .color import fg
 from .color import bg
+from .color import backgournd
+from .color import color
 
 from .transform import translate
 from .transform import scale

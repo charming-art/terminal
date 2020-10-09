@@ -18,15 +18,15 @@ def draw():
     with app.save():
         global theta
         app.translate(app.get_width() / 2, app.get_height() / 2)
-        # app.rotate(theta)
+        app.rotate(theta)
         app.scale(1.5)
-        # app.stroke('@')
+        app.stroke('@')
         app.fill('a')
         rect(0, 0, 5, 5)
         theta += 1 / 10
 
     rect(0, 0, 5, 5)
-    app.no_loop()
+    # app.no_loop()
 
 
 def rect(x, y, width, height):

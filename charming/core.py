@@ -126,6 +126,10 @@ class Renderer(object):
                 m for m in self.transform_matrix_stack]
         self.shape_queue.append(shape)
 
+    def set_frame_buffer(self, color):
+        for i in enumerate(self.frame_buffer):
+            self.frame_buffer[i] = color
+
     def _reset_frame_buffer(self):
         width, height = self.size
         self.frame_buffer = [Color(' ', 0, 0) for _ in range(width * height)]

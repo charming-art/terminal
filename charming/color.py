@@ -20,6 +20,14 @@ def no_fill():
     renderer.is_fill_enabled = False
 
 
+def backgournd(ch, fg=0, bg=0):
+    renderer.set_frame_buffer(Color(ch, fg, bg))
+
+
+def color(ch, fg=0, bg=0):
+    return Color(ch, fg, bg)
+
+
 def ch(color):
     return color.ch
 

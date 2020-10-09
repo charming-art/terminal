@@ -300,8 +300,65 @@ def sin(n):
 def tan(n):
     return math.tan(n)
 
+##### CVector #####
+
+
+class CVector(object):
+
+    def __init__(self, x=0, y=0):
+        self.x = x
+        self.y = y
+
+    def set(self, a, b=0):
+        if isinstance(a, self.__class__):
+            self.x = a.x
+            self.y = a.y
+        else:
+            self.x = a
+            self.y = b
+
+    def copy(self):
+        return self.__class__(self.x, self.y)
+
+    def mag(self):
+        return sqrt(self.x ** 2 + self.y ** 2)
+
+    def magSq(self):
+        return self.x ** 2 + self.y ** 2
+
+    def __add__(self, other):
+        x = self.x + other.x
+        y = self.y + other.y
+        return self.__class__(x, y)
+
+    def __sub__(self, other):
+        x = self.x - other.x
+        y = self.y - other.y
+        return self.__class__(x, y)
+
+    def __mul__(self, k):
+        x = self.x * k
+        y = self.y * k
+        return self.__class__(x, y)
+
+    def __truediv__(self, k):
+        x = self.x / k
+        y = self.y / k
+        return self.__class__(x, y)
+
+    def __rmul__(self, k):
+        return self * k
+
+    def __neq__(self):
+        return self * (-1)
+
+    def dot(self, a, b=None):
+        pass
+
+##### Random #####
 
 ##### Matrix #####
+
 
 class Matrix(object):
 
@@ -311,7 +368,8 @@ class Matrix(object):
         self.col = 0 if self.row == 0 else len(matrix[0])
 
     def __mul__(self, other):
-        new_matrix = Matrix([[0 for _ in range(other.col)] for _ in range(self.row)])
+        new_matrix = Matrix([[0 for _ in range(other.col)]
+                             for _ in range(self.row)])
         for i in range(self.row):
             for j in range(other.col):
                 new_matrix[i][j] = sum(
@@ -323,5 +381,5 @@ class Matrix(object):
 
     def __str__(self):
         return self.matrix.__str__()
-    
+
     __repr__ = __str__
