@@ -19,7 +19,7 @@ def draw():
     app.vertex(x + size, y - size)
     app.vertex(x + size * 2, y)
     app.vertex(x, y + size * 2)
-    app.end_shape(app.CLOSE)
+    app.end_shape()
     app.no_loop()
 
 

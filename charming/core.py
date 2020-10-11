@@ -224,6 +224,14 @@ class Renderer(object):
         '''
         https://www.cs.uic.edu/~jbell/CourseNotes/ComputerGraphics/PolygonFilling.html
         '''
+
+        # close the polygon
+        polygon = polygon.copy()
+        first = polygon[0]
+        last = polygon[-1]
+        if first.x != last.x or first.y != last.y:
+            polygon.append(Vertex(first.x, first.y, first.color))
+
         pixels = []
         edges_horizontal = [(v, polygon[i + 1]) for i, v in enumerate(polygon)
                             if i < len(polygon) - 1 and v.y == polygon[i + 1].y]

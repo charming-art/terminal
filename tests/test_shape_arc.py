@@ -14,13 +14,21 @@ theta = 0
 def draw():
     global theta
     # theta += 1 / 10
-    app.stroke('+')
+
     app.fill('e')
+    app.no_fill()
     # app.fill('o')
+    start_angle = 0
+    end_angle = app.PI / 2
     with app.save():
         app.translate(app.get_width() / 2, app.get_height() / 2,)
         app.rotate(theta)
-        app.arc(0, 0, 10, 5, 0, app.TAU / 4, app.CHORD)
+        app.stroke('+')
+        app.arc(0, 0, 20, 10, start_angle, end_angle, app.PIE)
+        app.stroke('-')
+        # app.arc(0, 0, 10, 20, start_angle, end_angle)
+        # app.ellipse(0, 0, 40 ,20)
+
     app.no_loop()
 
 

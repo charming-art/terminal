@@ -108,35 +108,7 @@ def arc(a, b, c, d, start, stop, mode=OPEN):
     def is_in(x, y):
         return (b * x) ** 2 + (a * y) ** 2 - (a * b) ** 2 < 0
 
-    if a >= b:
-        y = y0 - b
-        for x in range(x0, x0 + a + 1):
-            rx = x - x0
-            ry = y0 - y
-            p1.append(Point(x, y))
-            p2.append(Point(x, y + ry * 2))
-            p3.append(Point(x - rx * 2, y + ry * 2))
-            p4.append(Point(x - rx * 2, y))
-            if not is_in(rx + 1, ry - 0.5):
-                y += 1
-    else:
-        x = x0 + a
-        for y in range(y0, y0 + b + 1):
-            rx = x - x0
-            ry = y0 - y
-            p1.append(Point(x, y))
-            p2.append(Point(x - rx * 2, y))
-            p3.append(Point(x - rx * 2, y + ry * 2))
-            p4.append(Point(x, y + ry * 2))
-            if not is_in(rx - 0.5, ry + 1):
-                x -= 1
-
-    points = list(reversed(p2)) + p3 + list(reversed(p4)) + p1
-    close_mode = OPEN if mode == OPEN else CLOSE
-    if mode == PIE:
-        points.insert(0, Point(x0, y0))
-
-    def is_between(x, left,  right):
+    def is_between(x, left, right):
         return left <= x and x <= right
 
     def x_range(start, stop, a):
@@ -154,11 +126,61 @@ def arc(a, b, c, d, start, stop, mode=OPEN):
 
     x_min, x_max = x_range(start, stop, a)
     y_min, y_max = y_range(start, stop, b)
-    points_filterd = [p for p in points
-                      if is_between(p.x - x0, x_min, x_max)
-                      and is_between(p.y - y0, y_min, y_max)]
 
-    return CShape(points=points_filterd, close_mode=close_mode)
+    def add_point(list, x, y):
+        if is_between(x - x0, x_min, x_max) and is_between(y - y0, y_min, y_max):
+            list.append(Point(x, y))
+
+    def add_points(x, y, rx, ry):
+        add_point(p1, x, y)
+        add_point(p2, x, y + ry * 2)
+        add_point(p3, x - rx * 2, y + ry * 2)
+        add_point(p4, x - rx * 2, y)
+
+    if a >= b:
+        y = y0 - b
+        for x in range(x0, x0 + a + 1):
+            rx = x - x0
+            ry = y0 - y
+            add_points(x, y, rx, ry)
+            if not is_in(rx + 1, ry - 0.5):
+                y += 1
+        if y <= y0:
+            add_points(x, y0, a, 0)
+        p2 = list(reversed(p2))
+        p4 = list(reversed(p4))
+    else:
+        x = x0 + a
+        for y in range(y0, y0 + b + 1):
+            rx = x - x0
+            ry = y - y0
+            add_points(x, y - ry * 2, rx, ry)
+            if not is_in(rx - 0.5, ry + 1):
+                x -= 1
+        if x >= x0:
+            add_points(x0, y, 0, b)
+        p1 = list(reversed(p1))
+        p3 = list(reversed(p3))
+
+    while start < 0:
+        start += TAU
+    while start > TAU:
+        start -= TAU
+
+    if is_between(start, 0, HALF_PI):
+        points = p2 + p3 + p4 + p1
+    elif is_between(start, HALF_PI, PI):
+        points = p3 + p4 + p1 + p2
+    elif is_between(start, PI, PI + HALF_PI):
+        points = p4 + p1 + p2 + p3
+    else:
+        points = p1 + p2 + p3 + p4
+
+    close_mode = OPEN if mode == OPEN else CLOSE
+    if mode == PIE:
+        points.insert(0, Point(x0, y0))
+
+    return CShape(points=points, close_mode=close_mode)
 
 
 def ellipse(a, b, c, d):

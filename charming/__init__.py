@@ -11,6 +11,7 @@ from .constants import CENTER
 from .constants import RADIUS
 from .constants import CHORD
 from .constants import PIE
+from .constants import OPEN
 
 from .structure import setup
 from .structure import draw
@@ -43,7 +44,6 @@ from .event import get_key
 from .event import mouse_clicked
 from .event import key_typed
 
-
 from .cmath import abs
 from .cmath import ceil
 from .cmath import constrain
@@ -69,6 +69,9 @@ from .cmath import degrees
 from .cmath import radians
 from .cmath import sin
 from .cmath import tan
+from .cmath import random
+from .cmath import random_gaussian
+from .cmath import random_seed
 from .cmath import CVector
 
 from .shape import line

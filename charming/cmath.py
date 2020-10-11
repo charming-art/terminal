@@ -1,4 +1,5 @@
 import math
+import random as rd
 
 ##### Calculation #####
 
@@ -14,12 +15,12 @@ def abs(n):
 
     Example:
 
-    >>> abs(1)
-    1
-    >>> abs(-1)
-    1
-    >>> abs(0)
-    0
+        >>> abs(1)
+        1
+        >>> abs(-1)
+        1
+        >>> abs(0)
+        0
     '''
     return builtin_abs(n)
 
@@ -30,14 +31,14 @@ def ceil(n):
 
     Example:
 
-    >>> ceil(1.2)
-    2
-    >>> ceil(-1.2)
-    -1
-    >>> ceil(1)
-    1
-    >>> ceil(-1)
-    -1
+        >>> ceil(1.2)
+        2
+        >>> ceil(-1.2)
+        -1
+        >>> ceil(1)
+        1
+        >>> ceil(-1)
+        -1
     '''
     return math.ceil(n)
 
@@ -48,12 +49,12 @@ def constrain(amt, low, high):
 
     Example:
 
-    >>> constrain(-1, 2, 3)
-    2
-    >>> constrain(4, 2, 3)
-    3
-    >>> constrain(2.5, 2, 3)
-    2.5
+        >>> constrain(-1, 2, 3)
+        2
+        >>> constrain(4, 2, 3)
+        3
+        >>> constrain(2.5, 2, 3)
+        2.5
     '''
     return min(high, max(amt, low))
 
@@ -64,10 +65,10 @@ def dist(x1, y1, x2, y2):
 
     Example:
 
-    >>> dist(0, 0, 1, 0)
-    1.0
-    >>> dist(-1, -1, 2, 3)
-    5.0
+        >>> dist(0, 0, 1, 0)
+        1.0
+        >>> dist(-1, -1, 2, 3)
+        5.0
     '''
     p = [x1, y1]
     q = [x2, y2]
@@ -80,8 +81,8 @@ def exp(n):
 
     Example
 
-    >>> exp(1)
-    2.718281828459045
+        >>> exp(1)
+        2.718281828459045
     '''
     return math.exp(n)
 
@@ -92,12 +93,12 @@ def floor(n):
 
     Example:
 
-    >>> floor(1.2)
-    1
-    >>> floor(-1.2)
-    -2
-    >>> floor(0)
-    0
+        >>> floor(1.2)
+        1
+        >>> floor(-1.2)
+        -2
+        >>> floor(0)
+        0
     '''
     return math.floor(n)
 
@@ -110,12 +111,12 @@ def lerp(start, stop, amt):
 
     Example:
 
-    >>> lerp(1, 2, 0)
-    1
-    >>> lerp(1, 2, 1)
-    2
-    >>> lerp(10, 20, 0.2)
-    12.0
+        >>> lerp(1, 2, 0)
+        1
+        >>> lerp(1, 2, 1)
+        2
+        >>> lerp(10, 20, 0.2)
+        12.0
     '''
     return start * (1 - amt) + stop * amt
 
@@ -126,8 +127,8 @@ def log(x):
 
     Example:
 
-    >>> log(math.e)
-    1.0
+        >>> log(math.e)
+        1.0
     '''
     return math.log(x)
 
@@ -138,10 +139,10 @@ def mag(a, b, c=0):
 
     Example:
 
-    >>> mag(3, 4)
-    5.0
-    >>> mag(3, 4, 12)
-    13.0
+        >>> mag(3, 4)
+        5.0
+        >>> mag(3, 4, 12)
+        13.0
     '''
     return math.sqrt(sum([a ** 2, b ** 2, c ** 2]))
 
@@ -152,11 +153,11 @@ def map(value, start1, stop1, start2, stop2):
 
     Example:
 
-    >>> map(1.5, 1, 2, 10, 20)
-    15.0
+        >>> map(1.5, 1, 2, 10, 20)
+        15.0
     '''
     if start1 == stop1:
-        return start2
+        return stop2
     t = (value - start1) / (stop1 - start1)
     return start2 * (1 - t) + stop2 * t
 
@@ -167,12 +168,12 @@ def max(*args, **kw):
 
     Example:
 
-    >>> max(0, 1)
-    1
-    >>> max(0, 1, 2)
-    2
-    >>> max([0, 1, 2, 3])
-    3
+        >>> max(0, 1)
+        1
+        >>> max(0, 1, 2)
+        2
+        >>> max([0, 1, 2, 3])
+        3
     '''
     return builtin_max(*args, **kw)
 
@@ -183,12 +184,12 @@ def min(*args, **kw):
 
     Example:
 
-    >>> min(0, 1)
-    0
-    >>> min(0, 1, 2)
-    0
-    >>> min([0, 1, 2, 3])
-    0
+        >>> min(0, 1)
+        0
+        >>> min(0, 1, 2)
+        0
+        >>> min([0, 1, 2, 3])
+        0
     '''
     return builtin_min(*args, **kw)
 
@@ -199,8 +200,8 @@ def norm(value, start, stop):
 
     Example:
 
-    >>> norm(20, 0, 50)
-    0.4
+        >>> norm(20, 0, 50)
+        0.4
     '''
     return map(value, start, stop, 0, 1)
 
@@ -211,10 +212,10 @@ def pow(n, e):
 
     Example:
 
-    >>> pow(3, 2)
-    9.0
-    >>> pow(4, 0.5)
-    2.0
+        >>> pow(3, 2)
+        9.0
+        >>> pow(4, 0.5)
+        2.0
     '''
     return math.pow(n, e)
 
@@ -225,16 +226,16 @@ def round(n):
 
     Example:
 
-    >>> round(9.2)
-    9
-    >>> round(9.4)
-    9
-    >>> round(9.5)
-    10
-    >>> round(-1.4)
-    -1
-    >>> round(-1.5)
-    -2
+        >>> round(9.2)
+        9
+        >>> round(9.4)
+        9
+        >>> round(9.5)
+        10
+        >>> round(-1.4)
+        -1
+        >>> round(-1.5)
+        -2
     '''
     return builtin_round(n)
 
@@ -245,8 +246,8 @@ def sq(n):
 
     Example:
 
-    >>> sq(5)
-    25
+        >>> sq(5)
+        25
     '''
     return n ** 2
 
@@ -257,8 +258,8 @@ def sqrt(n):
 
     Example:
 
-    >>> sqrt(25)
-    5.0
+        >>> sqrt(25)
+        5.0
     '''
     return math.sqrt(n)
 
@@ -277,8 +278,8 @@ def atan(n):
     return math.atan(n)
 
 
-def atan2(n):
-    return math.atan2(n)
+def atan2(y, x):
+    return math.atan2(y, x)
 
 
 def cos(n):
@@ -310,52 +311,370 @@ class CVector(object):
         self.y = y
 
     def set(self, a, b=0):
+        '''
+        Set the components of the vector.
+
+        Example:
+
+            >>> v = CVector()
+            >>> v.set(1, 2)
+            (1, 2)
+            >>> v1 = CVector()
+            >>> v1.set(v)
+            (1, 2)
+            >>> v1.set([2, 3])
+            (2, 3)
+        '''
         if isinstance(a, self.__class__):
             self.x = a.x
             self.y = a.y
+        elif isinstance(a, list):
+            self.x = a[0]
+            self.y = a[1]
         else:
             self.x = a
             self.y = b
+        return self
+
+    @classmethod
+    def random_2D(cls):
+        '''
+        Make a new random 2D unit vector with a random direction
+
+        Example:
+
+            >>> from math import isclose
+            >>> v = CVector.random_2D()
+            >>> isclose(v.mag, 1.0)
+            True
+        '''
+        theta = random(math.pi * 2)
+        return cls.from_angle(theta)
+
+    @classmethod
+    def from_angle(cls, angle):
+        '''
+        Make a new 2D unit vector from an angle
+
+        Example:
+
+            >>> from math import pi, isclose
+            >>> v = CVector.from_angle(math.pi / 3)
+            >>> isclose(v.mag, 1.0)
+            True
+        '''
+        x = cos(angle)
+        y = sin(angle)
+        return cls(x, y)
 
     def copy(self):
+        '''
+        Get a copy of the vector
+
+        Example:
+
+            >>> v = CVector(1, 2)
+            >>> v.copy()
+            (1, 2)
+        '''
         return self.__class__(self.x, self.y)
 
+    @property
     def mag(self):
-        return sqrt(self.x ** 2 + self.y ** 2)
+        '''
+        Calculate the magnitude of the vector
 
-    def magSq(self):
+        Example:
+
+            >>> v = CVector(3, 4)
+            >>> v.mag
+            5.0
+        '''
+        return sqrt(self.mag_sq())
+
+    def mag_sq(self):
+        '''
+        Calculate the magnitude of the vector, squared
+
+        Example:
+
+            >>> v = CVector(3, 4)
+            >>> v.mag_sq()
+            25
+        '''
         return self.x ** 2 + self.y ** 2
 
     def __add__(self, other):
+        '''
+        Adds x and z components to a vector
+
+        Example:
+
+            >>> v1 = CVector(1, 2)
+            >>> v2 = CVector(3, 4)
+            >>> v1 + v2
+            (4, 6)
+            >>> v1 += v2
+            >>> v1
+            (4, 6)
+        '''
         x = self.x + other.x
         y = self.y + other.y
         return self.__class__(x, y)
 
     def __sub__(self, other):
+        '''
+        Subtract x and ycomponents from a vector
+
+        Example:
+
+            >>> v1 = CVector(4, 2)
+            >>> v2 = CVector(2, 1)
+            >>> v1 - v2
+            (2, 1)
+            >>> v1 -= v2
+            >>> v1
+            (2, 1)
+        '''
         x = self.x - other.x
         y = self.y - other.y
         return self.__class__(x, y)
 
     def __mul__(self, k):
+        '''
+        Multiply a vector by a scalar
+
+        Example:
+
+            >>> v = CVector(2, 3)
+            >>> v * 2
+            (4, 6)
+            >>> 2 * v
+            (4, 6)
+            >>> -v
+            (-2, -3)
+            >>> v *= 2
+            >>> v
+            (4, 6)
+        '''
         x = self.x * k
         y = self.y * k
         return self.__class__(x, y)
 
     def __truediv__(self, k):
+        '''
+        Divide a vector by a scalar
+
+        Example:
+
+            >>> v = CVector(2, 4)
+            >>> v / 2
+            (1.0, 2.0)
+            >>> v /= 2
+            >>> v
+            (1.0, 2.0)
+        '''
         x = self.x / k
         y = self.y / k
         return self.__class__(x, y)
 
     def __rmul__(self, k):
+        '''
+        Multiply a vector by a scalar
+        '''
         return self * k
 
-    def __neq__(self):
+    def __neg__(self):
+        '''
+        Negate the vector
+        '''
         return self * (-1)
 
-    def dot(self, a, b=None):
-        pass
+    def dist(self, other):
+        '''
+        Calculate the distance between two vectors
+
+        Example:
+
+            >>> v1 = CVector(1, 2)
+            >>> v2 = CVector(4, 6)
+            >>> v1.dist(v2)
+            5.0
+        '''
+        return dist(self.x, self.y, other.x, other.y)
+
+    def dot(self, other):
+        '''
+        Calculate the dot product of two vectors
+
+        Example:
+
+            >>> v1 = CVector(1, 2)
+            >>> v2 = CVector(2, 3)
+            >>> v1.dot(v2)
+            8
+        '''
+        return self.x * other.x + self.y * other.y
+
+    def normalize(self):
+        '''
+        Normalize the vector to a length of 1
+
+        Example:
+
+            >>> from math import isclose
+            >>> v = CVector(3, 4)
+            >>> isclose(v.normalize().mag, 1.0)
+            True
+        '''
+        if self.mag == 0.0:
+            raise ValueError(
+                "Vector which has 0 magnitude can't be normalized")
+        self.mag = 1
+        return self
+
+    def limit(self, max_len):
+        '''
+        Limit the magnitude of the vector
+
+        Example:
+
+            >>> v = CVector(3, 4)
+            >>> v.limit(6).mag
+            5.0
+            >>> v.limit(4).mag
+            4.0
+
+        '''
+        self.mag = min(max_len, self.mag)
+        return self
+
+    @mag.setter
+    def mag(self, len):
+        '''
+        Set the magnitude of the vector
+
+        Example:
+
+            >>> v = CVector(3, 4)
+            >>> v.mag = 2
+            >>> isclose(v.mag, 2)
+            True
+        '''
+        t = len / self.mag
+        self.x *= t
+        self.y *= t
+
+    def heading(self):
+        '''
+        Calculate the angle of rotation for this vector
+
+        Example:
+
+            >>> from math import pi, isclose
+            >>> v = CVector(1, 1)
+            >>> isclose(v.heading(), pi / 4)
+            True
+        '''
+        return atan2(self.y, self.x)
+
+    def rotate(self, theta):
+        '''
+        Rotate the vector by an angle (2D only)
+
+        Example:
+
+            >>> from math import pi, isclose
+            >>> v = CVector(1, 1)
+            >>> isclose(v.rotate(pi / 2).heading(), pi / 4 + pi / 2)
+            True
+        '''
+        x = self.x * cos(theta) - self.y * sin(theta)
+        y = self.x * sin(theta) + self.y * cos(theta)
+        self.x = x
+        self.y = y
+        return self
+
+    def lerp(self, other, amt):
+        '''
+        Linear interpolate the vector to another vector
+
+        Example:
+
+            >>> from math import isclose
+            >>> v1 = CVector(1, 2)
+            >>> v2 = CVector(2, 3)
+            >>> v3 = v1.lerp(v2, 0.4)
+            >>> isclose(v3.x, 1.4)
+            True
+            >>> isclose(v3.y, 2.4)
+            True
+        '''
+        x = lerp(self.x, other.x, amt)
+        y = lerp(self.y, other.y, amt)
+        return self.__class__(x, y)
+
+    def angle_between(self, other):
+        '''
+        Calculate and return the angle between two vectors
+
+        Example:
+
+            >>> from math import pi, isclose
+            >>> v1 = CVector.from_angle(pi / 4)
+            >>> v2 = CVector.from_angle(pi / 3)
+            >>> angle = v1.angle_between(v2)
+            >>> isclose(angle, pi / 3 - pi / 4)
+            True
+        '''
+        return acos(self.dot(other) / (self.mag * other.mag))
+
+    def array(self):
+        '''
+        Return a representation of the vector as a array
+
+        Example:
+
+            >>> v = CVector(1, 2)
+            >>> v.array()
+            [1, 2]
+        '''
+        return [self.x, self.y]
+
+    def __str__(self):
+        return (self.x, self.y).__str__()
+
+    __repr__ = __str__
 
 ##### Random #####
+
+
+def random(a, b=None):
+    '''
+    Returns uniform random numbers.
+    '''
+    if b == None:
+        low = 0
+        high = a
+    else:
+        low = a
+        high = b
+    return rd.uniform(low, high)
+
+
+def random_seed(seed):
+    '''
+    Sets the seed value for random().
+    '''
+    rd.seed(seed)
+
+
+def random_gaussian():
+    '''
+    Returns a float from a random series of numbers having a mean of 0 and standard deviation of 1.
+    '''
+    return rd.gauss(0, 1)
+
 
 ##### Matrix #####
 
@@ -383,3 +702,8 @@ class Matrix(object):
         return self.matrix.__str__()
 
     __repr__ = __str__
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

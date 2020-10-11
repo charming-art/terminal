@@ -233,9 +233,9 @@ CVector
 - [ ] noise()
 - [ ] noise_detail()
 - [ ] noise_seed()
-- [ ] random()
-- [ ] random_gaussian()
-- [ ] random_seed()
+- [x] random()
+- [x] random_gaussian()
+- [x] random_seed()
 
 ### Typography
 
