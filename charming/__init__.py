@@ -72,6 +72,9 @@ from .cmath import tan
 from .cmath import random
 from .cmath import random_gaussian
 from .cmath import random_seed
+from .cmath import noise
+from .cmath import noise_seed
+from .cmath import noise_detail
 from .cmath import CVector
 
 from .shape import line

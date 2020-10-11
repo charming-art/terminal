@@ -194,7 +194,7 @@ Try it one an online editor.
 
 ### Math
 
-CVector
+- [x] CVector
 
 #### Calculation
 

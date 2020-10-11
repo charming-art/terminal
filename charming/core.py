@@ -127,7 +127,7 @@ class Renderer(object):
         self.shape_queue.append(shape)
 
     def set_frame_buffer(self, color):
-        for i in enumerate(self.frame_buffer):
+        for i, _ in enumerate(self.frame_buffer):
             self.frame_buffer[i] = color
 
     def _reset_frame_buffer(self):
