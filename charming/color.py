@@ -1,15 +1,34 @@
 from .app import renderer
+from .app import context
 from .core import Color
+from functools import wraps
 
 
-def stroke(ch, fg=0, bg=0):
+def _add_on_return(func):
+
+    @wraps(func)
+    def wrapped(*args, **kw):
+        c = func(*args, **kw)
+        if hasattr(context, 'color_pair'):
+            context.color_pair.append(c)
+
+    return wrapped
+
+
+@_add_on_return
+def stroke(ch, fg=None, bg=None):
     renderer.is_stroke_enabled = True
-    renderer.stroke_color = Color(ch, fg, bg)
+    c = Color(ch, fg, bg)
+    renderer.stroke_color = c
+    return c
 
 
-def fill(ch, fg=0, bg=0):
+@_add_on_return
+def fill(ch, fg=None, bg=None):
     renderer.is_fill_enabled = True
-    renderer.fill_color = Color(ch, fg, bg)
+    c = Color(ch, fg, bg)
+    renderer.fill_color = c
+    return c
 
 
 def no_stroke():
@@ -20,12 +39,17 @@ def no_fill():
     renderer.is_fill_enabled = False
 
 
-def backgournd(ch, fg=0, bg=0):
-    renderer.set_frame_buffer(Color(ch, fg, bg))
+@_add_on_return
+def backgournd(ch, fg=None, bg=None):
+    c = Color(ch, fg, bg)
+    renderer.set_frame_buffer(c)
+    return c
 
 
-def color(ch, fg=0, bg=0):
-    return Color(ch, fg, bg)
+@_add_on_return
+def color(ch, fg=None, bg=None):
+    c = Color(ch, fg, bg)
+    return c
 
 
 def ch(color):

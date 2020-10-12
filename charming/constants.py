@@ -63,3 +63,14 @@ CHORD = 1
 
 PIE = 2
 
+# Text
+
+LEFT = 0
+
+RIGHT = 1
+
+TOP = 3
+
+BOTTOM = 4
+
+MIDDLE = 5

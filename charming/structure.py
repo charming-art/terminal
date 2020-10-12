@@ -53,7 +53,7 @@ def pop():
 
 
 @contextmanager
-def save():
+def open_context():
     push()
     yield
     pop()

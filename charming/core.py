@@ -97,8 +97,8 @@ class Renderer(object):
     def __init__(self):
         self.frame_buffer = []
         self.shape_queue = []
-        self.fill_color = Color(' ', 0, 0)
-        self.stroke_color = Color('*', 0, 0)
+        self.fill_color = Color(' ', None, None)
+        self.stroke_color = Color('*', None, None)
         self.stroke_weight = 1
         self.is_stroke_enabled = True
         self.is_fill_enabled = True
@@ -132,7 +132,8 @@ class Renderer(object):
 
     def _reset_frame_buffer(self):
         width, height = self.size
-        self.frame_buffer = [Color(' ', 0, 0) for _ in range(width * height)]
+        self.frame_buffer = [Color(' ', None, None)
+                             for _ in range(width * height)]
 
     def _render_shape(self, shape):
 
@@ -375,6 +376,7 @@ else:
             self.window_height = self._screen.getmaxyx()[0]
             self._screen.refresh()
             self._screen.leaveok(False)
+            self.color_pair = []
 
             curses.noecho()
             curses.cbreak()
@@ -384,6 +386,11 @@ else:
                              curses.REPORT_MOUSE_POSITION)
 
         def open(self, size):
+            curses.start_color()  # Enables colors
+
+            # for i, c in enumerate(self.color_pair):
+            #     curses.init_pair(i, c.fg, c.bg)
+
             self._pad_width = size[0] + 2
             self._pad_height = size[1] + 2
             self._pad = curses.newpad(

@@ -66,7 +66,7 @@ Try it one an online editor.
 - [x] redraw()
 - [x] push()
 - [x] pop()
-- [x] save()
+- [x] open_context()
 
 ### Shape
 
@@ -230,9 +230,9 @@ Try it one an online editor.
 
 #### Random
 
-- [ ] noise()
-- [ ] noise_detail()
-- [ ] noise_seed()
+- [x] noise()
+- [x] noise_detail()
+- [x] noise_seed()
 - [x] random()
 - [x] random_gaussian()
 - [x] random_seed()

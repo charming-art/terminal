@@ -12,6 +12,11 @@ from .constants import RADIUS
 from .constants import CHORD
 from .constants import PIE
 from .constants import OPEN
+from .constants import LEFT
+from .constants import RIGHT
+from .constants import MIDDLE
+from .constants import TOP
+from .constants import BOTTOM
 
 from .structure import setup
 from .structure import draw
@@ -21,7 +26,7 @@ from .structure import no_loop
 from .structure import loop
 from .structure import push
 from .structure import pop
-from .structure import save
+from .structure import open_context
 
 from .environment import frame_rate
 from .environment import size
@@ -106,5 +111,12 @@ from .transform import scale
 from .transform import rotate
 from .transform import shear_x
 from .transform import shear_y
+
+from .typography import text_size
+from .typography import text_width
+from .typography import text_height
+from .typography import text_align
+from .typography import text_leading
+from .typography import text
 
 from .helpers import log
