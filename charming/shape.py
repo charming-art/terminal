@@ -191,13 +191,13 @@ def circle(x, y, extend):
 
 def _get_bounding_rect_by_mode(a, b, c, d, mode):
     if mode == RADIUS:
-        x1 = a - c + 1
-        y1 = b - d + 1
+        x1 = a - c
+        y1 = b - d
         x2 = a + c
-        y2 = b - d + 1
+        y2 = b - d
         x3 = a + c
         y3 = b + d
-        x4 = a - c + 1
+        x4 = a - c
         y4 = b + d
     elif mode == CORNERS:
         x1 = a

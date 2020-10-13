@@ -391,6 +391,7 @@ else:
             self.window_height = self._screen.getmaxyx()[0]
             self._screen.refresh()
             self._screen.leaveok(False)
+            self._buffer = []
             self.color_pair = []
 
             curses.noecho()
@@ -445,7 +446,11 @@ else:
                 key = self._screen.getch()
             return event_queue
 
-        def draw(self, buffer):
+        def draw(self, buffer=None):
+            if buffer == None:
+                buffer = self._buffer
+            else:
+                self._buffer = buffer
             content_width = self._pad_width - 2
             x_offset = 1
             y_offset = 1
@@ -476,6 +481,7 @@ else:
             self._update_canvas()
             self._screen.clear()
             self._screen.refresh()
+            self.draw()
 
 
 class Event(object):

@@ -9,8 +9,8 @@ def setup():
 
 @app.draw
 def draw():
-    app.rect(5, 5, 5, 5)
-    app.point(5, 5)
+    app.rect(2, 2, 2, 2)
+    # app.point(5, 5)
     app.no_loop()
 
 
