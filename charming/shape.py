@@ -209,13 +209,13 @@ def _get_bounding_rect_by_mode(a, b, c, d, mode):
         x4 = a
         y4 = d
     elif mode == CENTER:
-        x1 = a - c / 2 + 1
-        y1 = b - d / 2 + 1
+        x1 = a - c / 2
+        y1 = b - d / 2
         x2 = a + c / 2
-        y2 = b - d / 2 + 1
+        y2 = b - d / 2
         x3 = a + c / 2
         y3 = b + d / 2
-        x4 = a - c / 2 + 1
+        x4 = a - c / 2
         y4 = b + d / 2
     else:
         x1 = a

@@ -20,7 +20,7 @@ def draw():
     # app.fill('o')
     start_angle = 0
     end_angle = app.PI / 2
-    with app.save():
+    with app.open_context():
         app.translate(app.get_width() / 2, app.get_height() / 2,)
         app.rotate(theta)
         app.stroke('+')

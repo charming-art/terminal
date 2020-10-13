@@ -1,7 +1,7 @@
 import string
 from .app import renderer
 from .core import Color
-from .shape import rect
+from .shape import square
 from .shape import rect_mode
 from .color import no_stroke
 from .color import fill
@@ -46,7 +46,7 @@ def text(text, x, y):
                 fill(ch, fg, bg)
                 x0 = x + j * renderer.text_size
                 y0 = y + i * (renderer.text_size + renderer.text_leading - 1)
-                rect(x0, y0, renderer.text_size - 1, renderer.text_size - 1)
+                square(x0, y0, renderer.text_size - 1)
 
 
 def text_width(text):
