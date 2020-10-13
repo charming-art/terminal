@@ -37,7 +37,13 @@ def push():
         "stroke_color": renderer.stroke_color,
         "fill_color": renderer.fill_color,
         "is_stroke_enabled": renderer.is_stroke_enabled,
-        "is_fill_enabled": renderer.is_fill_enabled
+        "is_fill_enabled": renderer.is_fill_enabled,
+        "rect_mode": renderer.rect_mode,
+        "ellipse_mode": renderer.ellipse_mode,
+        "text_align_x": renderer.text_align_x,
+        "text_aligh_y": renderer.text_aligh_y,
+        "text_leading": renderer.text_leading,
+        "text_size": renderer.text_size
     })
 
 
@@ -50,6 +56,12 @@ def pop():
     renderer.fill_color = state['fill_color']
     renderer.is_stroke_enabled = state['is_stroke_enabled']
     renderer.is_fill_enabled = state['is_fill_enabled']
+    renderer.rect_mode = state["rect_mode"]
+    renderer.ellipse_mode = state["ellipse_mode"]
+    renderer.text_align_x = state["text_align_x"]
+    renderer.text_aligh_y = state["text_aligh_y"]
+    renderer.text_leading = state["text_leading"]
+    renderer.text_size = state["text_size"]
 
 
 @contextmanager

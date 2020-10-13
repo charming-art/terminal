@@ -794,10 +794,11 @@ def random_gaussian():
 
 class Matrix(object):
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, type="normal"):
         self.matrix = matrix
         self.row = len(matrix)
         self.col = 0 if self.row == 0 else len(matrix[0])
+        self.type = type
 
     def __mul__(self, other):
         new_matrix = Matrix([[0 for _ in range(other.col)]

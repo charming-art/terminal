@@ -239,12 +239,12 @@ Try it one an online editor.
 
 ### Typography
 
-- [ ] text()
-- [ ] text_width()
-- [ ] text_align()
-- [ ] text_leading()
-- [ ] text_size()
-- [ ] text_height()
+- [x] text()
+- [x] text_width()
+- [x] text_align()
+- [x] text_leading()
+- [x] text_size()
+- [x] text_height()
 
 ### Image
 

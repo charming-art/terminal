@@ -2,24 +2,15 @@ import string
 from .app import renderer
 from .core import Color
 from .shape import rect
-from .shape import _rect_mode
 from .shape import rect_mode
 from .color import no_stroke
 from .color import fill
 from .structure import open_context
-from .constants import LEFT
 from .constants import CENTER
 from .constants import RIGHT
 from .constants import BOTTOM
 from .constants import MIDDLE
-from .constants import TOP
 from .constants import CORNER
-
-
-_text_size = 1
-_text_leading = 1
-_text_align_x = LEFT
-_text_align_y = TOP
 
 
 class CText(object):
@@ -36,61 +27,54 @@ def text(text, x, y):
     height = len(matrix)
     width = len(matrix[0]) if height > 0 else 0
 
-    if _text_align_x == RIGHT:
+    if renderer.text_align_x == RIGHT:
         x -= width
-    elif _text_align_x == CENTER:
+    elif renderer.text_align_x == CENTER:
         x -= width / 2
 
-    if _text_align_y == BOTTOM:
+    if renderer.text_align_y == BOTTOM:
         y -= height
-    elif _text_align_y == MIDDLE:
+    elif renderer.text_align_y == MIDDLE:
         y -= height / 2
 
-    old_rect_mode = _rect_mode
-    rect_mode(CORNER)
     with open_context():
+        rect_mode(CORNER)
         _, fg, bg = renderer.fill_color
         no_stroke()
         for i, chars in enumerate(matrix):
             for j, ch in enumerate(chars):
                 fill(ch, fg, bg)
-                x0 = x + j * _text_size
-                y0 = y + i * (_text_size + _text_leading - 1)
-                rect(x0, y0, _text_size, _text_size)
-    rect_mode(old_rect_mode)
+                x0 = x + j * renderer.text_size
+                y0 = y + i * (renderer.text_size + renderer.text_leading - 1)
+                rect(x0, y0, renderer.text_size - 1, renderer.text_size - 1)
 
 
 def text_width(text):
     matrix = _get_char_matrix(text)
     if len(matrix) > 0:
-        return len(matrix[0]) * _text_size
+        return len(matrix[0]) * renderer.text_size
     return 0
 
 
 def text_height(text):
     matrix = _get_char_matrix(text)
-    return len(matrix) * _text_size
+    return len(matrix) * renderer.text_size
 
 
 def text_align(align_x=None, align_y=None):
-    global _text_align_x
-    global _text_align_y
-
     if align_x != None:
-        _text_align_x = align_x
+        renderer.text_align_x = align_x
 
     if align_y != None:
-        _text_align_y = align_y
+        renderer.text_align_y = align_y
 
 
 def text_leading(leading):
-    global _text_leading
-    _text_leading = leading
+    renderer.text_leading = leading
 
 
 def text_size(size):
-    global _text_size
-    _text_size = size
+    renderer.text_size = size
 
 
 def _get_char_matrix(text):
@@ -100,16 +84,3 @@ def _get_char_matrix(text):
     matrix = [[line[i] if i < len(line) else ' ' for i in range(
         max_width)] for line in lines]
     return matrix
-
-
-# face = """
-#     ______
-#   .`      `.
-#  /   -  -   \\
-# |     __     |
-# |            |
-#  \\          /
-#   '.______.'
-# """
-
-# print(_get_char_matrix(face))

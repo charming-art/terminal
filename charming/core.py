@@ -4,7 +4,13 @@ import math
 import sys
 from collections import namedtuple
 from abc import ABCMeta, abstractclassmethod
-from . import constants
+from .constants import POINTS
+from .constants import POLYGON
+from .constants import CLOSE
+from .constants import CORNER
+from .constants import CENTER
+from .constants import LEFT
+from .constants import TOP
 from .cmath import map
 from .cmath import Matrix
 
@@ -97,12 +103,21 @@ class Renderer(object):
     def __init__(self):
         self.frame_buffer = []
         self.shape_queue = []
+
+        # styles
         self.fill_color = Color(' ', None, None)
         self.stroke_color = Color('*', None, None)
         self.stroke_weight = 1
         self.is_stroke_enabled = True
         self.is_fill_enabled = True
+        self.rect_mode = CORNER
+        self.ellipse_mode = CENTER
+        self.text_align_x = LEFT
+        self.text_aligh_y = TOP
+        self.text_leading = 1
+        self.text_size = 1
         self.transform_matrix_stack = []
+
         self.size = (10, 10)
 
     def setup(self, size):
@@ -171,11 +186,11 @@ class Renderer(object):
         return vertices
 
     def _primitive_assembly(self, vertices, primitive_type, close_mode):
-        if primitive_type == constants.POLYGON:
-            if close_mode == constants.CLOSE:
+        if primitive_type == POLYGON:
+            if close_mode == CLOSE:
                 vertices.append(vertices[0])
             primitives = [vertices]
-        elif primitive_type == constants.POINTS:
+        elif primitive_type == POINTS:
             primitives = [[v] for v in vertices]
         return primitives
 

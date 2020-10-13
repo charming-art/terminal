@@ -43,7 +43,7 @@ def scale(sx, sy=None):
         [sx, 0, 0],
         [0, sy, 0],
         [0, 0, 1],
-    ])
+    ], "scale")
     return matrix
 
 

@@ -18,8 +18,6 @@ from .constants import HALF_PI
 
 
 _current_shape = None
-_rect_mode = CORNER
-_ellipse_mode = CENTER
 
 
 class CShape(object):
@@ -79,7 +77,7 @@ def triangle(x1, y1, x2, y2, x3, y3):
 
 def rect(a, b, c, d):
     x1, y1, x2, y2, x3, y3, x4, y4 = _get_bounding_rect_by_mode(
-        a, b, c, d, _rect_mode)
+        a, b, c, d, renderer.rect_mode)
     quad(x1, y1, x2, y2, x3, y3, x4, y4)
 
 
@@ -95,7 +93,7 @@ def point(x, y):
 @_add_on_return
 def arc(a, b, c, d, start, stop, mode=OPEN):
     x1, y1, x2, _, _, _, _, y4 = _get_bounding_rect_by_mode(
-        a, b, c, d, _ellipse_mode)
+        a, b, c, d, renderer.ellipse_mode)
     x0 = int((x1 + x2) / 2)
     y0 = int((y1 + y4) / 2)
     a = int((x2 - x1) / 2)
@@ -222,12 +220,12 @@ def _get_bounding_rect_by_mode(a, b, c, d, mode):
     else:
         x1 = a
         y1 = b
-        x2 = a + c - 1
+        x2 = a + c
         y2 = b
-        x3 = a + c - 1
-        y3 = b + d - 1
+        x3 = a + c
+        y3 = b + d
         x4 = a
-        y4 = b + d - 1
+        y4 = b + d
     return (x1, y1, x2, y2, x3, y3, x4, y4)
 
 #### vertex ####
@@ -253,10 +251,8 @@ def vertex(x, y):
 
 
 def rect_mode(mode=CORNER):
-    global _rect_mode
-    _rect_mode = mode
+    renderer.rect_mode = mode
 
 
 def ellipse_mode(mode=CENTER):
-    global _ellipse_mode
-    _ellipse_mode = mode
+    renderer.ellipse_mode = mode
