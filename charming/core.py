@@ -11,6 +11,8 @@ from .constants import CORNER
 from .constants import CENTER
 from .constants import LEFT
 from .constants import TOP
+from .constants import WHITE
+from .constants import BLACK
 from .cmath import map
 from .cmath import Matrix
 
@@ -18,8 +20,16 @@ from .cmath import Matrix
 logger = logging.getLogger(__name__)
 
 Point = namedtuple('Point', ['x', 'y'])
-Color = namedtuple('Color', ['ch', 'fg', 'bg'])
 Vertex = namedtuple('Vertex', ['x', 'y', 'color'])
+_Color = namedtuple('Color', ['ch', 'fg', 'bg'])
+
+
+def Color(ch=" ", fg=WHITE, bg=BLACK):
+    if isinstance(ch, _Color):
+        return _Color(ch.ch, ch.fg, ch.bg)
+    fg = WHITE if fg == None else fg
+    bg = BLACK if bg == None else bg
+    return _Color(ch, fg, bg)
 
 
 class Sketch(object):
@@ -105,8 +115,8 @@ class Renderer(object):
         self.shape_queue = []
 
         # styles
-        self.fill_color = Color(' ', None, None)
-        self.stroke_color = Color('*', None, None)
+        self.fill_color = Color(' ')
+        self.stroke_color = Color('*')
         self.stroke_weight = 1
         self.is_stroke_enabled = True
         self.is_fill_enabled = True
@@ -147,7 +157,7 @@ class Renderer(object):
 
     def _reset_frame_buffer(self):
         width, height = self.size
-        self.frame_buffer = [Color(' ', None, None)
+        self.frame_buffer = [Color(' ')
                              for _ in range(width * height)]
 
     def _render_shape(self, shape):
@@ -396,16 +406,13 @@ else:
 
             curses.noecho()
             curses.cbreak()
+            curses.start_color()  # Enables colors
 
             # Enable mouse events
             curses.mousemask(curses.ALL_MOUSE_EVENTS |
                              curses.REPORT_MOUSE_POSITION)
 
         def open(self, size):
-            curses.start_color()  # Enables colors
-
-            # for i, c in enumerate(self.color_pair):
-            #     curses.init_pair(i, c.fg, c.bg)
 
             self._pad_width = size[0] + 2
             self._pad_height = size[1] + 2
@@ -447,6 +454,19 @@ else:
             return event_queue
 
         def draw(self, buffer=None):
+            # enable colors
+            for i, c in enumerate(self.color_pair):
+                if not c[1]:
+                    curses.init_pair(i + 1, c[0].fg, c[0].bg)
+                    c[1] = True
+
+            def get_color_pair_by_attrs(fg, bg):
+                for i, color in enumerate(self.color_pair):
+                    c, _ = color
+                    if fg == c.fg and bg == c.bg:
+                        return i + 1
+                return 0
+
             if buffer == None:
                 buffer = self._buffer
             else:
@@ -456,9 +476,11 @@ else:
             y_offset = 1
 
             for i, color in enumerate(buffer):
+                ch, fg, bg = color
                 x = i % content_width + x_offset
                 y = i // content_width + y_offset
-                self._pad.addch(y, x, color.ch)
+                index = get_color_pair_by_attrs(fg, bg)
+                self._pad.addstr(y, x, ch, curses.color_pair(index))
 
             self._pad.refresh(self._pad_y, self._pad_x, self._canvas_y, self._canvas_x,
                               self._canvas_y + self._canvas_height - 1, self._canvas_x + self._canvas_width - 1)

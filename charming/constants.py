@@ -34,19 +34,19 @@ CLOSE = 1
 
 BLACK = 0
 
-BLUE = 1
+RED = 1
 
-CYAN = 2
+GREEN = 2
 
-GREEN = 3
+YELLOW = 3
 
-MAGENTA = 4
+BLUE = 4
 
-RED = 5
+MAGENTA = 5
 
-WHITE = 6
+CYAN = 6
 
-YELLOW = 7
+WHITE = 7
 
 # Rect && Ellipse
 CORNER = 0

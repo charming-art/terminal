@@ -9,8 +9,17 @@ def _add_on_return(func):
     @wraps(func)
     def wrapped(*args, **kw):
         c = func(*args, **kw)
+
+        def has_color(color_pair):
+            _, fg, bg = c
+            equal_colors = [
+                color for color, enable in color_pair if color.fg == fg and color.bg == bg]
+            return len(equal_colors) > 0
+
         if hasattr(context, 'color_pair'):
-            context.color_pair.append(c)
+            if not has_color(context.color_pair):
+                context.color_pair.append([c, False])
+        return c
 
     return wrapped
 
@@ -48,8 +57,7 @@ def backgournd(ch, fg=None, bg=None):
 
 @_add_on_return
 def color(ch, fg=None, bg=None):
-    c = Color(ch, fg, bg)
-    return c
+    return Color(ch, fg, bg)
 
 
 def ch(color):

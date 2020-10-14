@@ -17,6 +17,14 @@ from .constants import RIGHT
 from .constants import MIDDLE
 from .constants import TOP
 from .constants import BOTTOM
+from .constants import RED
+from .constants import BLACK
+from .constants import CYAN
+from .constants import YELLOW
+from .constants import GREEN
+from .constants import BLUE
+from .constants import WHITE
+from .constants import MAGENTA
 
 from .structure import setup
 from .structure import draw
