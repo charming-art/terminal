@@ -8,11 +8,14 @@ def setup():
 
 @app.draw
 def draw():
-    c = app.color('*', 200)
+    c = app.color('🚀', 200)
     # app.log(c)
-    app.stroke(c)
+    app.stroke('*')
     app.fill(c)
+
     app.rect(0, 0, 5, 5)
+    app.point(1, 1)
+
     if app.get_frame_count() > 2:
         app.no_loop()
 

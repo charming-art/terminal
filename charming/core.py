@@ -15,6 +15,7 @@ from .constants import WHITE
 from .constants import BLACK
 from .cmath import map
 from .cmath import Matrix
+from .utils import get_char_width
 
 
 logger = logging.getLogger(__name__)
@@ -25,11 +26,27 @@ _Color = namedtuple('Color', ['ch', 'fg', 'bg'])
 
 
 def Color(ch=" ", fg=WHITE, bg=BLACK):
+
+    def has_color(c, color_pair):
+        _, fg, bg = c
+        equal_colors = [
+            color for color, enable in color_pair if color.fg == fg and color.bg == bg]
+        return len(equal_colors) > 0
+
     if isinstance(ch, _Color):
-        return _Color(ch.ch, ch.fg, ch.bg)
-    fg = WHITE if fg == None else fg
-    bg = BLACK if bg == None else bg
-    return _Color(ch, fg, bg)
+        _color = _Color(ch.ch, ch.fg, ch.bg)
+    else:
+        fg = WHITE if fg == None else fg
+        bg = BLACK if bg == None else bg
+
+        # solve the display problem when ch == " " and fg == WHITE
+        fg = BLACK if ch == " " else fg
+        _color = _Color(ch, fg, bg)
+
+    if not has_color(_color, Renderer.color_pair):
+        Renderer.color_pair.append([_color, False])
+
+    return _color
 
 
 class Sketch(object):
@@ -48,11 +65,19 @@ class Sketch(object):
         self.mouse_y = 0
         self.pmouse_x = 0
         self.pmouse_y = 0
+        self.mouse_button = 0
         self.hooks_map = {
             'setup': lambda: None,
             'draw': lambda: None,
             'mouse_clicked': lambda: None,
+            'mouse_pressed': lambda: None,
+            'mouse_released': lambda: None,
+            'mouse_moved': lambda: None,
+            'mouse_dragged': lambda: None,
+            'mouse_wheel': lambda: None,
             'key_typed': lambda: None,
+            'key_pressed': lambda: None,
+            'key_released': lambda: None,
             'window_resized': lambda: None,
         }
 
@@ -77,7 +102,8 @@ class Sketch(object):
                 if self.is_loop:
                     draw_hook()
                     self.renderer.render()
-                    self.context.draw(self.renderer.frame_buffer)
+                    self.context.draw(self.renderer.frame_buffer,
+                                      self.renderer.color_pair)
 
                 self.frame_count += 1
                 time.sleep(1 / self.frame_rate)
@@ -110,6 +136,8 @@ class Sketch(object):
 
 class Renderer(object):
 
+    color_pair = []
+
     def __init__(self):
         self.frame_buffer = []
         self.shape_queue = []
@@ -139,6 +167,7 @@ class Renderer(object):
             shape = self.shape_queue.pop(0)
             self._render_shape(shape)
         self.transform_matrix_stack.clear()
+        self._adjust_unicode_char()
 
     def add_shape(self, shape):
         if shape.is_auto:
@@ -157,7 +186,7 @@ class Renderer(object):
 
     def _reset_frame_buffer(self):
         width, height = self.size
-        self.frame_buffer = [Color(' ')
+        self.frame_buffer = [self.fill_color
                              for _ in range(width * height)]
 
     def _render_shape(self, shape):
@@ -245,6 +274,36 @@ class Renderer(object):
             for p in pixels:
                 index = p.x + p.y * self.size[0]
                 self.frame_buffer[index] = p.color
+
+    def _adjust_unicode_char(self):
+        width, height = self.size
+        flags = [0 for i in range(width)]
+
+        # scan the buffer to record unicode
+        for i in range(height):
+            for j in range(width):
+                index = j + i * width
+                ch, _, _ = self.frame_buffer[index]
+                ch_width = get_char_width(ch)
+                if ch_width == 2:
+                    flags[j] = 1
+
+        # insert and move the buffer
+        for i in range(height):
+            insert_indice = []
+            for j in range(width):
+                index = j + i * width
+                color = self.frame_buffer[index]
+                ch, _, _ = color
+                ch_width = get_char_width(ch)
+                if flags[j] == 1 and j < width - 1 and ch_width == 1:
+                    insert_indice.append((index + 1, color))
+
+            last_index = (i + 1) * width - 1
+            while len(insert_indice):
+                insert_index, color = insert_indice.pop()
+                self.frame_buffer.pop(last_index)
+                self.frame_buffer.insert(insert_index, color)
 
     def _scan_line_filling(self, polygon, fill_color):
         '''
@@ -453,20 +512,22 @@ else:
                 key = self._screen.getch()
             return event_queue
 
-        def draw(self, buffer=None):
+        def draw(self, buffer=None, color_pair=None):
             # enable colors
-            for i, c in enumerate(self.color_pair):
+            color_pair = [] if color_pair == None else color_pair
+            for i, c in enumerate(color_pair):
                 if not c[1]:
                     curses.init_pair(i + 1, c[0].fg, c[0].bg)
                     c[1] = True
 
             def get_color_pair_by_attrs(fg, bg):
-                for i, color in enumerate(self.color_pair):
+                for i, color in enumerate(color_pair):
                     c, _ = color
                     if fg == c.fg and bg == c.bg:
                         return i + 1
                 return 0
 
+            # solve no loop when resize window will clear the screen
             if buffer == None:
                 buffer = self._buffer
             else:
@@ -475,8 +536,11 @@ else:
             x_offset = 1
             y_offset = 1
 
+            # logger.debug(buffer)
             for i, color in enumerate(buffer):
                 ch, fg, bg = color
+                if isinstance(ch, tuple):
+                    ch = ch[0]
                 x = i % content_width + x_offset
                 y = i // content_width + y_offset
                 index = get_color_pair_by_attrs(fg, bg)
