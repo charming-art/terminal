@@ -138,3 +138,5 @@ from .typography import text_leading
 from .typography import text
 
 from .helpers import log
+from .helpers import begin_log_frame_buffer
+from .helpers import end_log_frame_buffer

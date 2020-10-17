@@ -81,6 +81,8 @@ class Sketch(object):
             'window_resized': lambda: None,
         }
 
+        self.is_log_frame_buffer = False
+
     def run(self):
         error = None
         try:
@@ -100,10 +102,18 @@ class Sketch(object):
                     self._handle_event(e)
 
                 if self.is_loop:
+                    self.renderer.has_background_called = False
                     draw_hook()
                     self.renderer.render()
+
+                    if self.renderer.has_background_called:
+                        self.context.clear()
+
                     self.context.draw(self.renderer.frame_buffer,
                                       self.renderer.color_pair)
+
+                    if self.is_log_frame_buffer == True:
+                        self.renderer.log_frame_buffer()
 
                 self.frame_count += 1
                 time.sleep(1 / self.frame_rate)
@@ -154,8 +164,9 @@ class Renderer(object):
         self.text_aligh_y = TOP
         self.text_leading = 1
         self.text_size = 1
-        self.transform_matrix_stack = []
 
+        self.has_background_called = False
+        self.transform_matrix_stack = []
         self.size = (10, 10)
 
     def setup(self, size):
@@ -278,15 +289,19 @@ class Renderer(object):
     def _adjust_unicode_char(self):
         width, height = self.size
         flags = [0 for i in range(width)]
+        wider_chars = []
 
         # scan the buffer to record unicode
         for i in range(height):
+            wider_cnt = 0
             for j in range(width):
                 index = j + i * width
                 ch, _, _ = self.frame_buffer[index]
                 ch_width = get_char_width(ch)
                 if ch_width == 2:
                     flags[j] = 1
+                    wider_cnt += 1
+            wider_chars.append(wider_cnt)
 
         # insert and move the buffer
         for i in range(height):
@@ -302,8 +317,32 @@ class Renderer(object):
             last_index = (i + 1) * width - 1
             while len(insert_indice):
                 insert_index, color = insert_indice.pop()
+
+                # change the count of wider chars if remove a wider char
+                ch, _, _ = self.frame_buffer[last_index]
+                ch_width = get_char_width(ch)
+                if ch_width == 2:
+                    wider_chars[i] -= 1
+
+                # remove and insert
                 self.frame_buffer.pop(last_index)
                 self.frame_buffer.insert(insert_index, color)
+
+            # remove chars exceed the screen
+            wider_cnt = wider_chars[i]
+            j = width - 1
+            while wider_cnt > 0:
+                index = j + i * width
+                ch, _, _ = self.frame_buffer[index]
+                self.frame_buffer[index] = None
+                ch_width = get_char_width(ch)
+                wider_cnt -= ch_width
+
+                # it will remove more if the last one is wider char
+                # in that case, wider_cnt == -1
+                if wider_cnt == -1:
+                    self.frame_buffer[index] = Color(" ")
+                j -= 1
 
     def _scan_line_filling(self, polygon, fill_color):
         '''
@@ -377,6 +416,26 @@ class Renderer(object):
 
         return pixels
 
+    def log_frame_buffer(self):
+        width, height = self.size
+        matrix = '\n'
+        for i in range(height):
+            line = ''
+            for j in range(width):
+                index = i * width + j
+                color = self.frame_buffer[index]
+                if not color:
+                    line += 'n'
+                    continue
+                ch, _, _ = color
+                if isinstance(ch, tuple):
+                    ch, _ = ch
+                s = "*" if ch == " " else ch
+                line += s
+            line += "\n"
+            matrix += line
+        logger.debug(matrix)
+
 
 class Context(metaclass=ABCMeta):
     @abstractclassmethod
@@ -403,6 +462,10 @@ class Context(metaclass=ABCMeta):
     def draw(self, buffer):
         """ draw buffer to screen """
 
+    @abstractclassmethod
+    def clear(self):
+        """ clear the screen when called background() """
+
 
 if sys.platform == "win32":
     class WindowsContext(Context):
@@ -423,6 +486,10 @@ if sys.platform == "win32":
 
         def draw(self, buffer):
             pass
+
+        def clear(self):
+            pass
+
 
 elif sys.platform == "brython":
     class BrowserContext(Context):
@@ -445,6 +512,9 @@ elif sys.platform == "brython":
         def draw(self, buffer):
             pass
 
+        def clear(self, buffer):
+            pass
+
 else:
     import curses
 
@@ -458,10 +528,9 @@ else:
             self._screen.nodelay(1)
             self.window_width = self._screen.getmaxyx()[1]
             self.window_height = self._screen.getmaxyx()[0]
-            self._screen.refresh()
             self._screen.leaveok(False)
             self._buffer = []
-            self.color_pair = []
+            self._color_pair = []
 
             curses.noecho()
             curses.cbreak()
@@ -475,10 +544,7 @@ else:
 
             self._pad_width = size[0] + 2
             self._pad_height = size[1] + 2
-            self._pad = curses.newpad(
-                self._pad_height, self._pad_width)
-            self._pad.border()
-            self._update_canvas()
+            self._update_pad()
 
         def close(self):
             self._screen.keypad(0)
@@ -501,73 +567,124 @@ else:
                     event_queue.append(WindowEvent())
                 elif key == curses.KEY_MOUSE:
                     _, x, y, _, bstate = curses.getmouse()
-                    x -= (self._canvas_x - self._pad_x + 1)
-                    y -= (self._canvas_y - self._pad_y + 1)
-                    x_in = x >= 0 and x < self._canvas_width - 1
-                    y_in = y >= 0 and y < self._canvas_height - 1
+                    _x = x - (self._pad_x + 1)
+                    _y = y - (self._pad_y + 1)
+                    x_in = _x > 0 and _x < self._pad_width - 1
+                    y_in = _y > 0 and _y < self._pad_width - 1
                     if x_in and y_in:
-                        event_queue.append(MouseEvent(x, y, bstate))
+                        event_queue.append(MouseEvent(_x, _y, bstate))
                 else:
+                    # self._screen.move(10, 10)
                     event_queue.append(KeyboardEvent(key))
                 key = self._screen.getch()
             return event_queue
 
-        def draw(self, buffer=None, color_pair=None):
-            # enable colors
-            color_pair = [] if color_pair == None else color_pair
-            for i, c in enumerate(color_pair):
+        def draw(self, buffer, color_pair):
+            self._buffer = buffer
+            self._color_pair = color_pair
+            self._enable_colors()
+            wider_chars = self._count_wider_chars()
+
+            for y in range(self._pad_height):
+                for x in range(self._pad_width):
+                    _x = x + self._pad_x
+                    _y = y + self._pad_y
+                    x_out = _x < 0 or _x > self.window_width - 2
+                    y_out = _y < 0 or _y > self.window_height - 1
+                    if x_out or y_out:
+                        continue
+                    border_ch = self._get_border(x, y)
+                    if border_ch:
+                        r = x == self._pad_width - 1 and y > 0 and y < self._pad_height - 1
+                        if r:
+                            cnt = wider_chars[y - 1]
+                            self._screen.addstr(_y, _x - cnt,  border_ch)
+                        else:
+                            self._screen.addstr(_y, _x, border_ch)
+                    else:
+                        index = (x - 1) + (y - 1) * (self._pad_width - 2)
+                        color = buffer[index]
+                        if not color:
+                            continue
+                        ch, fg, bg = color
+                        ch = ch[0] if isinstance(ch, tuple) else ch
+                        color_index = self._get_color(fg, bg)
+
+                        # It is strange that can't draw at (self.window_height - 1, self.window_width - 1)
+                        self._screen.addstr(
+                            _y, _x, ch, curses.color_pair(color_index))
+
+            # update the physical sceen
+            self._screen.refresh()
+
+        def clear(self):
+            self._screen.clear()
+
+        def _count_wider_chars(self):
+            wider_chars = []
+            width = self._pad_width - 2
+            height = self._pad_height - 2
+
+            for i in range(height):
+                wider_cnt = 0
+                for j in range(width):
+                    index = j + i * width
+                    color = self._buffer[index]
+                    if not color:
+                        continue
+                    ch, _, _ = color
+                    ch_width = get_char_width(ch)
+                    if ch_width == 2:
+                        wider_cnt += 1
+                wider_chars.append(wider_cnt)
+
+            return wider_chars
+
+        def _update_pad(self):
+            self._pad_x = (self.window_width - self._pad_width) // 2
+            self._pad_y = (self.window_height - self._pad_height) // 2
+
+        def _enable_colors(self):
+            for i, c in enumerate(self._color_pair):
                 if not c[1]:
                     curses.init_pair(i + 1, c[0].fg, c[0].bg)
                     c[1] = True
 
-            def get_color_pair_by_attrs(fg, bg):
-                for i, color in enumerate(color_pair):
-                    c, _ = color
-                    if fg == c.fg and bg == c.bg:
-                        return i + 1
-                return 0
+        def _get_color(self, fg, bg):
+            for i, color in enumerate(self._color_pair):
+                c, _ = color
+                if fg == c.fg and bg == c.bg:
+                    return i + 1
+            return 0
 
-            # solve no loop when resize window will clear the screen
-            if buffer == None:
-                buffer = self._buffer
-            else:
-                self._buffer = buffer
-            content_width = self._pad_width - 2
-            x_offset = 1
-            y_offset = 1
+        def _get_border(self, x, y):
+            lb = x == 0 and y == 0
+            rb = x == self._pad_width - 1 and y == 0
+            lt = x == 0 and y == self._pad_height - 1
+            rt = x == self._pad_width - 1 and y == self._pad_height - 1
+            b = y == 0 and x > 0 and x < self._pad_width - 1
+            r = x == self._pad_width - 1 and y > 0 and y < self._pad_height - 1
+            t = y == self._pad_height - 1 and x > 0 and x < self._pad_width - 1
+            l = x == 0 and y > 0 and y < self._pad_height - 1
 
-            # logger.debug(buffer)
-            for i, color in enumerate(buffer):
-                ch, fg, bg = color
-                if isinstance(ch, tuple):
-                    ch = ch[0]
-                x = i % content_width + x_offset
-                y = i // content_width + y_offset
-                index = get_color_pair_by_attrs(fg, bg)
-                self._pad.addstr(y, x, ch, curses.color_pair(index))
+            if lb or rb or lt or rt:
+                return "+"
 
-            self._pad.refresh(self._pad_y, self._pad_x, self._canvas_y, self._canvas_x,
-                              self._canvas_y + self._canvas_height - 1, self._canvas_x + self._canvas_width - 1)
+            if b or t:
+                return '-'
 
-        def _update_canvas(self):
-            x = (self.window_width - self._pad_width) // 2
-            y = (self.window_height - self._pad_height) // 2
+            if r or l:
+                return '|'
 
-            self._pad_x = -x if x < 0 else 0
-            self._pad_y = -y if y < 0 else 0
-            self._canvas_x = 0 if x < 0 else x
-            self._canvas_y = 0 if y < 0 else y
-            self._canvas_width = self.window_width if x <= 0 else self._pad_width
-            self._canvas_height = self.window_height if y <= 0 else self._pad_height
+            return None
 
         def _resize(self):
             curses.update_lines_cols()
             self.window_width = self._screen.getmaxyx()[1]
             self.window_height = self._screen.getmaxyx()[0]
-            self._update_canvas()
+            self._update_pad()
             self._screen.clear()
-            self._screen.refresh()
-            self.draw()
+            self.draw(self._buffer, self._color_pair)
 
 
 class Event(object):

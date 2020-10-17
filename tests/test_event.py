@@ -13,7 +13,7 @@ def draw():
 
 @app.mouse_clicked
 def mouse_clicked():
-    print(app.get_mouse_x(), app.get_mouse_y())
+    app.point(app.get_mouse_x(), app.get_mouse_y())
 
 
 @app.window_resized

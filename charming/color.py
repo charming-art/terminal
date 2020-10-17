@@ -24,6 +24,7 @@ def no_fill():
 
 def background(ch, fg=None, bg=None):
     c = Color(ch, fg, bg)
+    renderer.has_background_called = True
     renderer.set_frame_buffer(c)
 
 
