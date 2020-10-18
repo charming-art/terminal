@@ -3,20 +3,32 @@ from .constants import HALF_PI
 from .constants import QUARTER_PI
 from .constants import TAU
 from .constants import TWO_PI
+
 from .constants import CLOSE
+
 from .constants import POINTS
+from .constants import LINES
+from .constants import TRIANGLES
+from .constants import TRIANGLE_STRIP
+from .constants import TRIANGLE_FAN
+from .constants import QUADS
+from .constants import QUAD_STRIP
+
 from .constants import CORNERS
 from .constants import CORNER
 from .constants import CENTER
 from .constants import RADIUS
 from .constants import CHORD
+
 from .constants import PIE
 from .constants import OPEN
+
 from .constants import LEFT
 from .constants import RIGHT
 from .constants import MIDDLE
 from .constants import TOP
 from .constants import BOTTOM
+
 from .constants import RED
 from .constants import BLACK
 from .constants import CYAN

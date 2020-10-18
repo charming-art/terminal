@@ -4,8 +4,20 @@ import math
 import sys
 from collections import namedtuple
 from abc import ABCMeta, abstractclassmethod
+
+from .cmath import map
+from .cmath import Matrix
+
+from .utils import get_char_width
+
 from .constants import POINTS
 from .constants import POLYGON
+from .constants import LINES
+from .constants import TRIANGLES
+from .constants import TRIANGLE_STRIP
+from .constants import TRIANGLE_FAN
+from .constants import QUADS
+from .constants import QUAD_STRIP
 from .constants import CLOSE
 from .constants import CORNER
 from .constants import CENTER
@@ -13,9 +25,6 @@ from .constants import LEFT
 from .constants import TOP
 from .constants import WHITE
 from .constants import BLACK
-from .cmath import map
-from .cmath import Matrix
-from .utils import get_char_width
 
 
 logger = logging.getLogger(__name__)
@@ -334,6 +343,28 @@ class Renderer(object):
             primitives = [vertices]
         elif primitive_type == POINTS:
             primitives = [[v] for v in vertices]
+        elif primitive_type == LINES:
+            primitives = [[vertices[i], vertices[i + 1]]
+                          for i in range(len(vertices) - 1)
+                          if i % 2 == 0]
+        elif primitive_type == TRIANGLES:
+            primitives = [[vertices[i], vertices[i + 1], vertices[i + 2], vertices[i]]
+                          for i in range(len(vertices) - 2)
+                          if i % 3 == 0]
+        elif primitive_type == TRIANGLE_STRIP:
+            primitives = [[vertices[i], vertices[i + 1], vertices[i + 2], vertices[i]]
+                          for i in range(len(vertices) - 2)]
+        elif primitive_type == TRIANGLE_FAN:
+            primitives = [[vertices[0], vertices[i], vertices[i + 1], vertices[0]]
+                          for i in range(1, len(vertices) - 1)]
+        elif primitive_type == QUADS:
+            primitives = [[vertices[i], vertices[i + 1], vertices[i + 2], vertices[i + 3], vertices[i]]
+                          for i in range(len(vertices) - 3)
+                          if i % 4 == 0]
+        elif primitive_type == QUAD_STRIP:
+            primitives = [[vertices[i], vertices[i + 1], vertices[i + 3], vertices[i + 2], vertices[i]]
+                          for i in range(len(vertices) - 3)
+                          if i % 2 == 0]
         return primitives
 
     def _rasterization(self, primitives, fill_color, is_stroke_enabled, is_fill_enabled, stroke_weight):
