@@ -89,7 +89,7 @@ Try it one an online editor.
 
 - [x] ellipse_mode()
 - [x] rect_mode()
-- [ ] stroke_weight()
+- [x] stroke_weight()
 
 #### Vertex
 

@@ -113,6 +113,7 @@ from .shape import end_shape
 from .shape import vertex
 from .shape import rect_mode
 from .shape import ellipse_mode
+from .shape import stroke_weight
 
 from .color import stroke
 from .color import fill

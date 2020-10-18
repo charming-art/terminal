@@ -94,95 +94,33 @@ def point(x, y):
 def arc(a, b, c, d, start, stop, mode=OPEN):
     x1, y1, x2, _, _, _, _, y4 = _get_bounding_rect_by_mode(
         a, b, c, d, renderer.ellipse_mode)
-    x0 = int((x1 + x2) / 2)
-    y0 = int((y1 + y4) / 2)
+    x = int((x1 + x2) / 2)
+    y = int((y1 + y4) / 2)
     a = int((x2 - x1) / 2)
     b = int((y4 - y1) / 2)
-    p1 = []
-    p2 = []
-    p3 = []
-    p4 = []
 
-    def is_in(x, y):
-        return (b * x) ** 2 + (a * y) ** 2 - (a * b) ** 2 < 0
+    points = renderer.draw_ellipse(x, y, a, b)
 
-    def is_between(x, left, right):
-        return left <= x and x <= right
-
-    def x_range(start, stop, a):
-        coss = [math.cos(start), math.cos(stop)]
-        cos_max = 1 if is_between(0, start, stop) or is_between(
-            TAU, start, stop) else max(coss)
-        cos_min = -1 if is_between(PI, start, stop) else min(coss)
-        return (a * cos_min, a * cos_max)
-
-    def y_range(start, stop, b):
-        sins = [math.sin(start), math.sin(stop)]
-        sin_max = 1 if is_between(HALF_PI, start, stop) else max(sins)
-        sin_min = -1 if is_between(PI + HALF_PI, start, stop) else min(sins)
-        return (b * sin_min, b * sin_max)
-
-    x_min, x_max = x_range(start, stop, a)
-    y_min, y_max = y_range(start, stop, b)
-
-    def add_point(list, x, y):
-        if is_between(x - x0, x_min, x_max) and is_between(y - y0, y_min, y_max):
-            list.append(Point(x, y))
-
-    def add_points(x, y, rx, ry):
-        add_point(p1, x, y)
-        add_point(p2, x, y + ry * 2)
-        add_point(p3, x - rx * 2, y + ry * 2)
-        add_point(p4, x - rx * 2, y)
-
-    if a >= b:
-        y = y0 - b
-        for x in range(x0, x0 + a + 1):
-            rx = x - x0
-            ry = y0 - y
-            add_points(x, y, rx, ry)
-            if not is_in(rx + 1, ry - 0.5):
-                y += 1
-        if y <= y0:
-            add_points(x, y0, a, 0)
-        p2 = list(reversed(p2))
-        p4 = list(reversed(p4))
-    else:
-        x = x0 + a
-        for y in range(y0, y0 + b + 1):
-            rx = x - x0
-            ry = y - y0
-            add_points(x, y - ry * 2, rx, ry)
-            if not is_in(rx - 0.5, ry + 1):
-                x -= 1
-        if x >= x0:
-            add_points(x0, y, 0, b)
-        p1 = list(reversed(p1))
-        p3 = list(reversed(p3))
-
-    while start < 0:
-        start += TAU
-    while start > TAU:
-        start -= TAU
-
-    if is_between(start, 0, HALF_PI):
-        points = p2 + p3 + p4 + p1
-    elif is_between(start, HALF_PI, PI):
-        points = p3 + p4 + p1 + p2
-    elif is_between(start, PI, PI + HALF_PI):
-        points = p4 + p1 + p2 + p3
-    else:
-        points = p1 + p2 + p3 + p4
-
+    # filter and sort the points by start and stop angle
+    # todo
+    
     close_mode = OPEN if mode == OPEN else CLOSE
     if mode == PIE:
-        points.insert(0, Point(x0, y0))
-
+        points.insert(0, Point(x, y))
     return CShape(points=points, close_mode=close_mode)
 
 
+@_add_on_return
 def ellipse(a, b, c, d):
-    arc(a, b, c, d, 0, TAU, CHORD)
+    x1, y1, x2, _, _, _, _, y4 = _get_bounding_rect_by_mode(
+        a, b, c, d, renderer.ellipse_mode)
+    x = int((x1 + x2) / 2)
+    y = int((y1 + y4) / 2)
+    a = int((x2 - x1) / 2)
+    b = int((y4 - y1) / 2)
+
+    points = renderer.draw_ellipse(x, y, a, b)
+    return CShape(points=points, close_mode=CLOSE)
 
 
 def circle(x, y, extend):
@@ -256,3 +194,7 @@ def rect_mode(mode=CORNER):
 
 def ellipse_mode(mode=CENTER):
     renderer.ellipse_mode = mode
+
+
+def stroke_weight(weight=0):
+    renderer.stroke_weight = weight

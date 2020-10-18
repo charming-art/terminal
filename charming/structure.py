@@ -36,6 +36,7 @@ def push():
         "transform_pointer": len(renderer.transform_matrix_stack),
         "stroke_color": renderer.stroke_color,
         "fill_color": renderer.fill_color,
+        "stroke_weight": renderer.stroke_weight,
         "is_stroke_enabled": renderer.is_stroke_enabled,
         "is_fill_enabled": renderer.is_fill_enabled,
         "rect_mode": renderer.rect_mode,
@@ -56,6 +57,7 @@ def pop():
     renderer.fill_color = state['fill_color']
     renderer.is_stroke_enabled = state['is_stroke_enabled']
     renderer.is_fill_enabled = state['is_fill_enabled']
+    renderer.stroke_weight = state['stroke_weight']
     renderer.rect_mode = state["rect_mode"]
     renderer.ellipse_mode = state["ellipse_mode"]
     renderer.text_align_x = state["text_align_x"]

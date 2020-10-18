@@ -20,33 +20,79 @@ from .utils import get_char_width
 
 logger = logging.getLogger(__name__)
 
-Point = namedtuple('Point', ['x', 'y'])
-Vertex = namedtuple('Vertex', ['x', 'y', 'color'])
-_Color = namedtuple('Color', ['ch', 'fg', 'bg'])
+
+class Point(object):
+
+    def __init__(self, x, y, color=1, weight=0):
+        self.x = x
+        self.y = y
+        self.weight = weight
+        self.color = color
+
+    def __str__(self):
+        attrs = {
+            "x": self.x,
+            "y": self.y,
+            "weight": self.weight,
+            "color": self.color
+        }
+        return attrs.__str__()
+
+    __repr__ = __str__
 
 
-def Color(ch=" ", fg=WHITE, bg=BLACK):
+class Color(object):
 
-    def has_color(c, color_pair):
-        _, fg, bg = c
+    def __init__(self, ch=" ", fg=WHITE, bg=BLACK):
+        self.index = 0
+
+        if isinstance(ch, self.__class__):
+            self.ch = ch.ch
+            self.fg = ch.fg
+            self.bg = ch.bg
+        else:
+            self.ch = ch
+            self.fg = fg
+            self.bg = bg
+
+            self.fg = WHITE if self.fg == None else self.fg
+            self.bg = BLACK if self.bg == None else self.bg
+
+            # solve the display problem when ch == " " and fg == WHITE
+            self.fg = BLACK if ch == " " else self.fg
+
+        # add to color pair
+        if not self.has_color(self.fg, self.bg, Renderer.color_pair):
+            Renderer.color_pair.append([self, False])
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.index > 2:
+            self.index = 0
+            raise StopIteration()
+        attrs = [self.ch, self.fg, self.bg]
+        a = attrs[self.index]
+        self.index += 1
+        return a
+
+    def has_color(self, fg, bg, color_pair):
         equal_colors = [
-            color for color, enable in color_pair if color.fg == fg and color.bg == bg]
+            color for color, enable in color_pair
+            if color.fg == fg and color.bg == bg
+        ]
         return len(equal_colors) > 0
 
-    if isinstance(ch, _Color):
-        _color = _Color(ch.ch, ch.fg, ch.bg)
-    else:
-        fg = WHITE if fg == None else fg
-        bg = BLACK if bg == None else bg
+    def __str__(self):
+        attrs = {
+            "ch": self.ch,
+            "fg": self.fg,
+            "bg": self.bg
+        }
+        return attrs.__str__()
 
-        # solve the display problem when ch == " " and fg == WHITE
-        fg = BLACK if ch == " " else fg
-        _color = _Color(ch, fg, bg)
-
-    if not has_color(_color, Renderer.color_pair):
-        Renderer.color_pair.append([_color, False])
-
-    return _color
+    __repr__ = __str__
 
 
 class Sketch(object):
@@ -84,7 +130,6 @@ class Sketch(object):
         self.is_log_frame_buffer = False
 
     def run(self):
-        error = None
         try:
             setup_hook = self.hooks_map['setup']
             draw_hook = self.hooks_map['draw']
@@ -119,10 +164,9 @@ class Sketch(object):
                 time.sleep(1 / self.frame_rate)
         except Exception as e:
             logger.debug(e)
-            error = e
+            raise e
         finally:
             self.context.close()
-            print(error)
 
     def add_hook(self, name, hook):
         self.hooks_map[name] = hook
@@ -155,7 +199,7 @@ class Renderer(object):
         # styles
         self.fill_color = Color(' ')
         self.stroke_color = Color('*')
-        self.stroke_weight = 1
+        self.stroke_weight = 0
         self.is_stroke_enabled = True
         self.is_fill_enabled = True
         self.rect_mode = CORNER
@@ -195,6 +239,48 @@ class Renderer(object):
         for i, _ in enumerate(self.frame_buffer):
             self.frame_buffer[i] = color
 
+    def draw_ellipse(self, x0, y0, a, b):
+        p1 = []
+        p2 = []
+        p3 = []
+        p4 = []
+
+        def is_in(x, y):
+            return (b * x) ** 2 + (a * y) ** 2 - (a * b) ** 2 < 0
+
+        def add_points(x, y, rx, ry):
+            p1.append(Point(x, y))
+            p2.append(Point(x, y + ry * 2))
+            p3.append(Point(x - rx * 2, y + ry * 2))
+            p4.append(Point(x - rx * 2, y))
+
+        if a >= b:
+            y = y0 - b
+            for x in range(x0, x0 + a + 1):
+                rx = x - x0
+                ry = y0 - y
+                add_points(x, y, rx, ry)
+                if not is_in(rx + 1, ry - 0.5):
+                    y += 1
+            if y <= y0:
+                add_points(x, y0, a, 0)
+            p2 = list(reversed(p2))
+            p4 = list(reversed(p4))
+        else:
+            x = x0 + a
+            for y in range(y0, y0 + b + 1):
+                rx = x - x0
+                ry = y - y0
+                add_points(x, y - ry * 2, rx, ry)
+                if not is_in(rx - 0.5, ry + 1):
+                    x -= 1
+            if x >= x0:
+                add_points(x0, y, 0, b)
+            p1 = list(reversed(p1))
+            p3 = list(reversed(p3))
+
+        return p1 + p2 + p3 + p4
+
     def _reset_frame_buffer(self):
         width, height = self.size
         self.frame_buffer = [self.fill_color
@@ -216,7 +302,8 @@ class Renderer(object):
             primitives,
             shape.fill_color,
             shape.is_stroke_enabled,
-            shape.is_fill_enabled)
+            shape.is_fill_enabled,
+            shape.stroke_weight)
 
         fragments_clipped = self._clipping(fragments)
 
@@ -224,16 +311,21 @@ class Renderer(object):
 
     def _vertex_processing(self, points, stroke_color, transform_matrix_stack):
         # transform
-        matrix_points = [Matrix([[p.x], [p.y], [1]]) for p in points]
         while len(transform_matrix_stack) > 0:
             matrix = transform_matrix_stack.pop()
-            matrix_points = [matrix * p for p in matrix_points]
-        transformed_points = [Point(p[0][0], p[1][0]) for p in matrix_points]
+            for p in points:
+                mp = Matrix([[p.x], [p.y], [1]])
+                tp = matrix * mp
+                p.x = tp[0][0]
+                p.y = tp[1][0]
 
         # screen map && color
-        vertices = [Vertex(int(p.x), int(p.y), stroke_color)
-                    for p in transformed_points]
-        return vertices
+        for p in points:
+            p.color = stroke_color
+            p.x = int(p.x)
+            p.y = int(p.y)
+
+        return points
 
     def _primitive_assembly(self, vertices, primitive_type, close_mode):
         if primitive_type == POLYGON:
@@ -244,25 +336,32 @@ class Renderer(object):
             primitives = [[v] for v in vertices]
         return primitives
 
-    def _rasterization(self, primitives, fill_color, is_stroke_enabled, is_fill_enabled):
+    def _rasterization(self, primitives, fill_color, is_stroke_enabled, is_fill_enabled, stroke_weight):
         fragments = []
 
         for vertices in primitives:
-            pixels = []
+            fill_pixels = []
             # fill polygon
             if is_fill_enabled and len(vertices) > 2:
-                pixels += self._scan_line_filling(vertices, fill_color)
+                fill_pixels += self._scan_line_filling(vertices, fill_color)
 
             # stroke polygon
+            stroke_pixels = []
             if is_stroke_enabled:
+
+                # draw origin points
                 if len(vertices) == 1:
-                    pixels += vertices
+                    stroke_pixels += vertices
                 else:
                     for i, _ in enumerate(vertices):
                         if i < len(vertices) - 1:
-                            pixels += self._draw_line(
+                            stroke_pixels += self._draw_line(
                                 vertices[i],
-                                vertices[i + 1])
+                                vertices[i + 1],
+                                stroke_weight
+                            )
+
+            pixels = fill_pixels + stroke_pixels
             fragments.append(pixels)
 
         return fragments
@@ -285,6 +384,91 @@ class Renderer(object):
             for p in pixels:
                 index = p.x + p.y * self.size[0]
                 self.frame_buffer[index] = p.color
+
+    def _scan_line_filling(self, polygon, fill_color):
+        '''
+        https://www.cs.uic.edu/~jbell/CourseNotes/ComputerGraphics/PolygonFilling.html
+        '''
+
+        # close the polygon
+        polygon = polygon.copy()
+        first = polygon[0]
+        last = polygon[-1]
+        if first.x != last.x or first.y != last.y:
+            polygon.append(Point(first.x, first.y, first.color))
+
+        pixels = []
+        edges_horizontal = [(v, polygon[i + 1]) for i, v in enumerate(polygon)
+                            if i < len(polygon) - 1 and v.y == polygon[i + 1].y]
+        edges = [(v, polygon[i + 1])
+                 for i, v in enumerate(polygon)
+                 if i < len(polygon) - 1 and v.y != polygon[i + 1].y]
+        ymin = min(polygon, key=lambda p: p.y).y
+        ymax = max(polygon, key=lambda p: p.y).y
+
+        def has_intersect(e, y):
+            v1, v2 = e
+            if v1.y > v2.y:
+                return y <= v1.y and y > v2.y
+            else:
+                return y >= v1.y and y < v2.y
+
+        for e in edges_horizontal:
+            y = e[0].y
+            for x in range(e[0].x, e[1].x + 1):
+                pixels.append(Point(x, y, fill_color))
+
+        for y in range(ymin, ymax + 1):
+            intersections = [round(map(y, e[0].y, e[1].y, e[0].x, e[1].x))
+                             for e in edges if has_intersect(e, y)]
+            if len(intersections) == 1:
+                pixels += [Point(intersections[0], y, fill_color)]
+            else:
+                intersections_sorted = sorted(intersections)
+                is_draw = True
+                for i, x0 in enumerate(intersections_sorted):
+                    if is_draw and i < len(intersections_sorted) - 1:
+                        x1 = intersections_sorted[i + 1]
+                        pixels += self._draw_line(
+                            Point(x0, y, fill_color),
+                            Point(x1, y, fill_color))
+                    is_draw = not is_draw
+        return pixels
+
+    def _draw_line(self, v1, v2, stroke_weight=0):
+
+        pixels = []
+
+        dx = abs(v1.x - v2.x)
+        dy = abs(v1.y - v2.y)
+
+        if dx >= dy:
+            start_x = min(v1.x, v2.x)
+            end_x = max(v1.x, v2.x)
+            for x in range(start_x, end_x + 1):
+                y = map(x, v1.x, v2.x, v1.y, v2.y)
+                pixels += self._draw_point(x, round(y),
+                                           v1.color, stroke_weight)
+        else:
+            start_y = min(v1.y, v2.y)
+            end_y = max(v1.y, v2.y)
+            for y in range(start_y, end_y + 1):
+                x = map(y, v1.y, v2.y, v1.x, v2.x)
+                pixels += self._draw_point(round(x),
+                                           y, v1.color, stroke_weight)
+
+        return pixels
+
+    def _draw_point(self, x, y, color, stroke_weight):
+        # draw circle
+        points = self.draw_ellipse(x, y, stroke_weight, stroke_weight)
+        for p in points:
+            p.color = color
+            p.weight = 0
+
+        # fill circle
+        points += self._scan_line_filling(points, color)
+        return points
 
     def _adjust_unicode_char(self):
         width, height = self.size
@@ -344,78 +528,6 @@ class Renderer(object):
                     self.frame_buffer[index] = Color(" ")
                 j -= 1
 
-    def _scan_line_filling(self, polygon, fill_color):
-        '''
-        https://www.cs.uic.edu/~jbell/CourseNotes/ComputerGraphics/PolygonFilling.html
-        '''
-
-        # close the polygon
-        polygon = polygon.copy()
-        first = polygon[0]
-        last = polygon[-1]
-        if first.x != last.x or first.y != last.y:
-            polygon.append(Vertex(first.x, first.y, first.color))
-
-        pixels = []
-        edges_horizontal = [(v, polygon[i + 1]) for i, v in enumerate(polygon)
-                            if i < len(polygon) - 1 and v.y == polygon[i + 1].y]
-        edges = [(v, polygon[i + 1])
-                 for i, v in enumerate(polygon)
-                 if i < len(polygon) - 1 and v.y != polygon[i + 1].y]
-        ymin = min(polygon, key=lambda p: p.y).y
-        ymax = max(polygon, key=lambda p: p.y).y
-
-        def has_intersect(e, y):
-            v1, v2 = e
-            if v1.y > v2.y:
-                return y <= v1.y and y > v2.y
-            else:
-                return y >= v1.y and y < v2.y
-
-        for e in edges_horizontal:
-            y = e[0].y
-            pixels += self._draw_line(
-                Vertex(e[0].x, y, fill_color),
-                Vertex(e[1].x, y, fill_color))
-
-        for y in range(ymin, ymax + 1):
-            intersections = [round(map(y, e[0].y, e[1].y, e[0].x, e[1].x))
-                             for e in edges if has_intersect(e, y)]
-            if len(intersections) == 1:
-                pixels += [Vertex(intersections[0], y, fill_color)]
-            else:
-                intersections_sorted = sorted(intersections)
-                is_draw = True
-                for i, x0 in enumerate(intersections_sorted):
-                    if is_draw and i < len(intersections_sorted) - 1:
-                        x1 = intersections_sorted[i + 1]
-                        pixels += self._draw_line(
-                            Vertex(x0, y, fill_color),
-                            Vertex(x1, y, fill_color))
-                    is_draw = not is_draw
-        return pixels
-
-    def _draw_line(self, v1, v2):
-        pixels = []
-
-        dx = abs(v1.x - v2.x)
-        dy = abs(v1.y - v2.y)
-
-        if dx >= dy:
-            start_x = min(v1.x, v2.x)
-            end_x = max(v1.x, v2.x)
-            for x in range(start_x, end_x + 1):
-                y = map(x, v1.x, v2.x, v1.y, v2.y)
-                pixels.append(Vertex(x, round(y), v1.color))
-        else:
-            start_y = min(v1.y, v2.y)
-            end_y = max(v1.y, v2.y)
-            for y in range(start_y, end_y + 1):
-                x = map(y, v1.y, v2.y, v1.x, v2.x)
-                pixels.append(Vertex(round(x), y, v1.color))
-
-        return pixels
-
     def log_frame_buffer(self):
         width, height = self.size
         matrix = '\n'
@@ -438,31 +550,31 @@ class Renderer(object):
 
 
 class Context(metaclass=ABCMeta):
-    @abstractclassmethod
+    @ abstractclassmethod
     def open(self, size):
         """ open the drawing context"""
 
-    @abstractclassmethod
+    @ abstractclassmethod
     def close(self):
         """ close the drawing context and restore state of canvas """
 
-    @abstractclassmethod
+    @ abstractclassmethod
     def no_cursor(self):
         """ hide cursor """
 
-    @abstractclassmethod
+    @ abstractclassmethod
     def cursor(self):
         """ show cursor """
 
-    @abstractclassmethod
+    @ abstractclassmethod
     def get_events(self):
         """ get event: mouse event, keyboard event, cursor event """
 
-    @abstractclassmethod
+    @ abstractclassmethod
     def draw(self, buffer):
         """ draw buffer to screen """
 
-    @abstractclassmethod
+    @ abstractclassmethod
     def clear(self):
         """ clear the screen when called background() """
 
@@ -645,6 +757,7 @@ else:
             self._pad_y = (self.window_height - self._pad_height) // 2
 
         def _enable_colors(self):
+            logger.debug(self._color_pair)
             for i, c in enumerate(self._color_pair):
                 if not c[1]:
                     curses.init_pair(i + 1, c[0].fg, c[0].bg)
