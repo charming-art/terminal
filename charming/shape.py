@@ -4,6 +4,7 @@ import math
 from .app import renderer
 from .core import Point
 from .constants import POLYGON
+from .constants import POINTS
 from .constants import OPEN
 from .constants import CLOSE
 from .constants import CORNER
@@ -87,7 +88,7 @@ def square(x, y, extend):
 
 @_add_on_return
 def point(x, y):
-    return CShape(points=[Point(x, y)])
+    return CShape(points=[Point(x, y)], primitive_type=POINTS)
 
 
 @_add_on_return

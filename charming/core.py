@@ -6,8 +6,8 @@ from collections import namedtuple
 from abc import ABCMeta, abstractclassmethod
 
 from .cmath import map
-from .cmath import Matrix
 
+from .utils import Matrix
 from .utils import get_char_width
 
 from .constants import POINTS
@@ -32,17 +32,19 @@ logger = logging.getLogger(__name__)
 
 class Point(object):
 
-    def __init__(self, x, y, color=1, weight=0):
+    def __init__(self, x, y, color=1, weight_x=0, weight_y=0):
         self.x = x
         self.y = y
-        self.weight = weight
+        self.weight_x = weight_x
+        self.weight_y = weight_y
         self.color = color
 
     def __str__(self):
         attrs = {
             "x": self.x,
             "y": self.y,
-            "weight": self.weight,
+            "weight_x": self.weight_x,
+            "weight_y": self.weight_y,
             "color": self.color
         }
         return attrs.__str__()
@@ -68,7 +70,7 @@ class Color(object):
             self.bg = BLACK if self.bg == None else self.bg
 
             # solve the display problem when ch == " " and fg == WHITE
-            self.fg = BLACK if ch == " " else self.fg
+            # self.fg = BLACK if ch == " " else self.fg
 
         # add to color pair
         if not self.has_color(self.fg, self.bg, Renderer.color_pair):
@@ -214,7 +216,7 @@ class Renderer(object):
         self.rect_mode = CORNER
         self.ellipse_mode = CENTER
         self.text_align_x = LEFT
-        self.text_aligh_y = TOP
+        self.text_align_y = TOP
         self.text_leading = 1
         self.text_size = 1
 
@@ -300,6 +302,7 @@ class Renderer(object):
         vertices = self._vertex_processing(
             shape.points,
             shape.stroke_color,
+            shape.stroke_weight,
             shape.transform_matrix_stack)
 
         primitives = self._primitive_assembly(
@@ -311,22 +314,31 @@ class Renderer(object):
             primitives,
             shape.fill_color,
             shape.is_stroke_enabled,
-            shape.is_fill_enabled,
-            shape.stroke_weight)
+            shape.is_fill_enabled)
 
         fragments_clipped = self._clipping(fragments)
 
         self._fragment_processing(fragments_clipped)
 
-    def _vertex_processing(self, points, stroke_color, transform_matrix_stack):
+    def _vertex_processing(self, points, stroke_color, stroke_weight, transform_matrix_stack):
         # transform
+        tm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+        sm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         while len(transform_matrix_stack) > 0:
             matrix = transform_matrix_stack.pop()
-            for p in points:
-                mp = Matrix([[p.x], [p.y], [1]])
-                tp = matrix * mp
-                p.x = tp[0][0]
-                p.y = tp[1][0]
+            tm = matrix * tm
+            if matrix.type == "scale":
+                sm = matrix * sm
+        sx = sm[0][0]
+        sy = sm[1][1]
+
+        for p in points:
+            mp = Matrix([[p.x], [p.y], [1]])
+            tp = tm * mp
+            p.x = tp[0][0]
+            p.y = tp[1][0]
+            p.weight_x = sx * p.weight_x if p.weight_x != 0 else sx - 1
+            p.weight_y = sy * p.weight_y if p.weight_y != 0 else sy - 1
 
         # screen map && color
         for p in points:
@@ -340,34 +352,34 @@ class Renderer(object):
         if primitive_type == POLYGON:
             if close_mode == CLOSE:
                 vertices.append(vertices[0])
-            primitives = [vertices]
+            ps = [vertices]
         elif primitive_type == POINTS:
-            primitives = [[v] for v in vertices]
+            ps = [[v] for v in vertices]
         elif primitive_type == LINES:
-            primitives = [[vertices[i], vertices[i + 1]]
-                          for i in range(len(vertices) - 1)
-                          if i % 2 == 0]
+            ps = [[vertices[i], vertices[i + 1]]
+                  for i in range(len(vertices) - 1)
+                  if i % 2 == 0]
         elif primitive_type == TRIANGLES:
-            primitives = [[vertices[i], vertices[i + 1], vertices[i + 2], vertices[i]]
-                          for i in range(len(vertices) - 2)
-                          if i % 3 == 0]
+            ps = [[vertices[i], vertices[i + 1], vertices[i + 2], vertices[i]]
+                  for i in range(len(vertices) - 2)
+                  if i % 3 == 0]
         elif primitive_type == TRIANGLE_STRIP:
-            primitives = [[vertices[i], vertices[i + 1], vertices[i + 2], vertices[i]]
-                          for i in range(len(vertices) - 2)]
+            ps = [[vertices[i], vertices[i + 1], vertices[i + 2], vertices[i]]
+                  for i in range(len(vertices) - 2)]
         elif primitive_type == TRIANGLE_FAN:
-            primitives = [[vertices[0], vertices[i], vertices[i + 1], vertices[0]]
-                          for i in range(1, len(vertices) - 1)]
+            ps = [[vertices[0], vertices[i], vertices[i + 1], vertices[0]]
+                  for i in range(1, len(vertices) - 1)]
         elif primitive_type == QUADS:
-            primitives = [[vertices[i], vertices[i + 1], vertices[i + 2], vertices[i + 3], vertices[i]]
-                          for i in range(len(vertices) - 3)
-                          if i % 4 == 0]
+            ps = [[vertices[i], vertices[i + 1], vertices[i + 2], vertices[i + 3], vertices[i]]
+                  for i in range(len(vertices) - 3)
+                  if i % 4 == 0]
         elif primitive_type == QUAD_STRIP:
-            primitives = [[vertices[i], vertices[i + 1], vertices[i + 3], vertices[i + 2], vertices[i]]
-                          for i in range(len(vertices) - 3)
-                          if i % 2 == 0]
-        return primitives
+            ps = [[vertices[i], vertices[i + 1], vertices[i + 3], vertices[i + 2], vertices[i]]
+                  for i in range(len(vertices) - 3)
+                  if i % 2 == 0]
+        return ps
 
-    def _rasterization(self, primitives, fill_color, is_stroke_enabled, is_fill_enabled, stroke_weight):
+    def _rasterization(self, primitives, fill_color, is_stroke_enabled, is_fill_enabled):
         fragments = []
 
         for vertices in primitives:
@@ -382,14 +394,18 @@ class Renderer(object):
 
                 # draw origin points
                 if len(vertices) == 1:
-                    stroke_pixels += vertices
+                    p = vertices[0]
+                    stroke_pixels += self._draw_point(
+                        p.x, p.y,
+                        p.color,
+                        p.weight_x, p.weight_y
+                    )
                 else:
                     for i, _ in enumerate(vertices):
                         if i < len(vertices) - 1:
                             stroke_pixels += self._draw_line(
                                 vertices[i],
                                 vertices[i + 1],
-                                stroke_weight
                             )
 
             pixels = fill_pixels + stroke_pixels
@@ -462,12 +478,12 @@ class Renderer(object):
                         x1 = intersections_sorted[i + 1]
                         pixels += self._draw_line(
                             Point(x0, y, fill_color),
-                            Point(x1, y, fill_color))
+                            Point(x1, y, fill_color)
+                        )
                     is_draw = not is_draw
         return pixels
 
-    def _draw_line(self, v1, v2, stroke_weight=0):
-
+    def _draw_line(self, v1, v2):
         pixels = []
 
         dx = abs(v1.x - v2.x)
@@ -478,24 +494,32 @@ class Renderer(object):
             end_x = max(v1.x, v2.x)
             for x in range(start_x, end_x + 1):
                 y = map(x, v1.x, v2.x, v1.y, v2.y)
-                pixels += self._draw_point(x, round(y),
-                                           v1.color, stroke_weight)
+                pixels += self._draw_point(
+                    x, round(y),
+                    v1.color,
+                    v1.weight_x, v1.weight_y
+                )
         else:
             start_y = min(v1.y, v2.y)
             end_y = max(v1.y, v2.y)
             for y in range(start_y, end_y + 1):
                 x = map(y, v1.y, v2.y, v1.x, v2.x)
-                pixels += self._draw_point(round(x),
-                                           y, v1.color, stroke_weight)
+                pixels += self._draw_point(
+                    round(x), y,
+                    v1.color,
+                    v1.weight_x, v1.weight_y
+                )
 
         return pixels
 
-    def _draw_point(self, x, y, color, stroke_weight):
+    def _draw_point(self, x, y, color, stroke_weight_x=0, stroke_weight_y=0):
+        if stroke_weight_x == 0 and stroke_weight_y == 0:
+            return [Point(x, y, color)]
         # draw circle
-        points = self.draw_ellipse(x, y, stroke_weight, stroke_weight)
+        points = self.draw_ellipse(x, y, stroke_weight_x, stroke_weight_y)
+        logger.debug([x, y, points])
         for p in points:
             p.color = color
-            p.weight = 0
 
         # fill circle
         points += self._scan_line_filling(points, color)
@@ -788,7 +812,6 @@ else:
             self._pad_y = (self.window_height - self._pad_height) // 2
 
         def _enable_colors(self):
-            logger.debug(self._color_pair)
             for i, c in enumerate(self._color_pair):
                 if not c[1]:
                     curses.init_pair(i + 1, c[0].fg, c[0].bg)

@@ -26,3 +26,29 @@ def get_char_width(ch):
         if o <= num:
             return wid
     return 1
+
+
+class Matrix(object):
+
+    def __init__(self, matrix, type="normal"):
+        self.matrix = matrix
+        self.row = len(matrix)
+        self.col = 0 if self.row == 0 else len(matrix[0])
+        self.type = type
+
+    def __mul__(self, other):
+        new_matrix = Matrix([[0 for _ in range(other.col)]
+                             for _ in range(self.row)])
+        for i in range(self.row):
+            for j in range(other.col):
+                new_matrix[i][j] = sum(
+                    [self[i][k] * other[k][j] for k in range(self.col)])
+        return new_matrix
+
+    def __getitem__(self, n):
+        return self.matrix[n]
+
+    def __str__(self):
+        return self.matrix.__str__()
+
+    __repr__ = __str__

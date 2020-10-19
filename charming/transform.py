@@ -3,7 +3,7 @@ from .app import renderer
 from .cmath import sin
 from .cmath import cos
 from .cmath import tan
-from .cmath import Matrix
+from .utils import Matrix
 
 
 def _push_on_return(foo):

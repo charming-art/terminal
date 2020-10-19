@@ -1,8 +1,10 @@
 import string
+import logging
 from .app import renderer
 from .core import Color
-from .shape import square
-from .shape import rect_mode
+from .shape import begin_shape
+from .shape import end_shape
+from .shape import vertex
 from .color import no_stroke
 from .color import fill
 from .structure import open_context
@@ -11,6 +13,7 @@ from .constants import RIGHT
 from .constants import BOTTOM
 from .constants import MIDDLE
 from .constants import CORNER
+from .constants import QUAD_STRIP
 
 
 class CText(object):
@@ -19,7 +22,7 @@ class CText(object):
         self.x = x
         self.y = y
         self.chars = chars
-        self.fill_color = Color('', 0, 0)
+        self.fill_color = Color('*')
 
 
 def text(text, x, y):
@@ -38,15 +41,23 @@ def text(text, x, y):
         y -= height / 2
 
     with open_context():
-        rect_mode(CORNER)
         _, fg, bg = renderer.fill_color
         no_stroke()
         for i, chars in enumerate(matrix):
+            begin_shape(QUAD_STRIP)
             for j, ch in enumerate(chars):
                 fill(ch, fg, bg)
+                x_offset = renderer.text_size - 1
+                y_offset = renderer.text_size + renderer.text_leading - 2
                 x0 = x + j * renderer.text_size
                 y0 = y + i * (renderer.text_size + renderer.text_leading - 1)
-                square(x0, y0, renderer.text_size - 1)
+                x1 = x0 + x_offset
+                y1 = y0 + y_offset
+                vertex(x0, y0)
+                vertex(x0, y1)
+                vertex(x1, y0)
+                vertex(x1, y1)
+            end_shape()
 
 
 def text_width(text):
