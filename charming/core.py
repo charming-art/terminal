@@ -462,7 +462,9 @@ class Renderer(object):
 
         for e in edges_horizontal:
             y = e[0].y
-            for x in range(e[0].x, e[1].x + 1):
+            x1 = min(e[0].x, e[1].x)
+            x2 = max(e[0].x, e[1].x)
+            for x in range(x1, x2 + 1):
                 pixels.append(Point(x, y, fill_color))
 
         for y in range(ymin, ymax + 1):
