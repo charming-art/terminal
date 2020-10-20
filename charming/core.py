@@ -337,8 +337,8 @@ class Renderer(object):
             tp = tm * mp
             p.x = tp[0][0]
             p.y = tp[1][0]
-            p.weight_x = sx * p.weight_x if p.weight_x != 0 else sx - 1
-            p.weight_y = sy * p.weight_y if p.weight_y != 0 else sy - 1
+            p.weight_x = sx * stroke_weight if stroke_weight != 0 else sx - 1
+            p.weight_y = sy * stroke_weight if stroke_weight != 0 else sy - 1
 
         # screen map && color
         for p in points:
