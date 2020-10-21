@@ -148,6 +148,7 @@ from .typography import text_width
 from .typography import text_height
 from .typography import text_align
 from .typography import text_leading
+from .typography import text_space
 from .typography import text
 
 from .helpers import log

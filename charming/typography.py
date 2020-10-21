@@ -2,18 +2,16 @@ import string
 import logging
 from .app import renderer
 from .core import Color
-from .shape import begin_shape
-from .shape import end_shape
-from .shape import vertex
-from .color import no_stroke
-from .color import fill
+from .shape import point
+from .shape import stroke_weight
+from .color import no_fill
+from .color import stroke
 from .structure import open_context
 from .constants import CENTER
 from .constants import RIGHT
 from .constants import BOTTOM
 from .constants import MIDDLE
 from .constants import CORNER
-from .constants import QUAD_STRIP
 
 
 class CText(object):
@@ -42,34 +40,34 @@ def text(text, x, y):
 
     with open_context():
         _, fg, bg = renderer.fill_color
-        no_stroke()
+        no_fill()
         for i, chars in enumerate(matrix):
-            begin_shape(QUAD_STRIP)
             for j, ch in enumerate(chars):
-                fill(ch, fg, bg)
-                x_offset = renderer.text_size - 1
-                y_offset = renderer.text_size + renderer.text_leading - 2
-                x0 = x + j * renderer.text_size
-                y0 = y + i * (renderer.text_size + renderer.text_leading - 1)
-                x1 = x0 + x_offset
-                y1 = y0 + y_offset
-                vertex(x0, y0)
-                vertex(x0, y1)
-                vertex(x1, y0)
-                vertex(x1, y1)
-            end_shape()
+                ch_size = _get_char_size()
+                text_space_x = _get_space_x()
+                text_space_y = _get_space_y()
+                x0 = x + j * (ch_size + text_space_x)
+                y0 = y + i * (ch_size + text_space_y)
+
+                stroke(ch, fg, bg)
+                stroke_weight(renderer.text_size - 1)
+                point(x0, y0)
 
 
 def text_width(text):
     matrix = _get_char_matrix(text)
     if len(matrix) > 0:
-        return len(matrix[0]) * renderer.text_size
+        ch_size = _get_char_size()
+        text_space_x = _get_space_x()
+        return ch_size + (len(matrix[0]) - 1) * (ch_size + text_space_x)
     return 0
 
 
 def text_height(text):
     matrix = _get_char_matrix(text)
-    return len(matrix) * renderer.text_size
+    ch_size = _get_char_size()
+    text_space_y = _get_space_y()
+    return ch_size + (len(matrix) - 1) * (ch_size + text_space_y)
 
 
 def text_align(align_x=None, align_y=None):
@@ -86,6 +84,11 @@ def text_leading(leading):
 
 def text_size(size):
     renderer.text_size = size
+    renderer.text_leading = size - 1
+
+
+def text_space(space):
+    renderer.text_space = space
 
 
 def _get_char_matrix(text):
@@ -95,3 +98,15 @@ def _get_char_matrix(text):
     matrix = [[line[i] if i < len(line) else ' ' for i in range(
         max_width)] for line in lines]
     return matrix
+
+
+def _get_char_size():
+    return (renderer.text_size - 1) * 2 + 1
+
+
+def _get_space_x():
+    return renderer.text_size - 1 + renderer.text_space
+
+
+def _get_space_y():
+    return renderer.text_leading

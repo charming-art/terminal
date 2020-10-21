@@ -49,6 +49,17 @@ class Point(object):
         }
         return attrs.__str__()
 
+    def __eq__(self, other):
+        x = self.x == other.x
+        y = self.y == other.y
+        weight_x = self.weight_x == other.weight_x
+        weight_y = self.weight_y == other.weight_y
+        color = self.color == other.color
+        return x and y and weight_x and weight_y and color
+
+    def __hash__(self):
+        return hash('(%s, %s)' % (self.x, self.y))
+
     __repr__ = __str__
 
 
@@ -217,8 +228,9 @@ class Renderer(object):
         self.ellipse_mode = CENTER
         self.text_align_x = LEFT
         self.text_align_y = TOP
-        self.text_leading = 1
         self.text_size = 1
+        self.text_leading = self.text_size - 1
+        self.text_space = 0
 
         self.has_background_called = False
         self.transform_matrix_stack = []
@@ -249,6 +261,16 @@ class Renderer(object):
     def set_frame_buffer(self, color):
         for i, _ in enumerate(self.frame_buffer):
             self.frame_buffer[i] = color
+
+    def get_scale(self):
+        sm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+        scale_matrix = [
+            m for m in self.transform_matrix_stack
+            if m.type == "scale"
+        ]
+        for m in scale_matrix:
+            sm = m * sm
+        return (sm[0][0], sm[1][1])
 
     def draw_ellipse(self, x0, y0, a, b):
         p1 = []
@@ -290,7 +312,7 @@ class Renderer(object):
             p1 = list(reversed(p1))
             p3 = list(reversed(p3))
 
-        return p1 + p2 + p3 + p4
+        return p2 + p3 + p4 + p1
 
     def _reset_frame_buffer(self):
         width, height = self.size
@@ -519,7 +541,6 @@ class Renderer(object):
             return [Point(x, y, color)]
         # draw circle
         points = self.draw_ellipse(x, y, stroke_weight_x, stroke_weight_y)
-        logger.debug([x, y, points])
         for p in points:
             p.color = color
 
