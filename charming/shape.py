@@ -3,6 +3,8 @@ import logging
 import math
 from .app import renderer
 from .core import Point
+from .utils import is_between
+from .utils import angle_between
 from .constants import POLYGON
 from .constants import POINTS
 from .constants import OPEN
@@ -102,16 +104,37 @@ def arc(a, b, c, d, start, stop, mode=OPEN):
 
     points = renderer.draw_ellipse(x, y, a, b)
 
-    # filter and sort the points by start and stop angle
-    # todo
-    
+    # unique
+    unique_points = list(set(points))
+
+    # sort
+    xstart = math.cos(start)
+    ystart = math.sin(start)
+    if math.isclose(0, xstart, abs_tol=1e-9):
+        xstart = 0
+    if math.isclose(0, ystart, abs_tol=1e-9):
+        ystart = 0
+
+    sorted_points = sorted(
+        unique_points,
+        key=lambda p: angle_between(xstart, ystart, p.x - x, p.y - y)
+    )
+
+    # filter
+    total = stop - start
+    filtered_points = []
+    for p in sorted_points:
+        a = angle_between(xstart, ystart, p.x - x, p.y - y)
+        if is_between(a, 0, total):
+            filtered_points.append(p)
+
     close_mode = OPEN if mode == OPEN else CLOSE
     if mode == PIE:
-        points.insert(0, Point(x, y))
-    return CShape(points=points, close_mode=close_mode)
+        filtered_points.insert(0, Point(x, y))
+    return CShape(points=filtered_points, close_mode=close_mode)
 
 
-@_add_on_return
+@ _add_on_return
 def ellipse(a, b, c, d):
     x1, y1, x2, _, _, _, _, y4 = _get_bounding_rect_by_mode(
         a, b, c, d, renderer.ellipse_mode)
@@ -175,7 +198,7 @@ def begin_shape(primitive_type=POLYGON):
     _current_shape = CShape(primitive_type=primitive_type)
 
 
-@_add_on_return
+@ _add_on_return
 def end_shape(close_mode=OPEN):
     global _current_shape
     _current_shape.close_mode = close_mode

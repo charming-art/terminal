@@ -1,3 +1,5 @@
+import math
+
 widths = [
     (126,    1), (159,    0), (687,     1), (710,   0), (711,   1),
     (727,    0), (733,    1), (879,     0), (1154,  1), (1161,  0),
@@ -26,6 +28,30 @@ def get_char_width(ch):
         if o <= num:
             return wid
     return 1
+
+
+def angle_between(x1, y1, x2, y2):
+    '''angle from (x1, y1) to (x2, y2)'''
+    dot = x1 * x2 + y1 * y2
+    dist = math.sqrt(x1 ** 2 + y1 ** 2) * math.sqrt(x2 ** 2 + y2 ** 2)
+    theta = math.acos(dot / dist)
+
+    if not to_left(0, 0, x1, y1, x2, y2):
+        theta = math.pi * 2 - theta
+    return theta
+
+
+def is_between(v, start, end):
+    abs_tol = 1e-9
+    higher = v >= start or math.isclose(v, start, abs_tol=abs_tol)
+    lower = v <= end or math.isclose(v, end, abs_tol=abs_tol)
+    return higher and lower
+
+
+def to_left(x1, y1, x2, y2, px, py):
+    v1 = [x2 - x1, y2 - y1]
+    v2 = [px - x1, py - y1]
+    return v1[0] * v2[1] - v1[1] * v2[0] >= 0
 
 
 class Matrix(object):

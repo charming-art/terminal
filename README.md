@@ -70,9 +70,6 @@ Try it one an online editor.
 
 ### Shape
 
-- [ ] create_shape()
-- [ ] CShape()
-
 #### 2D Primitives
 
 - [x] arc()
@@ -99,20 +96,16 @@ Try it one an online editor.
 - [ ] curve_vertex()
 - [ ] end_contour()
 - [x] end_shape()
-- [ ] quadratic_vertex()
 - [x] vertex()
 
 #### Curves
 
 - [ ] bezier()
-- [ ] bezier_detail()
 - [ ] bezier_point()
 - [ ] bezier_tangent()
 - [ ] curve()
-- [ ] curve_detail()
 - [ ] curve_point()
 - [ ] curve_tangent()
-- [ ] curve_tightness()
 
 ### Transform
 
@@ -247,9 +240,6 @@ Try it one an online editor.
 - [x] text_height()
 
 ### Image
-
-- [ ] create_image()
-- [ ] CImage
   
 #### Loading & Displaying
 
@@ -257,22 +247,10 @@ Try it one an online editor.
 - [ ] image_mode()
 - [ ] load_image()
 - [ ] no_tint()
-- [ ] request_image()
 - [ ] tint()
-  
-#### Textures
-
-- [ ] texture()
-- [ ] texture_mode()
-- [ ] texture_wrap()
   
 #### Pixels
 
-- [ ] blend()
-- [ ] copy()
-- [ ] filter()
-- [ ] get()
 - [ ] load_pixels()
 - [ ] pixels[]
-- [ ] set()
 - [ ] update_pixels()

@@ -262,16 +262,6 @@ class Renderer(object):
         for i, _ in enumerate(self.frame_buffer):
             self.frame_buffer[i] = color
 
-    def get_scale(self):
-        sm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
-        scale_matrix = [
-            m for m in self.transform_matrix_stack
-            if m.type == "scale"
-        ]
-        for m in scale_matrix:
-            sm = m * sm
-        return (sm[0][0], sm[1][1])
-
     def draw_ellipse(self, x0, y0, a, b):
         p1 = []
         p2 = []
