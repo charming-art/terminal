@@ -1,125 +1,14 @@
 import time
 import logging
 import sys
-
-from collections import namedtuple
 from abc import ABCMeta, abstractclassmethod
-
+from . import constants
 from .cmath import map
 from .utils import Matrix
 from .utils import get_char_width
 
-from .constants import POINTS
-from .constants import POLYGON
-from .constants import LINES
-from .constants import TRIANGLES
-from .constants import TRIANGLE_STRIP
-from .constants import TRIANGLE_FAN
-from .constants import QUADS
-from .constants import QUAD_STRIP
-from .constants import CLOSE
-from .constants import CORNER
-from .constants import CENTER
-from .constants import LEFT
-from .constants import TOP
-from .constants import WHITE
-from .constants import BLACK
-from .constants import ARC
-from .constants import CURVE
-from .constants import BEZIER
-from .constants import CONTOUR
-
-
+logging.basicConfig(filename='charming.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
-
-class Point(object):
-
-    def __init__(self, x, y, color=1, weight_x=0, weight_y=0, type="normal"):
-        self.x = x
-        self.y = y
-        self.weight_x = weight_x
-        self.weight_y = weight_y
-        self.color = color
-        self.type = type
-
-    def __str__(self):
-        attrs = {
-            "x": self.x,
-            "y": self.y,
-            "weight_x": self.weight_x,
-            "weight_y": self.weight_y,
-            "color": self.color
-        }
-        return attrs.__str__()
-
-    def __eq__(self, other):
-        x = self.x == other.x
-        y = self.y == other.y
-        weight_x = self.weight_x == other.weight_x
-        weight_y = self.weight_y == other.weight_y
-        color = self.color == other.color
-        type = self.type == other.type
-        return x and y and weight_x and weight_y and color and type
-
-    def __hash__(self):
-        return hash('(%s, %s)' % (self.x, self.y))
-
-    __repr__ = __str__
-
-
-class Color(object):
-
-    def __init__(self, ch=" ", fg=WHITE, bg=BLACK):
-        self.index = 0
-
-        if isinstance(ch, self.__class__):
-            self.ch = ch.ch
-            self.fg = ch.fg
-            self.bg = ch.bg
-        else:
-            self.ch = ch
-            self.fg = fg
-            self.bg = bg
-
-            self.fg = WHITE if self.fg == None else self.fg
-            self.bg = BLACK if self.bg == None else self.bg
-
-            # solve the display problem when ch == " " and fg == WHITE
-            # self.fg = BLACK if ch == " " else self.fg
-
-        # add to color pair
-        if not self.has_color(self.fg, self.bg, Renderer.color_pair):
-            Renderer.color_pair.append([self, False])
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.index > 2:
-            self.index = 0
-            raise StopIteration()
-        attrs = [self.ch, self.fg, self.bg]
-        a = attrs[self.index]
-        self.index += 1
-        return a
-
-    def has_color(self, fg, bg, color_pair):
-        equal_colors = [
-            color for color, enable in color_pair
-            if color.fg == fg and color.bg == bg
-        ]
-        return len(equal_colors) > 0
-
-    def __str__(self):
-        attrs = {
-            "ch": self.ch,
-            "fg": self.fg,
-            "bg": self.bg
-        }
-        return attrs.__str__()
-
-    __repr__ = __str__
 
 
 class Sketch(object):
@@ -229,10 +118,10 @@ class Renderer(object):
         self.stroke_weight = 0
         self.is_stroke_enabled = True
         self.is_fill_enabled = True
-        self.rect_mode = CORNER
-        self.ellipse_mode = CENTER
-        self.text_align_x = LEFT
-        self.text_align_y = TOP
+        self.rect_mode = constants.CORNER
+        self.ellipse_mode = constants.CENTER
+        self.text_align_x = constants.LEFT
+        self.text_align_y = constants.TOP
         self.text_size = 1
         self.text_leading = self.text_size - 1
         self.text_space = 0
@@ -324,41 +213,41 @@ class Renderer(object):
         return points
 
     def _primitive_assembly(self, vertices, primitive_type, close_mode):
-        if primitive_type == POLYGON:
-            if close_mode == CLOSE:
+        if primitive_type == constants.POLYGON:
+            if close_mode == constants.CLOSE:
                 vertices.append(vertices[0])
             ps = [vertices]
-        elif primitive_type == POINTS:
+        elif primitive_type == constants.POINTS:
             ps = [[v] for v in vertices]
-        elif primitive_type == LINES:
+        elif primitive_type == constants.LINES:
             ps = [[vertices[i], vertices[i + 1]]
                   for i in range(len(vertices) - 1)
                   if i % 2 == 0]
-        elif primitive_type == TRIANGLES:
+        elif primitive_type == constants.TRIANGLES:
             ps = [[vertices[i], vertices[i + 1], vertices[i + 2], vertices[i]]
                   for i in range(len(vertices) - 2)
                   if i % 3 == 0]
-        elif primitive_type == TRIANGLE_STRIP:
+        elif primitive_type == constants.TRIANGLE_STRIP:
             ps = [[vertices[i], vertices[i + 1], vertices[i + 2], vertices[i]]
                   for i in range(len(vertices) - 2)]
-        elif primitive_type == TRIANGLE_FAN:
+        elif primitive_type == constants.TRIANGLE_FAN:
             ps = [[vertices[0], vertices[i], vertices[i + 1], vertices[0]]
                   for i in range(1, len(vertices) - 1)]
-        elif primitive_type == QUADS:
+        elif primitive_type == constants.QUADS:
             ps = [[vertices[i], vertices[i + 1], vertices[i + 2], vertices[i + 3], vertices[i]]
                   for i in range(len(vertices) - 3)
                   if i % 4 == 0]
-        elif primitive_type == QUAD_STRIP:
+        elif primitive_type == constants.QUAD_STRIP:
             ps = [[vertices[i], vertices[i + 1], vertices[i + 3], vertices[i + 2], vertices[i]]
                   for i in range(len(vertices) - 3)
                   if i % 2 == 0]
-        elif primitive_type == ARC:
+        elif primitive_type == constants.ARC:
             pass
-        elif primitive_type == CONTOUR:
+        elif primitive_type == constants.CONTOUR:
             pass
-        elif primitive_type == CURVE:
+        elif primitive_type == constants.CURVE:
             pass
-        elif primitive_type == BEZIER:
+        elif primitive_type == constants.BEZIER:
             pass
 
         return ps
@@ -893,6 +782,134 @@ else:
             self._update_pad()
             self._screen.clear()
             self.draw(self._buffer, self._color_pair)
+
+
+class CShape(object):
+
+    def __init__(self, points=None, is_auto=True, primitive_type=constants.POLYGON, close_mode=constants.CLOSE, options=None):
+        self.points = [] if points == None else points
+        self.options = {} if options == None else options
+        self.is_auto = is_auto
+        self.primitive_type = primitive_type
+        self.close_mode = close_mode
+        self.fill_color = None
+        self.stroke_color = None
+        self.stroke_weight = None
+        self.transform_matrix_stack = []
+        self.is_stroke_enabled = True
+        self.is_fill_enabled = True
+
+    def __str__(self):
+        attrs = {
+            'fill_color': self.fill_color,
+            'stroke_color': self.stroke_color,
+            'primitive_type': self.primitive_type,
+            'close_mode': self.close_mode,
+            'is_stroke_enabled': self.is_stroke_enabled,
+            'is_fill_enabled': self.is_fill_enabled,
+            'stroke_weight': self.stroke_weight,
+            'points': self.points
+        }
+        return attrs.__str__()
+
+    __repr__ = __str__
+
+
+class Point(object):
+
+    def __init__(self, x, y, color=1, weight_x=0, weight_y=0, type="normal"):
+        self.x = x
+        self.y = y
+        self.weight_x = weight_x
+        self.weight_y = weight_y
+        self.color = color
+        self.type = type
+
+    def __str__(self):
+        attrs = {
+            "x": self.x,
+            "y": self.y,
+            "weight_x": self.weight_x,
+            "weight_y": self.weight_y,
+            "color": self.color
+        }
+        return attrs.__str__()
+
+    def __eq__(self, other):
+        x = self.x == other.x
+        y = self.y == other.y
+        weight_x = self.weight_x == other.weight_x
+        weight_y = self.weight_y == other.weight_y
+        color = self.color == other.color
+        type = self.type == other.type
+        return x and y and weight_x and weight_y and color and type
+
+    def __hash__(self):
+        return hash('(%s, %s)' % (self.x, self.y))
+
+    __repr__ = __str__
+
+
+class Color(object):
+
+    def __init__(self, ch=" ", fg=constants.WHITE, bg=constants.BLACK):
+        self.index = 0
+
+        if isinstance(ch, self.__class__):
+            self.ch = ch.ch
+            self.fg = ch.fg
+            self.bg = ch.bg
+        else:
+            self.ch = ch
+            self.fg = fg
+            self.bg = bg
+
+            self.fg = constants.WHITE if self.fg == None else self.fg
+            self.bg = constants.BLACK if self.bg == None else self.bg
+
+            # solve the display problem when ch == " " and fg == WHITE
+            # self.fg = BLACK if ch == " " else self.fg
+
+        # add to color pair
+        if not self.has_color(self.fg, self.bg, Renderer.color_pair):
+            Renderer.color_pair.append([self, False])
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.index > 2:
+            self.index = 0
+            raise StopIteration()
+        attrs = [self.ch, self.fg, self.bg]
+        a = attrs[self.index]
+        self.index += 1
+        return a
+
+    def has_color(self, fg, bg, color_pair):
+        equal_colors = [
+            color for color, enable in color_pair
+            if color.fg == fg and color.bg == bg
+        ]
+        return len(equal_colors) > 0
+
+    def __str__(self):
+        attrs = {
+            "ch": self.ch,
+            "fg": self.fg,
+            "bg": self.bg
+        }
+        return attrs.__str__()
+
+    __repr__ = __str__
+
+
+class CImage(object):
+    pass
+
+
+class ImageLoader(object):
+    pass
 
 
 class Event(object):

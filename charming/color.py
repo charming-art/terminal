@@ -1,5 +1,6 @@
-from .app import renderer
+from . import constants
 from .core import Color
+from .app import renderer
 
 
 def stroke(ch=" ", fg=None, bg=None):

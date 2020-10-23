@@ -1,7 +1,6 @@
 import logging
 from .app import sketch
 
-logging.basicConfig(filename='charming.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 

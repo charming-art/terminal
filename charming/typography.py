@@ -1,26 +1,14 @@
 import string
 import logging
-from .app import renderer
+from . import constants
 from .core import Color
-from .shape import point
-from .shape import stroke_weight
+from .app import renderer
+from .color import Color
 from .color import no_fill
 from .color import stroke
+from .shape import point
+from .shape import stroke_weight
 from .structure import open_context
-from .constants import CENTER
-from .constants import RIGHT
-from .constants import BOTTOM
-from .constants import MIDDLE
-from .constants import CORNER
-
-
-class CText(object):
-
-    def __init__(self, x, y, chars):
-        self.x = x
-        self.y = y
-        self.chars = chars
-        self.fill_color = Color('*')
 
 
 def text(text, x, y):
@@ -28,14 +16,14 @@ def text(text, x, y):
     height = len(matrix)
     width = len(matrix[0]) if height > 0 else 0
 
-    if renderer.text_align_x == RIGHT:
+    if renderer.text_align_x == constants.RIGHT:
         x -= width
-    elif renderer.text_align_x == CENTER:
+    elif renderer.text_align_x == constants.CENTER:
         x -= width / 2
 
-    if renderer.text_align_y == BOTTOM:
+    if renderer.text_align_y == constants.BOTTOM:
         y -= height
-    elif renderer.text_align_y == MIDDLE:
+    elif renderer.text_align_y == constants.MIDDLE:
         y -= height / 2
 
     with open_context():

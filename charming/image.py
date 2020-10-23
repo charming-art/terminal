@@ -1,13 +1,8 @@
-
-class CImage(object):
-    pass
-
-
-class ImageLoader(object):
-    pass
-
+from .core import CImage
+from .core import ImageLoader
 
 #### Loading & Displaying
+
 
 def image():
     pass
