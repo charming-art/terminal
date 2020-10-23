@@ -18,15 +18,23 @@ from .constants import CHORD
 from .constants import PIE
 from .constants import PI
 from .constants import HALF_PI
+from .constants import BEZIER
+from .constants import CURVE
+from .constants import CONTOUR
+from .constants import ARC
 
 
 _current_shape = None
+is_curve = False
+is_bezier = False
+is_contour = False
 
 
 class CShape(object):
 
-    def __init__(self, points=None, is_auto=True, primitive_type=POLYGON, close_mode=CLOSE):
+    def __init__(self, points=None, is_auto=True, primitive_type=POLYGON, close_mode=CLOSE, options=None):
         self.points = [] if points == None else points
+        self.options = {} if options == None else options
         self.is_auto = is_auto
         self.primitive_type = primitive_type
         self.close_mode = close_mode
@@ -95,56 +103,20 @@ def point(x, y):
 
 @_add_on_return
 def arc(a, b, c, d, start, stop, mode=OPEN):
-    x1, y1, x2, _, _, _, _, y4 = _get_bounding_rect_by_mode(
+    x1, y1, x2, y2, x3, y3, x4, y4 = _get_bounding_rect_by_mode(
         a, b, c, d, renderer.ellipse_mode)
-    x = int((x1 + x2) / 2)
-    y = int((y1 + y4) / 2)
-    a = int((x2 - x1) / 2)
-    b = int((y4 - y1) / 2)
 
-    points = renderer.draw_ellipse(x, y, a, b)
-
-    # unique
-    unique_points = list(set(points))
-
-    # sort
-    xstart = math.cos(start)
-    ystart = math.sin(start)
-    if math.isclose(0, xstart, abs_tol=1e-9):
-        xstart = 0
-    if math.isclose(0, ystart, abs_tol=1e-9):
-        ystart = 0
-
-    sorted_points = sorted(
-        unique_points,
-        key=lambda p: angle_between(xstart, ystart, p.x - x, p.y - y)
-    )
-
-    # filter
-    total = stop - start
-    filtered_points = []
-    for p in sorted_points:
-        a = angle_between(xstart, ystart, p.x - x, p.y - y)
-        if is_between(a, 0, total):
-            filtered_points.append(p)
-
-    close_mode = OPEN if mode == OPEN else CLOSE
-    if mode == PIE:
-        filtered_points.insert(0, Point(x, y))
-    return CShape(points=filtered_points, close_mode=close_mode)
+    points = [Point(x1, y1), Point(x2, y2), Point(x3, y3), Point(x4, y4)]
+    options = {
+        'start': start,
+        'stop': stop,
+        'mode': mode
+    }
+    return CShape(points=points, options=options)
 
 
-@ _add_on_return
 def ellipse(a, b, c, d):
-    x1, y1, x2, _, _, _, _, y4 = _get_bounding_rect_by_mode(
-        a, b, c, d, renderer.ellipse_mode)
-    x = int((x1 + x2) / 2)
-    y = int((y1 + y4) / 2)
-    a = int((x2 - x1) / 2)
-    b = int((y4 - y1) / 2)
-
-    points = renderer.draw_ellipse(x, y, a, b)
-    return CShape(points=points, close_mode=CLOSE)
+    arc(a, b, c, d, 0, math.pi * 2, CHORD)
 
 
 def circle(x, y, extend):
@@ -195,6 +167,12 @@ def _get_bounding_rect_by_mode(a, b, c, d, mode):
 
 def begin_shape(primitive_type=POLYGON):
     global _current_shape
+    global is_bezier
+    global is_contour
+    global is_curve
+    is_contour = False
+    is_bezier = False
+    is_curve = False
     _current_shape = CShape(primitive_type=primitive_type)
 
 
@@ -205,9 +183,62 @@ def end_shape(close_mode=OPEN):
     return _current_shape
 
 
+def begin_contour():
+    global is_contour 
+    is_contour = True
+
+
+def end_contour():
+    pass
+
+
 def vertex(x, y):
     global _current_shape
     _current_shape.points.append(Point(x, y))
+
+
+def curve_vertex(x, y):
+    global _current_shape
+    global is_curve
+    is_curve = True
+    _current_shape.points.append(Point(x, y, type="curve"))
+
+
+def curve_tightness(v):
+    pass
+
+
+def bezier_vertex():
+    global is_bezier
+    is_bezier = True
+
+
+#### curves #####
+
+
+def curve():
+    pass
+
+
+def curve_point():
+    pass
+
+
+def curve_tangent():
+    pass
+
+
+def bezier():
+    pass
+
+
+def bezier_point():
+    pass
+
+
+def bezier_tangent():
+    pass
+
 
 #### attributes ####
 

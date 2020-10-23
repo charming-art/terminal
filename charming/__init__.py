@@ -46,6 +46,7 @@ from .structure import no_loop
 from .structure import loop
 from .structure import push
 from .structure import pop
+from .structure import preload
 from .structure import open_context
 
 from .environment import frame_rate
@@ -122,7 +123,18 @@ from .shape import circle
 from .shape import ellipse
 from .shape import begin_shape
 from .shape import end_shape
+from .shape import begin_contour
+from .shape import end_contour
 from .shape import vertex
+from .shape import curve
+from .shape import curve_point
+from .shape import curve_vertex
+from .shape import curve_tangent
+from .shape import curve_tightness
+from .shape import bezier
+from .shape import bezier_point
+from .shape import bezier_vertex
+from .shape import bezier_tangent
 from .shape import rect_mode
 from .shape import ellipse_mode
 from .shape import stroke_weight
@@ -150,6 +162,15 @@ from .typography import text_align
 from .typography import text_leading
 from .typography import text_space
 from .typography import text
+
+from .image import image
+from .image import image_mode
+from .image import load_image
+from .image import no_tint
+from .image import tint
+from .image import load_pixels
+from .image import get_pixels
+from .image import update_pixels
 
 from .helpers import log
 from .helpers import begin_log_frame_buffer

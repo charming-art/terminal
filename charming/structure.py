@@ -25,6 +25,10 @@ def loop():
     sketch.is_loop = True
 
 
+def preload():
+    pass
+
+
 def redraw():
     draw_hook = sketch.hooks_map['draw']
     draw_hook()

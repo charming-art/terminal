@@ -30,6 +30,14 @@ QUADS = 6
 
 QUAD_STRIP = 7
 
+ARC = 8
+
+CURVE = 9
+
+CONTOUR = 10
+
+BEZIER = 11
+
 # Close type
 
 OPEN = 0

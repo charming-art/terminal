@@ -1,12 +1,11 @@
 import time
 import logging
-import math
 import sys
+
 from collections import namedtuple
 from abc import ABCMeta, abstractclassmethod
 
 from .cmath import map
-
 from .utils import Matrix
 from .utils import get_char_width
 
@@ -25,6 +24,10 @@ from .constants import LEFT
 from .constants import TOP
 from .constants import WHITE
 from .constants import BLACK
+from .constants import ARC
+from .constants import CURVE
+from .constants import BEZIER
+from .constants import CONTOUR
 
 
 logger = logging.getLogger(__name__)
@@ -32,12 +35,13 @@ logger = logging.getLogger(__name__)
 
 class Point(object):
 
-    def __init__(self, x, y, color=1, weight_x=0, weight_y=0):
+    def __init__(self, x, y, color=1, weight_x=0, weight_y=0, type="normal"):
         self.x = x
         self.y = y
         self.weight_x = weight_x
         self.weight_y = weight_y
         self.color = color
+        self.type = type
 
     def __str__(self):
         attrs = {
@@ -55,7 +59,8 @@ class Point(object):
         weight_x = self.weight_x == other.weight_x
         weight_y = self.weight_y == other.weight_y
         color = self.color == other.color
-        return x and y and weight_x and weight_y and color
+        type = self.type == other.type
+        return x and y and weight_x and weight_y and color and type
 
     def __hash__(self):
         return hash('(%s, %s)' % (self.x, self.y))
@@ -262,48 +267,6 @@ class Renderer(object):
         for i, _ in enumerate(self.frame_buffer):
             self.frame_buffer[i] = color
 
-    def draw_ellipse(self, x0, y0, a, b):
-        p1 = []
-        p2 = []
-        p3 = []
-        p4 = []
-
-        def is_in(x, y):
-            return (b * x) ** 2 + (a * y) ** 2 - (a * b) ** 2 < 0
-
-        def add_points(x, y, rx, ry):
-            p1.append(Point(x, y))
-            p2.append(Point(x, y + ry * 2))
-            p3.append(Point(x - rx * 2, y + ry * 2))
-            p4.append(Point(x - rx * 2, y))
-
-        if a >= b:
-            y = y0 - b
-            for x in range(x0, x0 + a + 1):
-                rx = x - x0
-                ry = y0 - y
-                add_points(x, y, rx, ry)
-                if not is_in(rx + 1, ry - 0.5):
-                    y += 1
-            if y <= y0:
-                add_points(x, y0, a, 0)
-            p2 = list(reversed(p2))
-            p4 = list(reversed(p4))
-        else:
-            x = x0 + a
-            for y in range(y0, y0 + b + 1):
-                rx = x - x0
-                ry = y - y0
-                add_points(x, y - ry * 2, rx, ry)
-                if not is_in(rx - 0.5, ry + 1):
-                    x -= 1
-            if x >= x0:
-                add_points(x0, y, 0, b)
-            p1 = list(reversed(p1))
-            p3 = list(reversed(p3))
-
-        return p2 + p3 + p4 + p1
-
     def _reset_frame_buffer(self):
         width, height = self.size
         self.frame_buffer = [self.fill_color
@@ -389,6 +352,15 @@ class Renderer(object):
             ps = [[vertices[i], vertices[i + 1], vertices[i + 3], vertices[i + 2], vertices[i]]
                   for i in range(len(vertices) - 3)
                   if i % 2 == 0]
+        elif primitive_type == ARC:
+            pass
+        elif primitive_type == CONTOUR:
+            pass
+        elif primitive_type == CURVE:
+            pass
+        elif primitive_type == BEZIER:
+            pass
+
         return ps
 
     def _rasterization(self, primitives, fill_color, is_stroke_enabled, is_fill_enabled):
@@ -407,7 +379,7 @@ class Renderer(object):
                 # draw origin points
                 if len(vertices) == 1:
                     p = vertices[0]
-                    stroke_pixels += self._draw_point(
+                    stroke_pixels += self._rasterize_point(
                         p.x, p.y,
                         p.color,
                         p.weight_x, p.weight_y
@@ -415,7 +387,7 @@ class Renderer(object):
                 else:
                     for i, _ in enumerate(vertices):
                         if i < len(vertices) - 1:
-                            stroke_pixels += self._draw_line(
+                            stroke_pixels += self._rasterize_line(
                                 vertices[i],
                                 vertices[i + 1],
                             )
@@ -490,14 +462,14 @@ class Renderer(object):
                 for i, x0 in enumerate(intersections_sorted):
                     if is_draw and i < len(intersections_sorted) - 1:
                         x1 = intersections_sorted[i + 1]
-                        pixels += self._draw_line(
+                        pixels += self._rasterize_line(
                             Point(x0, y, fill_color),
                             Point(x1, y, fill_color)
                         )
                     is_draw = not is_draw
         return pixels
 
-    def _draw_line(self, v1, v2):
+    def _rasterize_line(self, v1, v2):
         pixels = []
 
         dx = abs(v1.x - v2.x)
@@ -508,7 +480,7 @@ class Renderer(object):
             end_x = max(v1.x, v2.x)
             for x in range(start_x, end_x + 1):
                 y = map(x, v1.x, v2.x, v1.y, v2.y)
-                pixels += self._draw_point(
+                pixels += self._rasterize_point(
                     x, round(y),
                     v1.color,
                     v1.weight_x, v1.weight_y
@@ -518,7 +490,7 @@ class Renderer(object):
             end_y = max(v1.y, v2.y)
             for y in range(start_y, end_y + 1):
                 x = map(y, v1.y, v2.y, v1.x, v2.x)
-                pixels += self._draw_point(
+                pixels += self._rasterize_point(
                     round(x), y,
                     v1.color,
                     v1.weight_x, v1.weight_y
@@ -526,17 +498,73 @@ class Renderer(object):
 
         return pixels
 
-    def _draw_point(self, x, y, color, stroke_weight_x=0, stroke_weight_y=0):
+    def _rasterize_ellipse(self, x0, y0, a, b):
+        p1 = []
+        p2 = []
+        p3 = []
+        p4 = []
+
+        def is_in(x, y):
+            return (b * x) ** 2 + (a * y) ** 2 - (a * b) ** 2 < 0
+
+        def add_points(x, y, rx, ry):
+            p1.append(Point(x, y))
+            p2.append(Point(x, y + ry * 2))
+            p3.append(Point(x - rx * 2, y + ry * 2))
+            p4.append(Point(x - rx * 2, y))
+
+        if a >= b:
+            y = y0 - b
+            for x in range(x0, x0 + a + 1):
+                rx = x - x0
+                ry = y0 - y
+                add_points(x, y, rx, ry)
+                if not is_in(rx + 1, ry - 0.5):
+                    y += 1
+            if y <= y0:
+                add_points(x, y0, a, 0)
+            p2 = list(reversed(p2))
+            p4 = list(reversed(p4))
+        else:
+            x = x0 + a
+            for y in range(y0, y0 + b + 1):
+                rx = x - x0
+                ry = y - y0
+                add_points(x, y - ry * 2, rx, ry)
+                if not is_in(rx - 0.5, ry + 1):
+                    x -= 1
+            if x >= x0:
+                add_points(x0, y, 0, b)
+            p1 = list(reversed(p1))
+            p3 = list(reversed(p3))
+
+        return p2 + p3 + p4 + p1
+
+    def _rasterize_point(self, x, y, color, stroke_weight_x=0, stroke_weight_y=0):
         if stroke_weight_x == 0 and stroke_weight_y == 0:
             return [Point(x, y, color)]
+
         # draw circle
-        points = self.draw_ellipse(x, y, stroke_weight_x, stroke_weight_y)
+        points = self._rasterize_ellipse(
+            x, y,
+            stroke_weight_x, stroke_weight_y
+        )
+
         for p in points:
             p.color = color
 
         # fill circle
         points += self._scan_line_filling(points, color)
         return points
+
+    def _discretize_curve(self):
+        pass
+
+    def _discretize_bezier(self):
+        pass
+
+    def _discretize_arc(self):
+        pass
 
     def _adjust_unicode_char(self):
         width, height = self.size

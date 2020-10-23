@@ -67,6 +67,7 @@ Try it one an online editor.
 - [x] push()
 - [x] pop()
 - [x] open_context()
+- [ ] preload()
 
 ### Shape
 
@@ -106,6 +107,7 @@ Try it one an online editor.
 - [ ] curve()
 - [ ] curve_point()
 - [ ] curve_tangent()
+- [ ] curve_tightness()
 
 ### Transform
 
@@ -252,5 +254,5 @@ Try it one an online editor.
 #### Pixels
 
 - [ ] load_pixels()
-- [ ] pixels[]
+- [ ] get_pixels()
 - [ ] update_pixels()
