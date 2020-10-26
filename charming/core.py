@@ -344,36 +344,26 @@ class Renderer(object):
         https://www.cs.uic.edu/~jbell/CourseNotes/ComputerGraphics/PolygonFilling.html
         '''
         pixels = []
-        edges_horizontal = []
-        edges = []
         ymin = float('inf')
         ymax = float('-inf')
         for e in polygon:
             v1, v2 = e
             ymin = min(v1.y, v2.y, ymin)
             ymax = max(v1.y, v2.y, ymax)
-            if v1.y == v2.y:
-                edges_horizontal.append(e)
-            else:
-                edges.append(e)
 
         def has_intersect(e, y):
             v1, v2 = e
             if v1.y > v2.y:
                 return y <= v1.y and y > v2.y
+            elif v1.y == v2.y:
+                return y == v1.y
             else:
                 return y >= v1.y and y < v2.y
 
-        for e in edges_horizontal:
-            y = e[0].y
-            x1 = min(e[0].x, e[1].x)
-            x2 = max(e[0].x, e[1].x)
-            for x in range(x1, x2 + 1):
-                pixels.append(Point(x, y, fill_color))
 
         for y in range(ymin, ymax + 1):
-            intersections = [round(map(y, e[0].y, e[1].y, e[0].x, e[1].x))
-                             for e in edges if has_intersect(e, y)]
+            intersections = [round(map(y, e[1].y, e[0].y, e[1].x, e[0].x))
+                             for e in polygon if has_intersect(e, y)]
             if len(intersections) == 1:
                 pixels += [Point(intersections[0], y, fill_color)]
             else:
