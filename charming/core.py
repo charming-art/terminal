@@ -213,6 +213,7 @@ class Renderer(object):
         return points
 
     def _primitive_assembly(self, vertices, primitive_type, close_mode):
+        # vertices
         if primitive_type == constants.POLYGON:
             if close_mode == constants.CLOSE:
                 vertices.append(vertices[0])
@@ -250,40 +251,61 @@ class Renderer(object):
         elif primitive_type == constants.BEZIER:
             pass
 
-        return ps
+        # edges
+        edges_list = []
+        for vertices in ps:
+            normal_vertices = [v for v in vertices if v.type == "normal"]
+            contour_vertices = [v for v in vertices if v.type == "contour"]
+            normal_edges = self._vertices_to_edges(normal_vertices)
+            contour_edges = self._vertices_to_edges(contour_vertices)
+            edges_list.append(normal_edges + contour_edges)
+        return edges_list
 
     def _rasterization(self, primitives, fill_color, is_stroke_enabled, is_fill_enabled):
         fragments = []
 
-        for vertices in primitives:
+        for edges in primitives:
             fill_pixels = []
-            # fill polygon
-            if is_fill_enabled and len(vertices) > 2:
-                fill_pixels += self._scan_line_filling(vertices, fill_color)
-
-            # stroke polygon
             stroke_pixels = []
-            if is_stroke_enabled:
 
-                # draw origin points
-                if len(vertices) == 1:
-                    p = vertices[0]
+            # draw a line or point
+            if len(edges) == 1:
+                e = edges[0]
+                if len(e) == 1:
                     stroke_pixels += self._rasterize_point(
-                        p.x, p.y,
-                        p.color,
-                        p.weight_x, p.weight_y
+                        e[0].x, e[0].y,
+                        e[0].color,
+                        e[0].stroke_weight_x, e[0].stroke_height_y
                     )
                 else:
-                    for i, _ in enumerate(vertices):
-                        if i < len(vertices) - 1:
-                            stroke_pixels += self._rasterize_line(
-                                vertices[i],
-                                vertices[i + 1],
-                            )
+                    stroke_pixels += self._rasterize_line(e[0], e[1])
+                fragments.append(stroke_pixels)
+            else:
+                # fill polygon
+                if is_fill_enabled:
+                    # close the polygon
+                    fill_edges = edges.copy()
+                    normal_edges = [
+                        e for e in fill_edges
+                        if e[0].type == "normal"
+                    ]
+                    first_point = normal_edges[0][0]
+                    last_point = normal_edges[-1][1]
+                    if last_point.x != first_point.x or last_point.y != first_point.y:
+                        fill_edges.append((last_point, first_point))
+                    fill_pixels += self._scan_line_filling(
+                        fill_edges, fill_color)
 
-            pixels = fill_pixels + stroke_pixels
-            fragments.append(pixels)
+                # stroke the polygon
+                if is_stroke_enabled:
+                    for _, e in enumerate(edges):
+                        stroke_pixels += self._rasterize_line(
+                            e[0],
+                            e[1],
+                        )
 
+                pixels = fill_pixels + stroke_pixels
+                fragments.append(pixels)
         return fragments
 
     def _clipping(self, fragments):
@@ -309,22 +331,19 @@ class Renderer(object):
         '''
         https://www.cs.uic.edu/~jbell/CourseNotes/ComputerGraphics/PolygonFilling.html
         '''
-
-        # close the polygon
-        polygon = polygon.copy()
-        first = polygon[0]
-        last = polygon[-1]
-        if first.x != last.x or first.y != last.y:
-            polygon.append(Point(first.x, first.y, first.color))
-
         pixels = []
-        edges_horizontal = [(v, polygon[i + 1]) for i, v in enumerate(polygon)
-                            if i < len(polygon) - 1 and v.y == polygon[i + 1].y]
-        edges = [(v, polygon[i + 1])
-                 for i, v in enumerate(polygon)
-                 if i < len(polygon) - 1 and v.y != polygon[i + 1].y]
-        ymin = min(polygon, key=lambda p: p.y).y
-        ymax = max(polygon, key=lambda p: p.y).y
+        edges_horizontal = []
+        edges = []
+        ymin = float('inf')
+        ymax = float('-inf')
+        for e in polygon:
+            v1, v2 = e
+            ymin = min(v1.y, v2.y, ymin)
+            ymax = max(v1.y, v2.y, ymax)
+            if v1.y == v2.y:
+                edges_horizontal.append(e)
+            else:
+                edges.append(e)
 
         def has_intersect(e, y):
             v1, v2 = e
@@ -442,8 +461,10 @@ class Renderer(object):
         for p in points:
             p.color = color
 
+        edges = self._vertices_to_edges(points)
+
         # fill circle
-        points += self._scan_line_filling(points, color)
+        points += self._scan_line_filling(edges, color)
         return points
 
     def _discretize_curve(self):
@@ -454,6 +475,20 @@ class Renderer(object):
 
     def _discretize_arc(self):
         pass
+
+    def _vertices_to_edges(self, vertices):
+        if len(vertices) == 0:
+            return []
+        elif len(vertices) == 1:
+            v = vertices[0]
+            return [(v)]
+        else:
+            edges = []
+            for i in range(1, len(vertices)):
+                v1 = vertices[i - 1]
+                v2 = vertices[i]
+                edges.append((v1, v2))
+            return edges
 
     def _adjust_unicode_char(self):
         width, height = self.size
@@ -829,9 +864,9 @@ class Point(object):
         attrs = {
             "x": self.x,
             "y": self.y,
-            "weight_x": self.weight_x,
-            "weight_y": self.weight_y,
-            "color": self.color
+            # "weight_x": self.weight_x,
+            # "weight_y": self.weight_y,
+            # "color": self.color
         }
         return attrs.__str__()
 
