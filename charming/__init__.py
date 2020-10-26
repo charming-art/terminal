@@ -6,6 +6,7 @@ from .constants import TWO_PI
 
 from .constants import CLOSE
 
+from .constants import POLYGON
 from .constants import POINTS
 from .constants import LINES
 from .constants import TRIANGLES
@@ -123,8 +124,10 @@ from .shape import circle
 from .shape import ellipse
 from .shape import begin_shape
 from .shape import end_shape
+from .shape import open_shape
 from .shape import begin_contour
 from .shape import end_contour
+from .shape import open_contour
 from .shape import vertex
 from .shape import curve
 from .shape import curve_point

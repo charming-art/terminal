@@ -91,13 +91,15 @@ Try it one an online editor.
 
 #### Vertex
 
-- [ ] begin_contour()
+- [x] begin_contour()
 - [x] begin_shape()
 - [ ] bezier_vertex()
 - [ ] curve_vertex()
-- [ ] end_contour()
+- [x] end_contour()
 - [x] end_shape()
 - [x] vertex()
+- [x] open_shape()
+- [x] open_contour()
 
 #### Curves
 

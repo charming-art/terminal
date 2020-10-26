@@ -227,7 +227,8 @@ class Renderer(object):
         # vertices
         if primitive_type == constants.POLYGON:
             if close_mode == constants.CLOSE:
-                vertices.append(vertices[0])
+                normal_vertices = [v for v in vertices if v.type == "normal"]
+                vertices.append(normal_vertices[0])
             ps = [vertices]
         elif primitive_type == constants.POINTS:
             ps = [[v] for v in vertices]

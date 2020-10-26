@@ -1,4 +1,6 @@
 import functools
+import logging
+from contextlib import contextmanager
 from . import constants
 from .app import renderer
 from .core import Point
@@ -126,11 +128,18 @@ def begin_shape(primitive_type=constants.POLYGON):
     _current_shape = CShape(primitive_type=primitive_type)
 
 
-@ _add_on_return
+@_add_on_return
 def end_shape(close_mode=constants.OPEN):
     global _current_shape
     _current_shape.close_mode = close_mode
     return _current_shape
+
+
+@contextmanager
+def open_shape(primitive_type=constants.POLYGON, close_mode=constants.OPEN):
+    begin_shape(primitive_type)
+    yield
+    end_shape(close_mode)
 
 
 def begin_contour():
@@ -139,12 +148,32 @@ def begin_contour():
 
 
 def end_contour():
-    pass
+    global is_contour
+    global _current_shape
+    is_contour = False
+    # close the contour
+    contour_points = [p for p in _current_shape.points if p.type == "contour"]
+    first_point = contour_points[0]
+    last_point = contour_points[-1]
+    if first_point.x != last_point.x or first_point.y != last_point.y:
+        _current_shape.points.append(
+            Point(first_point.x, first_point.y, type="contour"))
+
+
+@contextmanager
+def open_contour():
+    begin_contour()
+    yield
+    end_contour()
 
 
 def vertex(x, y):
     global _current_shape
-    _current_shape.points.append(Point(x, y))
+    if is_contour:
+        p = Point(x, y, type="contour")
+    else:
+        p = Point(x, y)
+    _current_shape.points.append(p)
 
 
 def curve_vertex(x, y):
