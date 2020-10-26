@@ -6,10 +6,12 @@ state_stack = []
 
 
 def setup(hook):
+    sketch.has_setup_hook = True
     sketch.add_hook('setup', hook)
 
 
 def draw(hook):
+    sketch.has_draw_hook = True
     sketch.add_hook('draw', hook)
 
 

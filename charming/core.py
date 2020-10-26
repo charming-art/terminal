@@ -28,6 +28,8 @@ class Sketch(object):
         self.pmouse_x = 0
         self.pmouse_y = 0
         self.mouse_button = 0
+        self.has_setup_hook = False
+        self.has_draw_hook = False
         self.hooks_map = {
             'setup': lambda: None,
             'draw': lambda: None,
@@ -47,37 +49,45 @@ class Sketch(object):
 
     def run(self):
         try:
-            setup_hook = self.hooks_map['setup']
-            draw_hook = self.hooks_map['draw']
+            is_static_mode = not self.has_draw_hook or not self.has_setup_hook
+            if is_static_mode:
+                self.context.open(self.size)
+                self.renderer.setup(self.size)
+                self.renderer.render()
+                self.context.draw(self.renderer.frame_buffer,
+                                  self.renderer.color_pair)
+                if self.is_log_frame_buffer == True:
+                    self.renderer.log_frame_buffer()
+                while True:
+                    time.sleep(1)
+            else:
+                setup_hook = self.hooks_map['setup']
+                draw_hook = self.hooks_map['draw']
+                setup_hook()
+                self.context.open(self.size)
+                self.renderer.setup(self.size)
 
-            if not setup_hook or not draw_hook:
-                return
+                while True:
+                    events = self.context.get_events()
+                    for e in events:
+                        self._handle_event(e)
 
-            setup_hook()
-            self.context.open(self.size)
-            self.renderer.setup(self.size)
+                    if self.is_loop:
+                        self.renderer.has_background_called = False
+                        draw_hook()
+                        self.renderer.render()
 
-            while True:
-                events = self.context.get_events()
-                for e in events:
-                    self._handle_event(e)
+                        if self.renderer.has_background_called:
+                            self.context.clear()
 
-                if self.is_loop:
-                    self.renderer.has_background_called = False
-                    draw_hook()
-                    self.renderer.render()
+                        self.context.draw(self.renderer.frame_buffer,
+                                          self.renderer.color_pair)
 
-                    if self.renderer.has_background_called:
-                        self.context.clear()
+                        if self.is_log_frame_buffer == True:
+                            self.renderer.log_frame_buffer()
 
-                    self.context.draw(self.renderer.frame_buffer,
-                                      self.renderer.color_pair)
-
-                    if self.is_log_frame_buffer == True:
-                        self.renderer.log_frame_buffer()
-
-                self.frame_count += 1
-                time.sleep(1 / self.frame_rate)
+                    self.frame_count += 1
+                    time.sleep(1 / self.frame_rate)
         except Exception as e:
             logger.debug(e)
             raise e
@@ -158,8 +168,9 @@ class Renderer(object):
 
     def _reset_frame_buffer(self):
         width, height = self.size
-        self.frame_buffer = [self.fill_color
-                             for _ in range(width * height)]
+        self.frame_buffer = [Color(' ')
+                             for _ in range(width * height)
+                             ]
 
     def _render_shape(self, shape):
 
