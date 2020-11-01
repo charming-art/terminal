@@ -26,10 +26,10 @@ def draw():
         # app.rotate(app.PI / 6)
         app.stroke('+')
         # app.rect(0, 0, 20, 10)
-        app.arc(0, 0, 20, 10, start_angle, end_angle, app.PIE)
+        # app.arc(0, 0, 20, 10, start_angle, end_angle, app.PIE)
         # app.stroke('-')
         # app.arc(0, 0, 10, 20, start_angle, end_angle)
-        # app.ellipse(0, 0, 2, 2)
+        app.ellipse(0, 0, 10, 6)
         # app.circle(0, 0, 10)
 
     app.no_loop()

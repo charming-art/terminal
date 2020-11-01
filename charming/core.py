@@ -203,11 +203,14 @@ class Renderer(object):
         # transform
         tm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         sm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+        rotation = 0
         while len(transform_matrix_stack) > 0:
             matrix = transform_matrix_stack.pop()
             tm = matrix * tm
             if matrix.type == "scale":
                 sm = matrix * sm
+            elif matrix.type == "rotate":
+                rotation += matrix.value
         sx = sm[0][0]
         sy = sm[1][1]
 
@@ -218,6 +221,7 @@ class Renderer(object):
             p.y = tp[1][0]
             p.weight_x = sx * stroke_weight if stroke_weight != 0 else sx - 1
             p.weight_y = sy * stroke_weight if stroke_weight != 0 else sy - 1
+            p.rotation = rotation
 
         # screen map && color
         for p in points:
@@ -302,7 +306,8 @@ class Renderer(object):
                     stroke_pixels += self._rasterize_point(
                         e[0].x, e[0].y,
                         e[0].color,
-                        e[0].weight_x, e[0].weight_y
+                        e[0].weight_x, e[0].weight_y,
+                        e[0].rotation
                     )
                 else:
                     stroke_pixels += self._rasterize_line(e[0], e[1])
@@ -407,7 +412,8 @@ class Renderer(object):
                 pixels += self._rasterize_point(
                     x, round(y),
                     v1.color,
-                    v1.weight_x, v1.weight_y
+                    v1.weight_x, v1.weight_y,
+                    v1.rotation
                 )
         else:
             start_y = min(v1.y, v2.y)
@@ -417,12 +423,13 @@ class Renderer(object):
                 pixels += self._rasterize_point(
                     round(x), y,
                     v1.color,
-                    v1.weight_x, v1.weight_y
+                    v1.weight_x, v1.weight_y,
+                    v1.rotation
                 )
 
         return pixels
 
-    def _rasterize_point(self, x, y, color, stroke_weight_x=0, stroke_weight_y=0):
+    def _rasterize_point(self, x, y, color, stroke_weight_x=0, stroke_weight_y=0, rotation=0):
         if stroke_weight_x == 0 or stroke_weight_y == 0:
             return [Point(x, y, color)]
 
@@ -432,25 +439,24 @@ class Renderer(object):
             stroke_weight_y,
             0,
             constants.TAU,
-            color
+            color,
+            rotation
         )
-
         edges = self._vertices_to_edges(vertices)
-
         return self._scan_line_filling(edges, color)
 
-    def _discretize_arc(self, x0, y0, a, b, start, stop, color, rotation=0, mode=constants.OPEN):
+    def _discretize_arc(self, x0, y0, a, b, start, stop, color, rotation=0, mode=constants.CHORD):
         if a == 0 or b == 0:
             return [Point(x0, y0, color)]
 
         points = []
-
+        
         pre_x = a
         pre_y = 0
         pre_angle = 0
         angle = start
-        cs = (2 * math.pi * b+4 * (a-b)) * (stop - start) / (math.pi * 2)
-        cnt = int(cs / 4) * 4
+        cs = (2 * math.pi * b + 4 * (a-b)) * (stop - start) / (math.pi * 2)
+        cnt = max(10, int(cs / 20) * 10)
         step = (stop - start) / cnt
 
         while angle < stop or math.isclose(angle, stop, abs_tol=1e-9):
@@ -463,15 +469,16 @@ class Renderer(object):
 
             x = pre_x * cos + pre_y * sin * (-a / b)
             y = pre_x * sin * (b / a) + pre_y * cos
-            pre_x = x
-            pre_y = y
+            if x != pre_x or y != pre_y:
+                pre_x = x
+                pre_y = y
 
-            rotated_x = math.cos(rotation) * x - math.sin(rotation) * y
-            rotated_y = math.sin(rotation) * x + math.cos(rotation) * y
-            points.append(Point(round(rotated_x + x0),
-                                round(rotated_y + y0),
-                                color=color)
-                          )
+                rotated_x = math.cos(rotation) * x - math.sin(rotation) * y
+                rotated_y = math.sin(rotation) * x + math.cos(rotation) * y
+                points.append(Point(round(rotated_x + x0),
+                                    round(rotated_y + y0),
+                                    color=color)
+                            )
         if mode == constants.PIE:
             points.insert(0, Point(x0, y0, color=color))
             points.append(points[0])
@@ -862,13 +869,14 @@ class CShape(object):
 
 class Point(object):
 
-    def __init__(self, x, y, color=1, weight_x=0, weight_y=0, type="normal"):
+    def __init__(self, x, y, color=1, weight_x=0, weight_y=0, rotation=0, type="normal"):
         self.x = x
         self.y = y
         self.weight_x = weight_x
         self.weight_y = weight_y
         self.color = color
         self.type = type
+        self.rotation = rotation
 
     def __str__(self):
         attrs = {

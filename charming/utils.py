@@ -49,11 +49,12 @@ def to_left(x1, y1, x2, y2, px, py):
 
 class Matrix(object):
 
-    def __init__(self, matrix, type="normal"):
+    def __init__(self, matrix, type="normal", value=0):
         self.matrix = matrix
         self.row = len(matrix)
         self.col = 0 if self.row == 0 else len(matrix[0])
         self.type = type
+        self.value = value
 
     def __mul__(self, other):
         new_matrix = Matrix([[0 for _ in range(other.col)]
