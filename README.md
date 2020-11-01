@@ -9,11 +9,11 @@ Charming(Character Terminal Art Programming) is a coss-platform python package f
 import charming as app
 
 @app.setup
-def setup():
+def foo():
     app.size(100, 100)
 
 @app.draw
-def draw():
+def foo():
     app.stroke('#')
     app.fill('@')
     app.rect(0, 0, 20, 20)

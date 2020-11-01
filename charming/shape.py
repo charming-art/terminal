@@ -61,10 +61,10 @@ def arc(a, b, c, d, start, stop, mode=constants.OPEN):
     points = [Point(x1, y1), Point(x2, y2), Point(x3, y3), Point(x4, y4)]
     options = {
         'start': start,
-        'stop': stop,
+        'stop': stop, 
         'mode': mode
     }
-    return CShape(points=points, options=options)
+    return CShape(points=points, options=options, primitive_type=constants.ARC)
 
 
 def ellipse(a, b, c, d):

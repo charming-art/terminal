@@ -1,10 +1,13 @@
 import time
 import logging
 import sys
+import math
 from abc import ABCMeta, abstractclassmethod
 from . import constants
 from .cmath import map
+from .cmath import dist
 from .utils import Matrix
+from .utils import angle_between
 from .utils import get_char_width
 
 logging.basicConfig(filename='charming.log', level=logging.DEBUG)
@@ -183,7 +186,8 @@ class Renderer(object):
         primitives = self._primitive_assembly(
             vertices,
             shape.primitive_type,
-            shape.close_mode)
+            shape.close_mode,
+            shape.options)
 
         fragments = self._rasterization(
             primitives,
@@ -223,7 +227,7 @@ class Renderer(object):
 
         return points
 
-    def _primitive_assembly(self, vertices, primitive_type, close_mode):
+    def _primitive_assembly(self, vertices, primitive_type, close_mode, options):
         # vertices
         if primitive_type == constants.POLYGON:
             if close_mode == constants.CLOSE:
@@ -255,9 +259,19 @@ class Renderer(object):
                   for i in range(len(vertices) - 3)
                   if i % 2 == 0]
         elif primitive_type == constants.ARC:
-            pass
-        elif primitive_type == constants.CONTOUR:
-            pass
+            start = options['start']
+            stop = options['stop']
+            mode = options['mode']
+            p1, p2, p3, p4 = vertices
+            a = int(dist(p1.x, p1.y, p2.x, p2.y) / 2)
+            b = int(dist(p1.x, p1.y, p4.x, p4.y) / 2)
+            x0 = int((p1.x + p3.x) / 2)
+            y0 = int((p1.y + p3.y) / 2)
+            rotation = angle_between(1, 0, p2.x - p1.x, p2.y - p1.y)
+            points = self._discretize_arc(
+                x0, y0, a, b, start, stop, p1.color, rotation, mode
+            )
+            ps = [points]
         elif primitive_type == constants.CURVE:
             pass
         elif primitive_type == constants.BEZIER:
@@ -271,6 +285,7 @@ class Renderer(object):
             normal_edges = self._vertices_to_edges(normal_vertices)
             contour_edges = self._vertices_to_edges(contour_vertices)
             edges_list.append(normal_edges + contour_edges)
+
         return edges_list
 
     def _rasterization(self, primitives, fill_color, is_stroke_enabled, is_fill_enabled):
@@ -287,7 +302,7 @@ class Renderer(object):
                     stroke_pixels += self._rasterize_point(
                         e[0].x, e[0].y,
                         e[0].color,
-                        e[0].stroke_weight_x, e[0].stroke_height_y
+                        e[0].weight_x, e[0].weight_y
                     )
                 else:
                     stroke_pixels += self._rasterize_line(e[0], e[1])
@@ -360,7 +375,6 @@ class Renderer(object):
             else:
                 return y >= v1.y and y < v2.y
 
-
         for y in range(ymin, ymax + 1):
             intersections = [round(map(y, e[1].y, e[0].y, e[1].x, e[0].x))
                              for e in polygon if has_intersect(e, y)]
@@ -408,65 +422,62 @@ class Renderer(object):
 
         return pixels
 
-    def _rasterize_ellipse(self, x0, y0, a, b):
-        p1 = []
-        p2 = []
-        p3 = []
-        p4 = []
-
-        def is_in(x, y):
-            return (b * x) ** 2 + (a * y) ** 2 - (a * b) ** 2 < 0
-
-        def add_points(x, y, rx, ry):
-            p1.append(Point(x, y))
-            p2.append(Point(x, y + ry * 2))
-            p3.append(Point(x - rx * 2, y + ry * 2))
-            p4.append(Point(x - rx * 2, y))
-
-        if a >= b:
-            y = y0 - b
-            for x in range(x0, x0 + a + 1):
-                rx = x - x0
-                ry = y0 - y
-                add_points(x, y, rx, ry)
-                if not is_in(rx + 1, ry - 0.5):
-                    y += 1
-            if y <= y0:
-                add_points(x, y0, a, 0)
-            p2 = list(reversed(p2))
-            p4 = list(reversed(p4))
-        else:
-            x = x0 + a
-            for y in range(y0, y0 + b + 1):
-                rx = x - x0
-                ry = y - y0
-                add_points(x, y - ry * 2, rx, ry)
-                if not is_in(rx - 0.5, ry + 1):
-                    x -= 1
-            if x >= x0:
-                add_points(x0, y, 0, b)
-            p1 = list(reversed(p1))
-            p3 = list(reversed(p3))
-
-        return p2 + p3 + p4 + p1
-
     def _rasterize_point(self, x, y, color, stroke_weight_x=0, stroke_weight_y=0):
-        if stroke_weight_x == 0 and stroke_weight_y == 0:
+        if stroke_weight_x == 0 or stroke_weight_y == 0:
             return [Point(x, y, color)]
 
-        # draw circle
-        points = self._rasterize_ellipse(
+        vertices = self._discretize_arc(
             x, y,
-            stroke_weight_x, stroke_weight_y
+            stroke_weight_x,
+            stroke_weight_y,
+            0,
+            constants.TAU,
+            color
         )
 
-        for p in points:
-            p.color = color
+        edges = self._vertices_to_edges(vertices)
 
-        edges = self._vertices_to_edges(points)
+        return self._scan_line_filling(edges, color)
 
-        # fill circle
-        points += self._scan_line_filling(edges, color)
+    def _discretize_arc(self, x0, y0, a, b, start, stop, color, rotation=0, mode=constants.OPEN):
+        if a == 0 or b == 0:
+            return [Point(x0, y0, color)]
+
+        points = []
+
+        pre_x = a
+        pre_y = 0
+        pre_angle = 0
+        angle = start
+        cs = (2 * math.pi * b+4 * (a-b)) * (stop - start) / (math.pi * 2)
+        cnt = int(cs / 4) * 4
+        step = (stop - start) / cnt
+
+        while angle < stop or math.isclose(angle, stop, abs_tol=1e-9):
+            theta = angle - pre_angle
+            pre_angle = angle
+            angle += step
+
+            cos = math.cos(theta)
+            sin = math.sin(theta)
+
+            x = pre_x * cos + pre_y * sin * (-a / b)
+            y = pre_x * sin * (b / a) + pre_y * cos
+            pre_x = x
+            pre_y = y
+
+            rotated_x = math.cos(rotation) * x - math.sin(rotation) * y
+            rotated_y = math.sin(rotation) * x + math.cos(rotation) * y
+            points.append(Point(round(rotated_x + x0),
+                                round(rotated_y + y0),
+                                color=color)
+                          )
+        if mode == constants.PIE:
+            points.insert(0, Point(x0, y0, color=color))
+            points.append(points[0])
+        elif mode == constants.CHORD:
+            points.append(points[0])
+
         return points
 
     def _discretize_curve(self):
@@ -475,15 +486,12 @@ class Renderer(object):
     def _discretize_bezier(self):
         pass
 
-    def _discretize_arc(self):
-        pass
-
     def _vertices_to_edges(self, vertices):
         if len(vertices) == 0:
             return []
         elif len(vertices) == 1:
             v = vertices[0]
-            return [(v)]
+            return [(v,)]
         else:
             edges = []
             for i in range(1, len(vertices)):

@@ -41,13 +41,6 @@ def angle_between(x1, y1, x2, y2):
     return theta
 
 
-def is_between(v, start, end):
-    abs_tol = 1e-9
-    higher = v >= start or math.isclose(v, start, abs_tol=abs_tol)
-    lower = v <= end or math.isclose(v, end, abs_tol=abs_tol)
-    return higher and lower
-
-
 def to_left(x1, y1, x2, y2, px, py):
     v1 = [x2 - x1, y2 - y1]
     v2 = [px - x1, py - y1]
