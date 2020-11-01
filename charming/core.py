@@ -9,6 +9,7 @@ from .cmath import dist
 from .utils import Matrix
 from .utils import angle_between
 from .utils import get_char_width
+from .utils import to_left
 
 logging.basicConfig(filename='charming.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -374,15 +375,32 @@ class Renderer(object):
         def has_intersect(e, y):
             v1, v2 = e
             if v1.y > v2.y:
-                return y <= v1.y and y > v2.y
+                return y < v1.y and y >= v2.y
             elif v1.y == v2.y:
                 return y == v1.y
             else:
-                return y >= v1.y and y < v2.y
+                return y > v1.y and y <= v2.y
 
         for y in range(ymin, ymax + 1):
-            intersections = [round(map(y, e[1].y, e[0].y, e[1].x, e[0].x))
-                             for e in polygon if has_intersect(e, y)]
+
+            intersections = []
+            for i, e in enumerate(polygon):
+                if has_intersect(e, y):
+                    v1, v2 = e
+                    if v1.y == v2.y:
+                        x = v2.x
+                    else:
+                        x = round(map(y, v1.y, v2.y, v1.x, v2.x))
+
+                    ne = polygon[i + 1] if i < len(polygon) - 1 else polygon[0]
+                    v3 = ne[1]
+                    y_diff = (v1.y - y) * (v3.y - y)
+                    is_left = to_left(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y)
+                    if x == v2.x and (y_diff > 0 or (y_diff == 0 and is_left)):
+                        intersections += [x, x]
+                    else:
+                        intersections += [x]
+
             if len(intersections) == 1:
                 pixels += [Point(intersections[0], y, fill_color)]
             else:
@@ -450,7 +468,7 @@ class Renderer(object):
             return [Point(x0, y0, color)]
 
         points = []
-        
+
         pre_x = a
         pre_y = 0
         pre_angle = 0
@@ -478,7 +496,7 @@ class Renderer(object):
                 points.append(Point(round(rotated_x + x0),
                                     round(rotated_y + y0),
                                     color=color)
-                            )
+                              )
         if mode == constants.PIE:
             points.insert(0, Point(x0, y0, color=color))
             points.append(points[0])

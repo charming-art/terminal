@@ -36,7 +36,7 @@ def angle_between(x1, y1, x2, y2):
     dist = math.sqrt(x1 ** 2 + y1 ** 2) * math.sqrt(x2 ** 2 + y2 ** 2)
     theta = math.acos(dot / dist)
 
-    if not to_left(0, 0, x1, y1, x2, y2):
+    if to_left(0, 0, x1, y1, x2, y2):
         theta = math.pi * 2 - theta
     return theta
 
@@ -44,7 +44,7 @@ def angle_between(x1, y1, x2, y2):
 def to_left(x1, y1, x2, y2, px, py):
     v1 = [x2 - x1, y2 - y1]
     v2 = [px - x1, py - y1]
-    return v1[0] * v2[1] - v1[1] * v2[0] >= 0
+    return v1[0] * v2[1] - v1[1] * v2[0] <= 0
 
 
 class Matrix(object):
