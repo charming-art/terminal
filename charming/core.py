@@ -63,6 +63,10 @@ class Sketch(object):
                 if self.is_log_frame_buffer == True:
                     self.renderer.log_frame_buffer()
                 while True:
+                    events = self.context.get_events()
+                    for e in events:
+                        if e.type == "window":
+                            self._handle_event(e)
                     time.sleep(1)
             else:
                 setup_hook = self.hooks_map['setup']
@@ -227,8 +231,8 @@ class Renderer(object):
         # screen map && color
         for p in points:
             p.color = stroke_color
-            p.x = int(p.x)
-            p.y = int(p.y)
+            p.x = round(p.x)
+            p.y = round(p.y)
 
         return points
 
@@ -280,7 +284,14 @@ class Renderer(object):
         elif primitive_type == constants.CURVE:
             pass
         elif primitive_type == constants.BEZIER:
-            pass
+            points = []
+            for i, v in enumerate(vertices):
+                if i < len(vertices) - 3 and i % 3 == 0:
+                    points += self._discretize_bezier(
+                        v, vertices[i + 1], vertices[i + 2], vertices[i + 3],
+                        v.color
+                    )
+            ps = [points]
 
         # edges
         edges_list = []
@@ -300,8 +311,9 @@ class Renderer(object):
             fill_pixels = []
             stroke_pixels = []
 
-            # draw a line or point
-            if len(edges) == 1:
+            if len(edges) == 0:
+                fragments.append([])
+            elif len(edges) == 1:
                 e = edges[0]
                 if len(e) == 1:
                     stroke_pixels += self._rasterize_point(
@@ -508,8 +520,28 @@ class Renderer(object):
     def _discretize_curve(self):
         pass
 
-    def _discretize_bezier(self):
-        pass
+    def _discretize_bezier(self, p0, p1, p2, p3, color):
+        t = 0
+        d1 = dist(p0.x, p0.y, p1.x, p1.y)
+        d2 = dist(p1.x, p1.y, p2.x, p2.y)
+        d3 = dist(p2.x, p2.y, p3.x, p3.y)
+        cnt = int((d1 + d2 + d3) / 3)
+        points = []
+        pre_x = None
+        pre_y = None
+        while t <= 1:
+            a = (1 - t) ** 3
+            b = 3 * t * (1 - t) ** 2
+            c = 3 * t ** 2 * (1 - t)
+            d = t ** 3
+            x = round(a * p0.x + b * p1.x + c * p2.x + d * p3.x)
+            y = round(a * p0.y + b * p1.y + c * p2.y + d * p3.y)
+            if pre_x != x or pre_y != y:
+                points.append(Point(x, y, color=color))
+            pre_x = x
+            pre_y = y
+            t += 1 / cnt
+        return points
 
     def _vertices_to_edges(self, vertices):
         if len(vertices) == 0:

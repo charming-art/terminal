@@ -93,7 +93,7 @@ Try it one an online editor.
 
 - [x] begin_contour()
 - [x] begin_shape()
-- [ ] bezier_vertex()
+- [x] bezier_vertex()
 - [ ] curve_vertex()
 - [x] end_contour()
 - [x] end_shape()
@@ -103,9 +103,9 @@ Try it one an online editor.
 
 #### Curves
 
-- [ ] bezier()
-- [ ] bezier_point()
-- [ ] bezier_tangent()
+- [x] bezier()
+- [x] bezier_point()
+- [x] bezier_tangent()
 - [ ] curve()
 - [ ] curve_point()
 - [ ] curve_tangent()

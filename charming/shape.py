@@ -61,7 +61,7 @@ def arc(a, b, c, d, start, stop, mode=constants.OPEN):
     points = [Point(x1, y1), Point(x2, y2), Point(x3, y3), Point(x4, y4)]
     options = {
         'start': start,
-        'stop': stop, 
+        'stop': stop,
         'mode': mode
     }
     return CShape(points=points, options=options, primitive_type=constants.ARC)
@@ -132,6 +132,10 @@ def begin_shape(primitive_type=constants.POLYGON):
 def end_shape(close_mode=constants.OPEN):
     global _current_shape
     _current_shape.close_mode = close_mode
+    if is_bezier:
+        _current_shape.primitive_type = constants.BEZIER
+    elif is_curve:
+        _current_shape.primitive_type = constants.CURVE
     return _current_shape
 
 
@@ -187,9 +191,13 @@ def curve_tightness(v):
     pass
 
 
-def bezier_vertex():
+def bezier_vertex(x2, y2, x3, y3, x4, y4):
     global is_bezier
     is_bezier = True
+    global _current_shape
+    _current_shape.points.append(Point(x2, y2, type="bezier"))
+    _current_shape.points.append(Point(x3, y3, type="bezier"))
+    _current_shape.points.append(Point(x4, y4, type="bezier"))
 
 
 #### curves #####
@@ -207,16 +215,27 @@ def curve_tangent():
     pass
 
 
-def bezier():
-    pass
+def bezier(x1, y1, x2, y2, x3, y3, x4, y4):
+    begin_shape()
+    vertex(x1, y1)
+    bezier_vertex(x2, y2, x3, y3, x4, y4)
+    end_shape()
 
 
-def bezier_point():
-    pass
+def bezier_point(n1, n2, n3, n4, t):
+    a = (1 - t) ** 3
+    b = 3 * t * (1 - t) ** 2
+    c = 3 * t ** 2 * (1 - t)
+    d = t ** 3
+    return a * n1 + b * n2 + c * n3 + d * n4
 
 
-def bezier_tangent():
-    pass
+def bezier_tangent(n1, n2, n3, n4, t):
+    a = -3 * (1 - t) ** 2
+    b = 3 * (1 - t) ** 2 - 6 * t * (1 - t)
+    c = 6 * t * (1 - t) - 3 * t ** 2
+    d = 3 * t ** 2
+    return a * n1 + b * n2 + c * n3 + d * n4
 
 
 #### attributes ####
