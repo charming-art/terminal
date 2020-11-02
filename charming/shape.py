@@ -11,6 +11,7 @@ _current_shape = None
 is_curve = False
 is_bezier = False
 is_contour = False
+_curve_tightness = 0
 
 
 def _add_on_return(foo):
@@ -136,6 +137,7 @@ def end_shape(close_mode=constants.OPEN):
         _current_shape.primitive_type = constants.BEZIER
     elif is_curve:
         _current_shape.primitive_type = constants.CURVE
+        _current_shape.options['curve_tightness'] = _curve_tightness
     return _current_shape
 
 
@@ -161,7 +163,8 @@ def end_contour():
     last_point = contour_points[-1]
     if first_point.x != last_point.x or first_point.y != last_point.y:
         _current_shape.points.append(
-            Point(first_point.x, first_point.y, type="contour"))
+            Point(first_point.x, first_point.y, type="contour")
+        )
 
 
 @contextmanager
@@ -188,7 +191,8 @@ def curve_vertex(x, y):
 
 
 def curve_tightness(v):
-    pass
+    global _curve_tightness
+    _curve_tightness = v
 
 
 def bezier_vertex(x2, y2, x3, y3, x4, y4):
@@ -203,16 +207,39 @@ def bezier_vertex(x2, y2, x3, y3, x4, y4):
 #### curves #####
 
 
-def curve():
-    pass
+def curve(x1, y1, x2, y2, x3, y3, x4, y4):
+    begin_shape()
+    curve_vertex(x1, y1)
+    curve_vertex(x2, y2)
+    curve_vertex(x3, y3)
+    curve_vertex(x4, y4)
+    end_shape()
 
 
-def curve_point():
-    pass
+def curve_point(n1, n2, n3, n4, t):
+    s = 1 - _curve_tightness
+    t3 = t ** 3
+    t2 = t ** 2
+    t1 = t
+    t0 = 1
+    a = -s * t3 + 2 * s * t2 - s * t1
+    b = (2 - s) * t3 + (s - 3) * t2 + 1 * t0
+    c = (s - 2) * t3 + (3 - 2 * s) * t2 + s * t1
+    d = s * t3 - s * t2
+    return a * n1 + b * n2 + c * n3 + d * n4
 
 
-def curve_tangent():
-    pass
+def curve_tangent(n1, n2, n3, n4, t):
+    s = 1 - _curve_tightness
+    t3 = 3 * t ** 2
+    t2 = 2 * t
+    t1 = 1
+    t0 = 0
+    a = -s * t3 + 2 * s * t2 - s * t1
+    b = (2 - s) * t3 + (s - 3) * t2 + 1 * t0
+    c = (s - 2) * t3 + (3 - 2 * s) * t2 + s * t1
+    d = s * t3 - s * t2
+    return a * n1 + b * n2 + c * n3 + d * n4
 
 
 def bezier(x1, y1, x2, y2, x3, y3, x4, y4):

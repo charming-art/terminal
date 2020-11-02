@@ -282,7 +282,16 @@ class Renderer(object):
             )
             ps = [points]
         elif primitive_type == constants.CURVE:
-            pass
+            points = []
+            curve_tightness = options['curve_tightness']
+            for i, v in enumerate(vertices):
+                if i < len(vertices) - 3:
+                    points += self._discretize_curve(
+                        v, vertices[i + 1], vertices[i + 2], vertices[i + 3],
+                        v.color,
+                        curve_tightness
+                    )
+            ps = [points]
         elif primitive_type == constants.BEZIER:
             points = []
             for i, v in enumerate(vertices):
@@ -296,8 +305,13 @@ class Renderer(object):
         # edges
         edges_list = []
         for vertices in ps:
-            normal_vertices = [v for v in vertices if v.type == "normal"]
-            contour_vertices = [v for v in vertices if v.type == "contour"]
+            unique_vertices = [v for i, v in enumerate(vertices)
+                               if i == 0 or
+                               (v.x != vertices[i - 1].x or
+                                v.y != vertices[i - 1].y)
+                               ]
+            normal_vertices = [v for v in unique_vertices if v.type == "normal"]
+            contour_vertices = [v for v in unique_vertices if v.type == "contour"]
             normal_edges = self._vertices_to_edges(normal_vertices)
             contour_edges = self._vertices_to_edges(contour_vertices)
             edges_list.append(normal_edges + contour_edges)
@@ -394,7 +408,7 @@ class Renderer(object):
                 return y > v1.y and y <= v2.y
 
         for y in range(ymin, ymax + 1):
-
+            # calc the intersections
             intersections = []
             for i, e in enumerate(polygon):
                 if has_intersect(e, y):
@@ -404,11 +418,13 @@ class Renderer(object):
                     else:
                         x = round(map(y, v1.y, v2.y, v1.x, v2.x))
 
+                    # pay more attention if is a joint point
                     ne = polygon[i + 1] if i < len(polygon) - 1 else polygon[0]
                     v3 = ne[1]
                     y_diff = (v1.y - y) * (v3.y - y)
                     is_left = to_left(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y)
-                    if x == v2.x and (y_diff > 0 or (y_diff == 0 and is_left)):
+                    is_joint = x == v2.x and y == v2.y
+                    if is_joint and (y_diff > 0 or (y_diff == 0 and is_left)):
                         intersections += [x, x]
                     else:
                         intersections += [x]
@@ -517,8 +533,31 @@ class Renderer(object):
 
         return points
 
-    def _discretize_curve(self):
-        pass
+    def _discretize_curve(self, p0, p1, p2, p3, color, s):
+        t = 0
+        d = dist(p1.x, p1.y, p2.x, p2.y)
+        cnt = int(d / 2)
+        points = []
+        pre_x = None
+        pre_y = None
+        s = 1 - s
+        while t <= 1:
+            t3 = t ** 3
+            t2 = t ** 2
+            t1 = t
+            t0 = 1
+            a = -s * t3 + 2 * s * t2 - s * t1
+            b = (2 - s) * t3 + (s - 3) * t2 + 1 * t0
+            c = (s - 2) * t3 + (3 - 2 * s) * t2 + s * t1
+            d = s * t3 - s * t2
+            x = round(a * p0.x + b * p1.x + c * p2.x + d * p3.x)
+            y = round(a * p0.y + b * p1.y + c * p2.y + d * p3.y)
+            if pre_x != x or pre_y != y:
+                points.append(Point(x, y, color=color))
+            pre_x = x
+            pre_y = y
+            t += 1 / cnt
+        return points
 
     def _discretize_bezier(self, p0, p1, p2, p3, color):
         t = 0
