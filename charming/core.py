@@ -496,12 +496,11 @@ class Renderer(object):
             return [Point(x0, y0, color)]
 
         points = []
-
         pre_x = a
         pre_y = 0
         pre_angle = 0
         angle = start
-        cs = (2 * math.pi * b + 4 * (a-b)) * (stop - start) / (math.pi * 2)
+        cs = (2 * math.pi * b + 4 * (a - b)) * (stop - start) / (math.pi * 2)
         cnt = max(10, int(cs / 20) * 10)
         step = (stop - start) / cnt
 
@@ -541,7 +540,7 @@ class Renderer(object):
         pre_x = None
         pre_y = None
         s = 1 - s
-        while t <= 1:
+        while t < 1 or math.isclose(t, 1, abs_tol=1e-9):
             t3 = t ** 3
             t2 = t ** 2
             t1 = t
@@ -568,7 +567,7 @@ class Renderer(object):
         points = []
         pre_x = None
         pre_y = None
-        while t <= 1:
+        while t < 1 or math.isclose(t, 1, abs_tol=1e-9):
             a = (1 - t) ** 3
             b = 3 * t * (1 - t) ** 2
             c = 3 * t ** 2 * (1 - t)

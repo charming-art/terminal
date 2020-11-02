@@ -29,8 +29,8 @@ def draw():
         # app.arc(0, 0, 20, 10, start_angle, end_angle, app.PIE)
         # app.stroke('-')
         # app.arc(0, 0, 10, 20, start_angle, end_angle)
-        app.ellipse(0, 0, 10, 6)
-        # app.circle(0, 0, 10)
+        # app.ellipse(0, 0, 2, 2)
+        app.circle(0, 0, 4)
 
     app.no_loop()
 
