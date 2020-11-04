@@ -2,6 +2,8 @@ import time
 import logging
 import sys
 import math
+import colorsys
+import bisect
 from abc import ABCMeta, abstractclassmethod
 from . import constants
 from .cmath import map
@@ -17,9 +19,10 @@ logger = logging.getLogger(__name__)
 
 class Sketch(object):
 
-    def __init__(self, renderer, context):
+    def __init__(self, renderer, context, image_loader):
         self.renderer = renderer
         self.context = context
+        self.image_loader = image_loader
 
         self.frame_rate = 30
         self.is_loop = True
@@ -128,16 +131,20 @@ class Renderer(object):
 
     def __init__(self):
         self.frame_buffer = []
+        self.tmp_frame_buffer = []
         self.shape_queue = []
 
         # styles
         self.fill_color = Color(' ')
         self.stroke_color = Color('*')
+        self.tint_color = Color('·')
         self.stroke_weight = 0
         self.is_stroke_enabled = True
         self.is_fill_enabled = True
+        self.is_tint_enabled = False
         self.rect_mode = constants.CORNER
         self.ellipse_mode = constants.CENTER
+        self.image_mode = constants.CORNER
         self.text_align_x = constants.LEFT
         self.text_align_y = constants.TOP
         self.text_size = 1
@@ -163,11 +170,14 @@ class Renderer(object):
         if shape.is_auto:
             shape.fill_color = self.fill_color
             shape.stroke_color = self.stroke_color
+            shape.tint_color = self.tint_color
             shape.stroke_weight = self.stroke_weight
+            shape.is_tint_enabled = self.is_tint_enabled
             shape.is_fill_enabled = self.is_fill_enabled
             shape.is_stroke_enabled = self.is_stroke_enabled
             shape.transform_matrix_stack = [
-                m for m in self.transform_matrix_stack]
+                m for m in self.transform_matrix_stack
+            ]
         self.shape_queue.append(shape)
 
     def set_frame_buffer(self, color):
@@ -186,7 +196,8 @@ class Renderer(object):
             shape.points,
             shape.stroke_color,
             shape.stroke_weight,
-            shape.transform_matrix_stack)
+            shape.transform_matrix_stack,
+            shape.primitive_type)
 
         primitives = self._primitive_assembly(
             vertices,
@@ -197,14 +208,17 @@ class Renderer(object):
         fragments = self._rasterization(
             primitives,
             shape.fill_color,
+            shape.tint_color,
             shape.is_stroke_enabled,
-            shape.is_fill_enabled)
+            shape.is_fill_enabled,
+            shape.is_tint_enabled,
+            shape.primitive_type)
 
         fragments_clipped = self._clipping(fragments)
 
         self._fragment_processing(fragments_clipped)
 
-    def _vertex_processing(self, points, stroke_color, stroke_weight, transform_matrix_stack):
+    def _vertex_processing(self, points, stroke_color, stroke_weight, transform_matrix_stack, primitive_type):
         # transform
         tm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         sm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
@@ -230,9 +244,10 @@ class Renderer(object):
 
         # screen map && color
         for p in points:
-            p.color = stroke_color
-            p.x = round(p.x)
-            p.y = round(p.y)
+            if primitive_type != constants.IMAGE:
+                p.color = stroke_color
+            p.x = int(p.x)
+            p.y = int(p.y)
 
         return points
 
@@ -301,25 +316,45 @@ class Renderer(object):
                         v.color
                     )
             ps = [points]
+        elif primitive_type == constants.IMAGE:
+            w = options['width']
+            h = options['height']
+            ps = []
+            for j in range(0, h - 1):
+                for i in range(0, w - 1):
+                    i1 = j * w + i
+                    i2 = j * w + i + 1
+                    i3 = (j + 1) * w + i + 1
+                    i4 = (j + 1) * w + i
+                    ps.append([vertices[i1], vertices[i2],
+                               vertices[i3], vertices[i4]])
 
         # edges
         edges_list = []
         for vertices in ps:
             unique_vertices = [v for i, v in enumerate(vertices)
-                               if i == 0 or
-                               (v.x != vertices[i - 1].x or
-                                v.y != vertices[i - 1].y)
+                               if i == 0
+                               or (v.x != vertices[i - 1].x or v.y != vertices[i - 1].y)
                                ]
-            normal_vertices = [v for v in unique_vertices if v.type == "normal"]
-            contour_vertices = [v for v in unique_vertices if v.type == "contour"]
+            normal_vertices = [
+                v for v in unique_vertices
+                if v.type == "normal"
+            ]
+            contour_vertices = [
+                v for v in unique_vertices
+                if v.type == "contour"
+            ]
             normal_edges = self._vertices_to_edges(normal_vertices)
             contour_edges = self._vertices_to_edges(contour_vertices)
             edges_list.append(normal_edges + contour_edges)
 
         return edges_list
 
-    def _rasterization(self, primitives, fill_color, is_stroke_enabled, is_fill_enabled):
+    def _rasterization(self, primitives, fill_color, tint_color, is_stroke_enabled, is_fill_enabled, is_tint_enbaled, primitive_type):
         fragments = []
+        is_image = primitive_type == constants.IMAGE
+        if is_image:
+            is_stroke_enabled = False
 
         for edges in primitives:
             fill_pixels = []
@@ -330,13 +365,19 @@ class Renderer(object):
             elif len(edges) == 1:
                 e = edges[0]
                 if len(e) == 1:
-                    stroke_pixels += self._rasterize_point(
-                        e[0].x, e[0].y,
-                        e[0].color,
-                        e[0].weight_x, e[0].weight_y,
-                        e[0].rotation
-                    )
+                    # point
+                    if is_image or is_stroke_enabled:
+                        ch, fg, bg = e[0].color
+                        if is_tint_enbaled:
+                            ch, _, _ = tint_color
+                        stroke_pixels += self._rasterize_point(
+                            e[0].x, e[0].y,
+                            Color(ch, fg, bg),
+                            e[0].weight_x, e[0].weight_y,
+                            e[0].rotation
+                        )
                 else:
+                    # line
                     stroke_pixels += self._rasterize_line(e[0], e[1])
                 fragments.append(stroke_pixels)
             else:
@@ -352,8 +393,16 @@ class Renderer(object):
                     last_point = normal_edges[-1][1]
                     if last_point.x != first_point.x or last_point.y != first_point.y:
                         fill_edges.append((last_point, first_point))
+
+                    # filling
+                    if is_image:
+                        ch, fg, bg = first_point.color
+                        if is_tint_enbaled:
+                            ch, _, _ = tint_color
+                        fill_color = Color(ch, fg, bg)
                     fill_pixels += self._scan_line_filling(
-                        fill_edges, fill_color)
+                        fill_edges, fill_color
+                    )
 
                 # stroke the polygon
                 if is_stroke_enabled:
@@ -675,6 +724,266 @@ class Renderer(object):
 
 
 class Context(metaclass=ABCMeta):
+
+    color_palette = [
+        0x00, 0x00, 0x00,
+        0x80, 0x00, 0x00,
+        0x00, 0x80, 0x00,
+        0x80, 0x80, 0x00,
+        0x00, 0x00, 0x80,
+        0x80, 0x00, 0x80,
+        0x00, 0x80, 0x80,
+        0xc0, 0xc0, 0xc0,
+        0x80, 0x80, 0x80,
+        0xff, 0x00, 0x00,
+        0x00, 0xff, 0x00,
+        0xff, 0xff, 0x00,
+        0x00, 0x00, 0xff,
+        0xff, 0x00, 0xff,
+        0x00, 0xff, 0xff,
+        0xff, 0xff, 0xff,
+        0x00, 0x00, 0x00,
+        0x00, 0x00, 0x5f,
+        0x00, 0x00, 0x87,
+        0x00, 0x00, 0xaf,
+        0x00, 0x00, 0xd7,
+        0x00, 0x00, 0xff,
+        0x00, 0x5f, 0x00,
+        0x00, 0x5f, 0x5f,
+        0x00, 0x5f, 0x87,
+        0x00, 0x5f, 0xaf,
+        0x00, 0x5f, 0xd7,
+        0x00, 0x5f, 0xff,
+        0x00, 0x87, 0x00,
+        0x00, 0x87, 0x5f,
+        0x00, 0x87, 0x87,
+        0x00, 0x87, 0xaf,
+        0x00, 0x87, 0xd7,
+        0x00, 0x87, 0xff,
+        0x00, 0xaf, 0x00,
+        0x00, 0xaf, 0x5f,
+        0x00, 0xaf, 0x87,
+        0x00, 0xaf, 0xaf,
+        0x00, 0xaf, 0xd7,
+        0x00, 0xaf, 0xff,
+        0x00, 0xd7, 0x00,
+        0x00, 0xd7, 0x5f,
+        0x00, 0xd7, 0x87,
+        0x00, 0xd7, 0xaf,
+        0x00, 0xd7, 0xd7,
+        0x00, 0xd7, 0xff,
+        0x00, 0xff, 0x00,
+        0x00, 0xff, 0x5f,
+        0x00, 0xff, 0x87,
+        0x00, 0xff, 0xaf,
+        0x00, 0xff, 0xd7,
+        0x00, 0xff, 0xff,
+        0x5f, 0x00, 0x00,
+        0x5f, 0x00, 0x5f,
+        0x5f, 0x00, 0x87,
+        0x5f, 0x00, 0xaf,
+        0x5f, 0x00, 0xd7,
+        0x5f, 0x00, 0xff,
+        0x5f, 0x5f, 0x00,
+        0x5f, 0x5f, 0x5f,
+        0x5f, 0x5f, 0x87,
+        0x5f, 0x5f, 0xaf,
+        0x5f, 0x5f, 0xd7,
+        0x5f, 0x5f, 0xff,
+        0x5f, 0x87, 0x00,
+        0x5f, 0x87, 0x5f,
+        0x5f, 0x87, 0x87,
+        0x5f, 0x87, 0xaf,
+        0x5f, 0x87, 0xd7,
+        0x5f, 0x87, 0xff,
+        0x5f, 0xaf, 0x00,
+        0x5f, 0xaf, 0x5f,
+        0x5f, 0xaf, 0x87,
+        0x5f, 0xaf, 0xaf,
+        0x5f, 0xaf, 0xd7,
+        0x5f, 0xaf, 0xff,
+        0x5f, 0xd7, 0x00,
+        0x5f, 0xd7, 0x5f,
+        0x5f, 0xd7, 0x87,
+        0x5f, 0xd7, 0xaf,
+        0x5f, 0xd7, 0xd7,
+        0x5f, 0xd7, 0xff,
+        0x5f, 0xff, 0x00,
+        0x5f, 0xff, 0x5f,
+        0x5f, 0xff, 0x87,
+        0x5f, 0xff, 0xaf,
+        0x5f, 0xff, 0xd7,
+        0x5f, 0xff, 0xff,
+        0x87, 0x00, 0x00,
+        0x87, 0x00, 0x5f,
+        0x87, 0x00, 0x87,
+        0x87, 0x00, 0xaf,
+        0x87, 0x00, 0xd7,
+        0x87, 0x00, 0xff,
+        0x87, 0x5f, 0x00,
+        0x87, 0x5f, 0x5f,
+        0x87, 0x5f, 0x87,
+        0x87, 0x5f, 0xaf,
+        0x87, 0x5f, 0xd7,
+        0x87, 0x5f, 0xff,
+        0x87, 0x87, 0x00,
+        0x87, 0x87, 0x5f,
+        0x87, 0x87, 0x87,
+        0x87, 0x87, 0xaf,
+        0x87, 0x87, 0xd7,
+        0x87, 0x87, 0xff,
+        0x87, 0xaf, 0x00,
+        0x87, 0xaf, 0x5f,
+        0x87, 0xaf, 0x87,
+        0x87, 0xaf, 0xaf,
+        0x87, 0xaf, 0xd7,
+        0x87, 0xaf, 0xff,
+        0x87, 0xd7, 0x00,
+        0x87, 0xd7, 0x5f,
+        0x87, 0xd7, 0x87,
+        0x87, 0xd7, 0xaf,
+        0x87, 0xd7, 0xd7,
+        0x87, 0xd7, 0xff,
+        0x87, 0xff, 0x00,
+        0x87, 0xff, 0x5f,
+        0x87, 0xff, 0x87,
+        0x87, 0xff, 0xaf,
+        0x87, 0xff, 0xd7,
+        0x87, 0xff, 0xff,
+        0xaf, 0x00, 0x00,
+        0xaf, 0x00, 0x5f,
+        0xaf, 0x00, 0x87,
+        0xaf, 0x00, 0xaf,
+        0xaf, 0x00, 0xd7,
+        0xaf, 0x00, 0xff,
+        0xaf, 0x5f, 0x00,
+        0xaf, 0x5f, 0x5f,
+        0xaf, 0x5f, 0x87,
+        0xaf, 0x5f, 0xaf,
+        0xaf, 0x5f, 0xd7,
+        0xaf, 0x5f, 0xff,
+        0xaf, 0x87, 0x00,
+        0xaf, 0x87, 0x5f,
+        0xaf, 0x87, 0x87,
+        0xaf, 0x87, 0xaf,
+        0xaf, 0x87, 0xd7,
+        0xaf, 0x87, 0xff,
+        0xaf, 0xaf, 0x00,
+        0xaf, 0xaf, 0x5f,
+        0xaf, 0xaf, 0x87,
+        0xaf, 0xaf, 0xaf,
+        0xaf, 0xaf, 0xd7,
+        0xaf, 0xaf, 0xff,
+        0xaf, 0xd7, 0x00,
+        0xaf, 0xd7, 0x5f,
+        0xaf, 0xd7, 0x87,
+        0xaf, 0xd7, 0xaf,
+        0xaf, 0xd7, 0xd7,
+        0xaf, 0xd7, 0xff,
+        0xaf, 0xff, 0x00,
+        0xaf, 0xff, 0x5f,
+        0xaf, 0xff, 0x87,
+        0xaf, 0xff, 0xaf,
+        0xaf, 0xff, 0xd7,
+        0xaf, 0xff, 0xff,
+        0xd7, 0x00, 0x00,
+        0xd7, 0x00, 0x5f,
+        0xd7, 0x00, 0x87,
+        0xd7, 0x00, 0xaf,
+        0xd7, 0x00, 0xd7,
+        0xd7, 0x00, 0xff,
+        0xd7, 0x5f, 0x00,
+        0xd7, 0x5f, 0x5f,
+        0xd7, 0x5f, 0x87,
+        0xd7, 0x5f, 0xaf,
+        0xd7, 0x5f, 0xd7,
+        0xd7, 0x5f, 0xff,
+        0xd7, 0x87, 0x00,
+        0xd7, 0x87, 0x5f,
+        0xd7, 0x87, 0x87,
+        0xd7, 0x87, 0xaf,
+        0xd7, 0x87, 0xd7,
+        0xd7, 0x87, 0xff,
+        0xd7, 0xaf, 0x00,
+        0xd7, 0xaf, 0x5f,
+        0xd7, 0xaf, 0x87,
+        0xd7, 0xaf, 0xaf,
+        0xd7, 0xaf, 0xd7,
+        0xd7, 0xaf, 0xff,
+        0xd7, 0xd7, 0x00,
+        0xd7, 0xd7, 0x5f,
+        0xd7, 0xd7, 0x87,
+        0xd7, 0xd7, 0xaf,
+        0xd7, 0xd7, 0xd7,
+        0xd7, 0xd7, 0xff,
+        0xd7, 0xff, 0x00,
+        0xd7, 0xff, 0x5f,
+        0xd7, 0xff, 0x87,
+        0xd7, 0xff, 0xaf,
+        0xd7, 0xff, 0xd7,
+        0xd7, 0xff, 0xff,
+        0xff, 0x00, 0x00,
+        0xff, 0x00, 0x5f,
+        0xff, 0x00, 0x87,
+        0xff, 0x00, 0xaf,
+        0xff, 0x00, 0xd7,
+        0xff, 0x00, 0xff,
+        0xff, 0x5f, 0x00,
+        0xff, 0x5f, 0x5f,
+        0xff, 0x5f, 0x87,
+        0xff, 0x5f, 0xaf,
+        0xff, 0x5f, 0xd7,
+        0xff, 0x5f, 0xff,
+        0xff, 0x87, 0x00,
+        0xff, 0x87, 0x5f,
+        0xff, 0x87, 0x87,
+        0xff, 0x87, 0xaf,
+        0xff, 0x87, 0xd7,
+        0xff, 0x87, 0xff,
+        0xff, 0xaf, 0x00,
+        0xff, 0xaf, 0x5f,
+        0xff, 0xaf, 0x87,
+        0xff, 0xaf, 0xaf,
+        0xff, 0xaf, 0xd7,
+        0xff, 0xaf, 0xff,
+        0xff, 0xd7, 0x00,
+        0xff, 0xd7, 0x5f,
+        0xff, 0xd7, 0x87,
+        0xff, 0xd7, 0xaf,
+        0xff, 0xd7, 0xd7,
+        0xff, 0xd7, 0xff,
+        0xff, 0xff, 0x00,
+        0xff, 0xff, 0x5f,
+        0xff, 0xff, 0x87,
+        0xff, 0xff, 0xaf,
+        0xff, 0xff, 0xd7,
+        0xff, 0xff, 0xff,
+        0x08, 0x08, 0x08,
+        0x12, 0x12, 0x12,
+        0x1c, 0x1c, 0x1c,
+        0x26, 0x26, 0x26,
+        0x30, 0x30, 0x30,
+        0x3a, 0x3a, 0x3a,
+        0x44, 0x44, 0x44,
+        0x4e, 0x4e, 0x4e,
+        0x58, 0x58, 0x58,
+        0x62, 0x62, 0x62,
+        0x6c, 0x6c, 0x6c,
+        0x76, 0x76, 0x76,
+        0x80, 0x80, 0x80,
+        0x8a, 0x8a, 0x8a,
+        0x94, 0x94, 0x94,
+        0x9e, 0x9e, 0x9e,
+        0xa8, 0xa8, 0xa8,
+        0xb2, 0xb2, 0xb2,
+        0xbc, 0xbc, 0xbc,
+        0xc6, 0xc6, 0xc6,
+        0xd0, 0xd0, 0xd0,
+        0xda, 0xda, 0xda,
+        0xe4, 0xe4, 0xe4,
+        0xee, 0xee, 0xee,
+    ]
+
     @ abstractclassmethod
     def open(self, size):
         """ open the drawing context"""
@@ -934,10 +1243,12 @@ class CShape(object):
         self.close_mode = close_mode
         self.fill_color = None
         self.stroke_color = None
+        self.tint_color = None
         self.stroke_weight = None
         self.transform_matrix_stack = []
         self.is_stroke_enabled = True
         self.is_fill_enabled = True
+        self.is_tint_enabled = False
 
     def __str__(self):
         attrs = {
@@ -957,7 +1268,7 @@ class CShape(object):
 
 class Point(object):
 
-    def __init__(self, x, y, color=1, weight_x=0, weight_y=0, rotation=0, type="normal"):
+    def __init__(self, x, y, color=None, weight_x=0, weight_y=0, rotation=0, type="normal"):
         self.x = x
         self.y = y
         self.weight_x = weight_x
@@ -965,14 +1276,12 @@ class Point(object):
         self.color = color
         self.type = type
         self.rotation = rotation
+        self.color = Color(' ') if color == None else color
 
     def __str__(self):
         attrs = {
             "x": self.x,
-            "y": self.y,
-            # "weight_x": self.weight_x,
-            # "weight_y": self.weight_y,
-            # "color": self.color
+            "y": self.y
         }
         return attrs.__str__()
 
@@ -1045,12 +1354,86 @@ class Color(object):
     __repr__ = __str__
 
 
+class ImageLoader(metaclass=ABCMeta):
+    def __init__(self):
+        pass
+
+    @abstractclassmethod
+    def load(self, src):
+        '''load image data'''
+        pass
+
+    def convert_color(self, data):
+        hue_palette = []
+        for i, c in enumerate(Context.color_palette):
+            if i < len(Context.color_palette) - 3 and i % 3 == 0:
+                r = c
+                g = Context.color_palette[i + 1]
+                b = Context.color_palette[i + 2]
+                h, _, _ = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
+                hue_palette.append((h, i // 3))
+        sorted_hue_palette = sorted(hue_palette, key=lambda x: x[0])
+        sorted_palette = [h[0] for h in sorted_hue_palette]
+        palette_len = len(sorted_palette)
+        pixels = []
+        for r, g, b, _ in data:
+            h, _, _ = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
+            index = bisect.bisect_left(sorted_palette, h)
+            index = max(min(index, palette_len - 1), 0)
+            _, hue_index = sorted_hue_palette[index]
+            pixels.append(Color('·', min(index + 1, 255), hue_index))
+        return pixels
+
+
+if sys.platform == "brython":
+    class BrowserImageLoader(ImageLoader):
+        def load(self, src):
+            pass
+
+else:
+    from PIL import Image
+
+    class PILImageLoader(ImageLoader):
+        def load(self, src):
+            image = Image.open(src)
+            w, h = image.size
+            data = image.getdata()
+            pixels = self.convert_color(data)
+            return CImage(pixels, w, h)
+
+
 class CImage(object):
-    pass
 
+    def __init__(self, pixels, width, height):
+        self._pixels = pixels
+        self.pixels = []
+        self.width = width
+        self.height = height
 
-class ImageLoader(object):
-    pass
+    def load_pixels(self):
+        self.pixels = [p for p in self._pixels]
+
+    def update_pixels(self):
+        self._pixels = [p for p in self.pixels]
+
+    def copy(self):
+        return self.__class__(self.pixels, self.width, self.height)
+
+    def __getitem__(self, index):
+        return self._pixels[index]
+
+    def __setitem__(self, key, value):
+        self._pixels[key] = value
+
+    def __repr__(self):
+        attrs = {
+            'pixels': self._pixels,
+            'width': self.width,
+            'height': self.height
+        }
+        return attrs.__repr__()
+
+    __str__ = __repr__
 
 
 class Event(object):

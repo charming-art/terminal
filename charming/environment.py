@@ -23,11 +23,11 @@ def get_window_height():
 
 
 def get_width():
-    return sketch.renderer.size[0]
+    return sketch.size[0]
 
 
 def get_height():
-    return sketch.renderer.size[1]
+    return sketch.size[1]
 
 
 def get_frame_rate():

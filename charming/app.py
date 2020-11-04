@@ -2,18 +2,21 @@ from sys import platform
 from .core import Sketch, Renderer
 
 
-def get_context_by_platform(platform):
+def get_components_by_platform(platform):
     if platform == "win32":
         from .core import WindowsContext
-        return WindowsContext()
+        from .core import PILImageLoader
+        return (WindowsContext(), PILImageLoader())
     elif platform == "brython":
         from .core import BrowserContext
-        return BrowserContext()
+        from .core import BrowserImageLoader
+        return (BrowserContext(), BrowserImageLoader())
     else:
         from .core import CursesContext
-        return CursesContext()
+        from .core import PILImageLoader
+        return (CursesContext(), PILImageLoader())
 
 
-context = get_context_by_platform(platform)
+context, image_loader = get_components_by_platform(platform)
 renderer = Renderer()
-sketch = Sketch(renderer, context)
+sketch = Sketch(renderer, context, image_loader)

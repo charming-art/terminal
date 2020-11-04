@@ -9,11 +9,11 @@ Charming(Character Terminal Art Programming) is a coss-platform python package f
 import charming as app
 
 @app.setup
-def foo():
+def setup():
     app.size(100, 100)
 
 @app.draw
-def foo():
+def draw():
     app.stroke('#')
     app.fill('@')
     app.rect(0, 0, 20, 20)
@@ -245,16 +245,18 @@ Try it one an online editor.
 
 ### Image
   
+- [x] CImage
+
 #### Loading & Displaying
 
-- [ ] image()
-- [ ] image_mode()
-- [ ] load_image()
-- [ ] no_tint()
-- [ ] tint()
+- [x] image()
+- [x] image_mode()
+- [x] load_image()
+- [x] no_tint()
+- [x] tint()
   
 #### Pixels
 
-- [ ] load_pixels()
-- [ ] get_pixels()
-- [ ] update_pixels()
+- [x] load_xixels()
+- [x] get_pixels()
+- [x] update_pixels()

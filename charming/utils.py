@@ -46,7 +46,6 @@ def to_left(x1, y1, x2, y2, px, py):
     v2 = [px - x1, py - y1]
     return v1[0] * v2[1] - v1[1] * v2[0] <= 0
 
-
 class Matrix(object):
 
     def __init__(self, matrix, type="normal", value=0):

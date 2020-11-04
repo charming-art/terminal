@@ -38,6 +38,8 @@ CONTOUR = 10
 
 BEZIER = 11
 
+IMAGE = 12
+
 # Close type
 
 OPEN = 0
