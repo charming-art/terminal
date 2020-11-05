@@ -10,6 +10,7 @@ def setup():
 x = 0
 @app.draw
 def draw():
+    # app.log('hello world')
     app.background(' ')
     global x
     x += 1
@@ -17,6 +18,6 @@ def draw():
     # app.circle(1, 1, 1)
     app.circle(x, 10, 4)
     # app.point(5, 5)
-    app.no_loop()
+    # app.no_loop()
 
 app.run()

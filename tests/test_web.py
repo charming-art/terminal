@@ -1,6 +1,24 @@
 import charming as app
 
-# app.full_terminal()
-# app.terminal_size(100, 100)
-app.rect(0, 0, 10, 10)
+x = 0
+
+
+@app.setup
+def setup():
+    # app.full_terminal()
+    app.terminal_size(800, 600)
+    # app.full_screen()
+    app.size(30, 28)
+
+
+@app.draw
+def draw():
+    # app.log('hello world')
+    # app.background(' ')
+    # global x
+    # x += 1
+    # app.rect(x, 0, 10, 10)
+    app.no_loop()
+
+
 app.run()

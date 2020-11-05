@@ -6,6 +6,7 @@ def frame_rate(frame_rate):
 
 
 def size(width, height):
+    sketch.is_full_screen = False
     sketch.size = (int(width), int(height))
 
 
@@ -22,8 +23,7 @@ def full_terminal(options=None):
 
 
 def full_screen():
-    size(sketch.context.window_width,
-         sketch.context.window_height)
+    sketch.is_full_screen = True
 
 
 def get_window_width():

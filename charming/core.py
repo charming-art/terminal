@@ -25,6 +25,7 @@ class Sketch(object):
         self.frame_rate = 30
         self.is_loop = True
         self.frame_count = 0
+        self.is_full_screen = False
         self.size = (10, 10)
         self.key = 0
         self.key_code = 0
@@ -56,7 +57,7 @@ class Sketch(object):
         try:
             is_static_mode = not self.has_draw_hook or not self.has_setup_hook
             if is_static_mode:
-                self.context.open(self.size)
+                self.size = self.context.open(self.size, self.is_full_screen)
                 self.renderer.setup(self.size)
                 self.renderer.render()
                 self.context.draw(self.renderer.frame_buffer,
@@ -77,7 +78,7 @@ class Sketch(object):
                 setup_hook = self.hooks_map['setup']
                 draw_hook = self.hooks_map['draw']
                 setup_hook()
-                self.context.open(self.size)
+                self.size = self.context.open(self.size, self.is_full_screen)
                 self.renderer.setup(self.size)
 
                 # main loop
@@ -194,7 +195,6 @@ class Renderer(object):
                              ]
 
     def _render_shape(self, shape):
-
         vertices = self._vertex_processing(
             shape.points,
             shape.stroke_color,
@@ -1016,12 +1016,16 @@ class Context(metaclass=ABCMeta):
         """ enable colors """
 
     @abstractclassmethod
-    def init(self, size):
+    def init(self):
         """ init the terminal """
 
     @abstractclassmethod
     def update_window(self):
         """ update the size of the window """
+
+    @abstractclassmethod
+    def refresh(self):
+        """ refresh the physical sceen """
 
     def __init__(self):
         self.window_width = 0
@@ -1030,6 +1034,8 @@ class Context(metaclass=ABCMeta):
         self.terminal_height = 0
         self.inner_width = 0
         self.inner_height = 0
+        self._content_width = 0
+        self._content_height = 0
         self._pad_width = 0
         self._pad_height = 0
         self._buffer = []
@@ -1038,11 +1044,20 @@ class Context(metaclass=ABCMeta):
         self._pad_y = 0
         self._screen = None
 
-    def open(self, size):
-        self.init(size)
-        self._pad_width = size[0] + 2
-        self._pad_height = size[1] + 2
+    def open(self, size, is_full_screen):
+        self.init()
+
+        if is_full_screen:
+            self._content_width = self.window_width
+            self._content_height = self.window_height
+        else:
+            self._content_width = size[0]
+            self._content_height = size[1]
+
+        self._pad_width = self._content_width + 2
+        self._pad_height = self._content_height + 2
         self._update_pad()
+        return (self._content_width, self._content_height)
 
     def draw(self, buffer, color_pair):
         self._buffer = buffer
@@ -1079,7 +1094,7 @@ class Context(metaclass=ABCMeta):
                     self.addch(_x, _y, ch, color_index)
 
         # update the physical sceen
-        self._screen.refresh()
+        self.refresh()
 
     def _get_border(self, x, y):
         lb = x == 0 and y == 0
@@ -1143,7 +1158,7 @@ class Context(metaclass=ABCMeta):
 if sys.platform == "win32":
     class WindowsContext(Context):
 
-        def init(self, size):
+        def init(self):
             print('hello windows context')
 
         def close(self):
@@ -1188,7 +1203,7 @@ elif sys.platform == "brython":
             self.inner_height = window.innerHeight
             self.options = None
 
-        def init(self, size):
+        def init(self):
             if self.options == None:
                 self.options = {}
             self._screen = Terminal.new(self.options)
@@ -1196,7 +1211,7 @@ elif sys.platform == "brython":
             # set the css styles of container
             container = doc.getElementById("terminal")
             self._styles(container, {
-                'background': 'black',
+                # 'background': 'black',
                 'width': self.terminal_width,
                 'height': self.terminal_height,
                 'display': 'flex',
@@ -1209,19 +1224,28 @@ elif sys.platform == "brython":
             self._screen.open(container)
             fit_addon.fit()
 
-            self._window_height = self._screen.cols
-            self._window_width = self._screen.rows
+            # self._screen.write(
+            #     "Hello world \x1B[32mxterm.js  $ \x1b[10;10;H hello")
 
-        def add_ch(self, x, y, color, color_index=None):
+            self.window_height = self._screen.rows
+            self.window_width = self._screen.cols
+
+            # logger
+
+        def addch(self, x, y, ch, color_index=None):
             pass
+            # self._screen.write(f'\x1b[{y};{x};H{ch}')
 
         def close(self):
             self._screen.clear()
 
         def no_cursor(self):
-            pass
+            self._screen.write('\x1b[?25l')
 
         def cursor(self):
+            self._screen.write('\x1b[?25h')
+
+        def enable_colors(self):
             pass
 
         def get_events(self):
@@ -1231,6 +1255,9 @@ elif sys.platform == "brython":
             self._screen.clear()
 
         def update_window(self):
+            pass
+
+        def refresh(self):
             pass
 
         def _styles(self, dom, styles):
@@ -1261,7 +1288,7 @@ else:
             curses.mousemask(curses.ALL_MOUSE_EVENTS |
                              curses.REPORT_MOUSE_POSITION)
 
-        def init(self, size):
+        def init(self):
             pass
 
         def close(self):
@@ -1309,6 +1336,9 @@ else:
 
         def clear(self):
             self._screen.clear()
+
+        def refresh(self):
+            self._screen.refresh()
 
         def enable_colors(self):
             for i, c in enumerate(self._color_pair):

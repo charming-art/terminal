@@ -75,10 +75,10 @@ if sys.platform == "brython":
 
     class BrowserTimer(Timer):
         def run(self, ms, callback):
-            self.t = timer.clear_timeout(callback, ms)
+            self.t = timer.set_interval(callback, ms)
 
         def stop(self):
-            timer.clear(self.t)
+            timer.clear_interval(self.t)
 
     class BrowserLogger(Logger):
 
