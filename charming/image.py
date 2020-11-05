@@ -7,7 +7,6 @@ from . import constants
 from .cmath import map
 from .common import get_bounding_rect_by_mode
 from .common import add_on_return
-import logging
 
 
 #### Loading & Displaying

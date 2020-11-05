@@ -1,5 +1,4 @@
 import string
-import logging
 from . import constants
 from .core import Color
 from .app import renderer

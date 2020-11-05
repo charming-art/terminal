@@ -9,6 +9,18 @@ def size(width, height):
     sketch.size = (int(width), int(height))
 
 
+def terminal_size(width, height, options=None):
+    sketch.context.terminal_width = width
+    sketch.context.terminal_height = height
+    sketch.context.options = options
+
+
+def full_terminal(options=None):
+    terminal_size(sketch.context.inner_width,
+                  sketch.context.inner_height,
+                  options)
+
+
 def full_screen():
     size(sketch.context.window_width,
          sketch.context.window_height)

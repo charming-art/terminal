@@ -173,13 +173,15 @@ Try it one an online editor.
 - [x] get_window_width(): the cols of the termianl
 - [x] get_window_height(): the lines of the terminal
 - [x] frame_rate()
-- [x] full_screen
+- [x] full_screen()
 - [x] get_frame_count()
 - [x] get_frame_rate()
 - [x] no_cursor()
 - [x] get_height()
 - [x] size()
 - [x] get_width()
+- [ ] terminal_size()
+- [ ] full_terminal()
 
 ### Constants
 

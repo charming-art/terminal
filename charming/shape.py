@@ -1,4 +1,3 @@
-import logging
 from contextlib import contextmanager
 from . import constants
 from .app import renderer

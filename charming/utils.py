@@ -1,4 +1,6 @@
 import math
+import sys
+from abc import ABCMeta, abstractclassmethod
 
 widths = [
     (126,    1), (159,    0), (687,     1), (710,   0), (711,   1),
@@ -45,6 +47,73 @@ def to_left(x1, y1, x2, y2, px, py):
     v1 = [x2 - x1, y2 - y1]
     v2 = [px - x1, py - y1]
     return v1[0] * v2[1] - v1[1] * v2[0] <= 0
+
+
+class Logger(metaclass=ABCMeta):
+
+    @abstractclassmethod
+    def log(self, *kw, **args):
+        pass
+
+    @abstractclassmethod
+    def debug(self, *kw, **args):
+        pass
+
+
+class Timer(metaclass=ABCMeta):
+    @abstractclassmethod
+    def run(ms, callback):
+        pass
+
+    @abstractclassmethod
+    def stop(ms, callback):
+        pass
+
+
+if sys.platform == "brython":
+    from browser import timer  # pylint: disable=imports
+
+    class BrowserTimer(Timer):
+        def run(self, ms, callback):
+            self.t = timer.clear_timeout(callback, ms)
+
+        def stop(self):
+            timer.clear(self.t)
+
+    class BrowserLogger(Logger):
+
+        def log(self, *args, **kw):
+            print(*args, **kw)
+
+        def debug(self, *args, **kw):
+            print(*args, **kw)
+
+    logger = BrowserLogger()
+else:
+    import time
+    import logging
+    logging.basicConfig(filename='charming.log', level=logging.DEBUG)
+
+    class LocalTimer(Timer):
+
+        def run(self, ms, callback):
+            while True:
+                callback()
+                time.sleep(ms / 1000)
+
+        def stop(self):
+            pass
+
+    class LocalLogger(Logger):
+
+        def debug(self, *args, **kw):
+            logging.debug(*args, **kw)
+
+        def log(self, *args, **kw):
+            logging.log(*args, **kw)
+
+    logger = LocalLogger()
+
 
 class Matrix(object):
 

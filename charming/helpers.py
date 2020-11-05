@@ -1,11 +1,9 @@
-import logging
+import sys
 from .app import sketch
-
-logger = logging.getLogger(__name__)
-
+from .utils import logger
 
 def log(msg):
-    logger.debug(msg)
+    logger.log(msg)
 
 
 def begin_log_frame_buffer():

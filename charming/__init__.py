@@ -62,6 +62,8 @@ from .environment import get_frame_rate
 from .environment import no_cursor
 from .environment import cursor
 from .environment import window_resized
+from .environment import full_terminal
+from .environment import terminal_size
 
 from .event import get_mouse_x
 from .event import get_mouse_y
