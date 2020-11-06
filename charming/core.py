@@ -140,7 +140,8 @@ class Renderer(object):
         self.shape_queue = []
 
         # styles
-        self.fill_color = Color(' ', constants.BLACK) # set fg color to solve unicode problem
+        # set fg color to solve unicode problem
+        self.fill_color = Color(' ', constants.BLACK)
         self.stroke_color = Color('*')
         self.tint_color = Color('·')
         self.stroke_weight = 0
@@ -1009,7 +1010,7 @@ class Context(metaclass=ABCMeta):
         """ clear the screen when called background() """
 
     @abstractclassmethod
-    def addch(self, x, y, ch, color=None):
+    def addch(self, x, y, ch, fg=None, bg=None):
         """ add ch to screen """
 
     @abstractclassmethod
@@ -1040,6 +1041,7 @@ class Context(metaclass=ABCMeta):
         self._pad_width = 0
         self._pad_height = 0
         self._buffer = []
+        self._cell_poss = []
         self._color_pair = []
         self._pad_x = 0
         self._pad_y = 0
@@ -1064,7 +1066,7 @@ class Context(metaclass=ABCMeta):
         self._buffer = buffer
         self._color_pair = color_pair
         self.enable_colors()
-        wider_chars = self._count_wider_chars()
+        self._count_cell_width()
 
         for y in range(self._pad_height):
             for x in range(self._pad_width):
@@ -1078,7 +1080,7 @@ class Context(metaclass=ABCMeta):
                 if border_ch:
                     r = x == self._pad_width - 1 and y > 0 and y < self._pad_height - 1
                     if r:
-                        cnt = wider_chars[y - 1]
+                        cnt = self._cell_poss[y - 1]['cnt']
                         self.addch(_x - cnt, _y, border_ch)
                     else:
                         self.addch(_x, _y, border_ch)
@@ -1089,10 +1091,9 @@ class Context(metaclass=ABCMeta):
                         continue
                     ch, fg, bg = color
                     ch = ch[0] if isinstance(ch, tuple) else ch
-                    color_index = self._get_color(fg, bg)
 
                     # It is strange that can't draw at (self.window_height - 1, self.window_width - 1)
-                    self.addch(_x, _y, ch, color_index)
+                    self.addch(_x, _y, ch, fg, bg)
 
         # update the physical sceen
         self.refresh()
@@ -1118,36 +1119,37 @@ class Context(metaclass=ABCMeta):
 
         return None
 
-    def _count_wider_chars(self):
-        wider_chars = []
+    def _count_cell_width(self):
+        self._cell_poss.clear()
         width = self._pad_width - 2
         height = self._pad_height - 2
 
         for i in range(height):
-            wider_cnt = 0
+            cnt = 0
+            poss = [0, 1]
             for j in range(width):
                 index = j + i * width
                 color = self._buffer[index]
+
                 if not color:
+                    poss.append(-1)
                     continue
+
                 ch, _, _ = color
                 ch_width = get_char_width(ch)
-                if ch_width == 2:
-                    wider_cnt += 1
-            wider_chars.append(wider_cnt)
+                poss.append(ch_width + poss[-1])
 
-        return wider_chars
+                if ch_width == 2:
+                    cnt += 1
+                
+            self._cell_poss.append({
+                "cnt": cnt,
+                "list": poss
+            })
 
     def _update_pad(self):
         self._pad_x = (self.window_width - self._pad_width) // 2
         self._pad_y = (self.window_height - self._pad_height) // 2
-
-    def _get_color(self, fg, bg):
-        for i, color in enumerate(self._color_pair):
-            c, _ = color
-            if fg == c.fg and bg == c.bg:
-                return i + 1
-        return 0
 
     def _resize(self):
         self.update_window()
@@ -1158,6 +1160,8 @@ class Context(metaclass=ABCMeta):
 
 if sys.platform == WINDOWS:
     class WindowsContext(Context):
+        def __init__(self):
+            super(WindowsContext, self).__init__()
 
         def init(self):
             print('hello windows context')
@@ -1201,6 +1205,7 @@ elif sys.platform == BROWSER:
     class BrowserContext(Context):
 
         def __init__(self):
+            super(BrowserContext, self).__init__()
             self.terminal_width = 720
             self.terminal_height = 408
             self.inner_width = window.innerWidth
@@ -1234,8 +1239,27 @@ elif sys.platform == BROWSER:
             self.window_height = self._screen.rows
             self.window_width = self._screen.cols
 
-        def addch(self, x, y, ch, color_index=None):
-            self._write_content += f'\x1b[{y + 1};{x + 1};H{ch}'
+        def addch(self, x, y, ch, fg=None, bg=None):
+            _x = x - self._pad_x
+            _y = y - self._pad_y
+
+            if _y > 0 and _y < self._pad_height - 1:
+                 x = self._cell_poss[_y - 1]['list'][_x] + self._pad_x
+
+            if fg == None:
+                fg = 7
+            if bg == None:
+                bg = 0
+
+            csi_fg = f'\x1b[38;5;{fg}m'
+            csi_bg = f'\x1b[48;5;{bg}m'
+            csi_pos = f'\x1b[{y + 1};{x};H'
+            self._write_content += f'{csi_pos}{csi_fg}{csi_bg}{ch}'
+
+            if get_char_width(ch) == 2:
+                csi_pos = f'\x1b[{y + 1};{x + 1};H'
+                ch = " "
+                self._write_content += f'{csi_pos}{csi_fg}{csi_bg}{ch}'
 
         def close(self):
             self._screen.clear()
@@ -1275,6 +1299,7 @@ else:
     class CursesContext(Context):
 
         def __init__(self):
+            super(CursesContext, self).__init__()
             self._screen = curses.initscr()
             self.window_width = self._screen.getmaxyx()[1]
             self.window_height = self._screen.getmaxyx()[0]
@@ -1327,14 +1352,18 @@ else:
                 key = self._screen.getch()
             return event_queue
 
-        def addch(self, x, y, ch, color_index=None):
-            if color_index == None:
+        def addch(self, x, y, ch, fg=None, bg=None):
+            if fg != None and bg != None:
+                for i, color in enumerate(self._color_pair):
+                    c, _ = color
+                    if fg == c.fg and bg == c.bg:
+                        color_index = i + 1
                 self._screen.addstr(
-                    y, x, ch
+                    y, x, ch, curses.color_pair(color_index)
                 )
             else:
                 self._screen.addstr(
-                    y, x, ch, curses.color_pair(color_index)
+                    y, x, ch
                 )
 
         def clear(self):

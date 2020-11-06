@@ -48,4 +48,3 @@ def fg(color):
 
 def bg(color):
     return color.bg
-    
