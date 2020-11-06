@@ -49,6 +49,35 @@ def to_left(x1, y1, x2, y2, px, py):
     return v1[0] * v2[1] - v1[1] * v2[0] <= 0
 
 
+def map(value, start1, stop1, start2, stop2):
+    '''
+    Re-maps a number from one range to another.
+
+    Example:
+
+        >>> map(1.5, 1, 2, 10, 20)
+        15.0
+    '''
+    if start1 == stop1:
+        return stop2
+    t = (value - start1) / (stop1 - start1)
+    return start2 * (1 - t) + stop2 * t
+
+def dist(x1, y1, x2, y2):
+    '''
+    Calculates the distance between two points.
+
+    Example:
+
+        >>> dist(0, 0, 1, 0)
+        1.0
+        >>> dist(-1, -1, 2, 3)
+        5.0
+    '''
+    p = [x1, y1]
+    q = [x2, y2]
+    return math.sqrt(sum((px - qx) ** 2 for px, qx in zip(p, q)))
+
 class Matrix(object):
 
     def __init__(self, matrix, type="normal", value=0):

@@ -5,8 +5,8 @@ import colorsys
 import bisect
 from abc import ABCMeta, abstractclassmethod
 from . import constants
-from .cmath import map
-from .cmath import dist
+from .utils import map
+from .utils import dist
 from .utils import Matrix
 from .utils import angle_between
 from .utils import get_char_width

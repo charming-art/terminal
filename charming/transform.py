@@ -1,8 +1,8 @@
 import functools
+from math import sin
+from math import cos
+from math import tan
 from .app import renderer
-from .cmath import sin
-from .cmath import cos
-from .cmath import tan
 from .utils import Matrix
 
 

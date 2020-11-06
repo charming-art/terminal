@@ -1,5 +1,7 @@
 import math
 import random as rd
+from .utils import map as utils_map
+from .utils import dist as utils_dist
 
 ##### Calculation #####
 
@@ -70,9 +72,7 @@ def dist(x1, y1, x2, y2):
         >>> dist(-1, -1, 2, 3)
         5.0
     '''
-    p = [x1, y1]
-    q = [x2, y2]
-    return math.sqrt(sum((px - qx) ** 2 for px, qx in zip(p, q)))
+    return utils_dist(x1, y1, x2, y2)
 
 
 def exp(n):
@@ -156,10 +156,7 @@ def map(value, start1, stop1, start2, stop2):
         >>> map(1.5, 1, 2, 10, 20)
         15.0
     '''
-    if start1 == stop1:
-        return stop2
-    t = (value - start1) / (stop1 - start1)
-    return start2 * (1 - t) + stop2 * t
+    return utils_map(value, start1, stop1, start2, stop2)
 
 
 def max(*args, **kw):
