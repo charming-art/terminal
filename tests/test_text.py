@@ -25,6 +25,7 @@ def draw():
     app.background(' ')
     # app.log(text_width)
     # app.scale(2)
+    app.stroke(" ", app.RED, app.YELLOW)
     app.text_size(3)
     app.text_leading(2)
     # app.translate(0, app.get_height() / 2)

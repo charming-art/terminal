@@ -26,7 +26,7 @@ def text(text, x, y):
         y -= height / 2
 
     with open_context():
-        _, fg, bg = renderer.fill_color
+        _, fg, bg = renderer.stroke_color
         no_fill()
         for i, chars in enumerate(matrix):
             for j, ch in enumerate(chars):

@@ -6,7 +6,7 @@ def setup():
     # app.full_screen()
     app.size(50, 20)
     # app.size()
-    app.begin_log_frame_buffer()
+    # app.begin_log_frame_buffer()
     # app.background('*')
 
     # app.frame_rate(1)
@@ -21,12 +21,14 @@ x = 0
 def draw():
     global x
     x += 0.5
-    app.background(" ")
+    # app.background(" ")
     # color = app.color(('🧚‍♀️')) # not display
     # color = app.color(('⏰', 2))  # wrong display
-    # color = app.color('爱', app.YELLOW, app.BLUE)
+    color = app.color('爱', app.YELLOW, app.BLUE)
     color = app.color('🌈')
     # color = app.color('@')
+    # color = app.color('d')
+    app.fill('*')
     app.stroke(color)
     # app.fill('+')
     # app.fill(' ', app.WHITE)
@@ -55,7 +57,7 @@ def draw():
     app.vertex(x + size * 2, y)
     app.vertex(x, y + size * 2)
     app.end_shape(app.CLOSE)
-    # app.no_loop()
+    app.no_loop()
 
 
 app.run()

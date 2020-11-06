@@ -6,9 +6,10 @@ x = 0
 @app.setup
 def setup():
     # app.full_terminal()
-    app.terminal_size(800, 600)
+    # app.terminal_size(800, 600)
     # app.full_screen()
-    app.size(30, 28)
+    app.size(25, 20)
+    app.no_cursor()
 
 
 @app.draw
@@ -17,7 +18,8 @@ def draw():
     # app.background(' ')
     # global x
     # x += 1
-    app.rect(x, 0, 10, 10)
+    app.stroke('🌈')
+    app.rect(x, 0, 1, 1)
     app.no_loop()
 
 

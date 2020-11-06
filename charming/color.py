@@ -11,6 +11,11 @@ def stroke(ch=" ", fg=None, bg=None):
 
 def fill(ch=" ", fg=None, bg=None):
     renderer.is_fill_enabled = True
+
+    # set fg color to solve unicode problem
+    if ch == " " and (fg == None or fg == constants.WHITE):
+        fg = constants.BLACK
+
     c = Color(ch, fg, bg)
     renderer.fill_color = c
 
@@ -43,3 +48,4 @@ def fg(color):
 
 def bg(color):
     return color.bg
+    

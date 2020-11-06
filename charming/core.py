@@ -140,7 +140,7 @@ class Renderer(object):
         self.shape_queue = []
 
         # styles
-        self.fill_color = Color(' ')
+        self.fill_color = Color(' ', constants.BLACK) # set fg color to solve unicode problem
         self.stroke_color = Color('*')
         self.tint_color = Color('·')
         self.stroke_weight = 0
@@ -191,7 +191,7 @@ class Renderer(object):
 
     def _reset_frame_buffer(self):
         width, height = self.size
-        self.frame_buffer = [Color(' ')
+        self.frame_buffer = [Color(' ', constants.BLACK)
                              for _ in range(width * height)
                              ]
 
@@ -1206,6 +1206,8 @@ elif sys.platform == BROWSER:
             self.inner_width = window.innerWidth
             self.inner_height = window.innerHeight
             self.options = None
+            self._write_content = ''
+            self._has_cursor = True
 
         def init(self):
             if self.options == None:
@@ -1233,16 +1235,16 @@ elif sys.platform == BROWSER:
             self.window_width = self._screen.cols
 
         def addch(self, x, y, ch, color_index=None):
-            self._screen.write(f'\x1b[{y};{x};H{ch}')
+            self._write_content += f'\x1b[{y + 1};{x + 1};H{ch}'
 
         def close(self):
             self._screen.clear()
 
         def no_cursor(self):
-            self._screen.write('\x1b[?25l')
+            self._has_cursor = False
 
         def cursor(self):
-            self._screen.write('\x1b[?25h')
+            self._has_cursor = True
 
         def enable_colors(self):
             pass
@@ -1257,7 +1259,9 @@ elif sys.platform == BROWSER:
             pass
 
         def refresh(self):
-            pass
+            cursor_control = '\x1b[?25h' if self._has_cursor else '\x1b[?25l'
+            self._screen.write(self._write_content + cursor_control)
+            self._write_content = ''
 
         def _styles(self, dom, styles):
             for key, value in styles.items():
@@ -1544,9 +1548,6 @@ class Color(object):
 
             self.fg = constants.WHITE if self.fg == None else self.fg
             self.bg = constants.BLACK if self.bg == None else self.bg
-
-            # solve the display problem when ch == " " and fg == WHITE
-            # self.fg = BLACK if ch == " " else self.fg
 
         # add to color pair
         if not self.has_color(self.fg, self.bg, Renderer.color_pair):
