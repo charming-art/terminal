@@ -1,5 +1,4 @@
 import math
-import sys
 from abc import ABCMeta, abstractclassmethod
 
 widths = [
