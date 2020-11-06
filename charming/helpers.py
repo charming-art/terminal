@@ -1,6 +1,6 @@
 import sys
 from .app import sketch
-from .utils import logger
+from .core import logger
 
 def log(msg):
     logger.log(msg)

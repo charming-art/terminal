@@ -17,7 +17,7 @@ def draw():
     # app.background(' ')
     # global x
     # x += 1
-    # app.rect(x, 0, 10, 10)
+    app.rect(x, 0, 10, 10)
     app.no_loop()
 
 

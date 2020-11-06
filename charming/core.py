@@ -11,7 +11,9 @@ from .utils import Matrix
 from .utils import angle_between
 from .utils import get_char_width
 from .utils import to_left
-from .utils import logger
+
+WINDOWS = "win32"
+BROWSER = "brython"
 
 
 class Sketch(object):
@@ -1155,7 +1157,7 @@ class Context(metaclass=ABCMeta):
         self.draw(self._buffer, self._color_pair)
 
 
-if sys.platform == "win32":
+if sys.platform == WINDOWS:
     class WindowsContext(Context):
 
         def init(self):
@@ -1185,8 +1187,11 @@ if sys.platform == "win32":
         def addch(self):
             pass
 
+        def refresh(self):
+            pass
 
-elif sys.platform == "brython":
+
+elif sys.platform == BROWSER:
 
     from browser import document as doc  # pylint: disable=imports
     from browser import window   # pylint: disable=imports
@@ -1211,7 +1216,7 @@ elif sys.platform == "brython":
             # set the css styles of container
             container = doc.getElementById("terminal")
             self._styles(container, {
-                # 'background': 'black',
+                'background': 'black',
                 'width': self.terminal_width,
                 'height': self.terminal_height,
                 'display': 'flex',
@@ -1219,22 +1224,17 @@ elif sys.platform == "brython":
                 'alignItems': 'center'
             })
 
+            # fit the container
             fit_addon = FitAddon.new()
             self._screen.loadAddon(fit_addon)
             self._screen.open(container)
             fit_addon.fit()
 
-            # self._screen.write(
-            #     "Hello world \x1B[32mxterm.js  $ \x1b[10;10;H hello")
-
             self.window_height = self._screen.rows
             self.window_width = self._screen.cols
 
-            # logger
-
         def addch(self, x, y, ch, color_index=None):
-            pass
-            # self._screen.write(f'\x1b[{y};{x};H{ch}')
+            self._screen.write(f'\x1b[{y};{x};H{ch}')
 
         def close(self):
             self._screen.clear()
@@ -1350,6 +1350,116 @@ else:
             curses.update_lines_cols()
             self.window_width = self._screen.getmaxyx()[1]
             self.window_height = self._screen.getmaxyx()[0]
+
+
+class Logger(metaclass=ABCMeta):
+
+    @abstractclassmethod
+    def log(self, *kw, **args):
+        pass
+
+    @abstractclassmethod
+    def debug(self, *kw, **args):
+        pass
+
+
+class Timer(metaclass=ABCMeta):
+    @abstractclassmethod
+    def run(ms, callback):
+        pass
+
+    @abstractclassmethod
+    def stop(ms, callback):
+        pass
+
+
+class ImageLoader(metaclass=ABCMeta):
+    def __init__(self):
+        pass
+
+    @abstractclassmethod
+    def load(self, src):
+        '''load image data'''
+        pass
+
+    def convert_color(self, data):
+        hue_palette = []
+        for i, c in enumerate(Context.color_palette):
+            if i < len(Context.color_palette) - 3 and i % 3 == 0:
+                r = c
+                g = Context.color_palette[i + 1]
+                b = Context.color_palette[i + 2]
+                h, _, _ = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
+                hue_palette.append((h, i // 3))
+        sorted_hue_palette = sorted(hue_palette, key=lambda x: x[0])
+        sorted_palette = [h[0] for h in sorted_hue_palette]
+        palette_len = len(sorted_palette)
+        pixels = []
+        for r, g, b, _ in data:
+            h, _, _ = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
+            index = bisect.bisect_left(sorted_palette, h)
+            index = max(min(index, palette_len - 1), 0)
+            _, hue_index = sorted_hue_palette[index]
+            pixels.append(Color('·', min(index + 1, 255), hue_index))
+        return pixels
+
+
+if sys.platform == BROWSER:
+    from browser import timer  # pylint: disable=imports
+
+    class BrowserTimer(Timer):
+        def run(self, ms, callback):
+            self.t = timer.set_interval(callback, ms)
+
+        def stop(self):
+            timer.clear_interval(self.t)
+
+    class BrowserLogger(Logger):
+
+        def log(self, *args, **kw):
+            print(*args, **kw)
+
+        def debug(self, *args, **kw):
+            print(*args, **kw)
+
+    class BrowserImageLoader(ImageLoader):
+        def load(self, src):
+            pass
+
+    logger = BrowserLogger()
+else:
+    import time
+    import logging
+    from PIL import Image
+    logging.basicConfig(filename='charming.log', level=logging.DEBUG)
+
+    class LocalTimer(Timer):
+
+        def run(self, ms, callback):
+            while True:
+                callback()
+                time.sleep(ms / 1000)
+
+        def stop(self):
+            pass
+
+    class LocalLogger(Logger):
+
+        def debug(self, *args, **kw):
+            logging.debug(*args, **kw)
+
+        def log(self, *args, **kw):
+            logging.log(*args, **kw)
+
+    class PILImageLoader(ImageLoader):
+        def load(self, src):
+            image = Image.open(src)
+            w, h = image.size
+            data = image.getdata()
+            pixels = self.convert_color(data)
+            return CImage(pixels, w, h)
+
+    logger = LocalLogger()
 
 
 class CShape(object):
@@ -1471,54 +1581,6 @@ class Color(object):
         return attrs.__str__()
 
     __repr__ = __str__
-
-
-class ImageLoader(metaclass=ABCMeta):
-    def __init__(self):
-        pass
-
-    @abstractclassmethod
-    def load(self, src):
-        '''load image data'''
-        pass
-
-    def convert_color(self, data):
-        hue_palette = []
-        for i, c in enumerate(Context.color_palette):
-            if i < len(Context.color_palette) - 3 and i % 3 == 0:
-                r = c
-                g = Context.color_palette[i + 1]
-                b = Context.color_palette[i + 2]
-                h, _, _ = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
-                hue_palette.append((h, i // 3))
-        sorted_hue_palette = sorted(hue_palette, key=lambda x: x[0])
-        sorted_palette = [h[0] for h in sorted_hue_palette]
-        palette_len = len(sorted_palette)
-        pixels = []
-        for r, g, b, _ in data:
-            h, _, _ = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
-            index = bisect.bisect_left(sorted_palette, h)
-            index = max(min(index, palette_len - 1), 0)
-            _, hue_index = sorted_hue_palette[index]
-            pixels.append(Color('·', min(index + 1, 255), hue_index))
-        return pixels
-
-
-if sys.platform == "brython":
-    class BrowserImageLoader(ImageLoader):
-        def load(self, src):
-            pass
-
-else:
-    from PIL import Image
-
-    class PILImageLoader(ImageLoader):
-        def load(self, src):
-            image = Image.open(src)
-            w, h = image.size
-            data = image.getdata()
-            pixels = self.convert_color(data)
-            return CImage(pixels, w, h)
 
 
 class CImage(object):
