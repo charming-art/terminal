@@ -6,3 +6,5 @@ dist/
 venv
 *.egg-info
 *.log
+index.html
+lib/
