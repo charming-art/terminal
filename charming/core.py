@@ -10,9 +10,10 @@ from .utils import Matrix
 from .utils import angle_between
 from .utils import get_char_width
 from .utils import to_left
+from .utils import generate_color_palette
 
 WINDOWS = "win32"
-BROWSER = "brython"
+BROWSER = "emscripten"
 
 
 class Sketch(object):
@@ -61,8 +62,11 @@ class Sketch(object):
                 self.size = self.context.open(self.size, self.is_full_screen)
                 self.renderer.setup(self.size)
                 self.renderer.render()
+
                 self.context.draw(self.renderer.frame_buffer,
+                                  self.renderer.background_color,
                                   self.renderer.color_pair)
+
                 if self.is_log_frame_buffer == True:
                     self.renderer.log_frame_buffer()
 
@@ -97,6 +101,7 @@ class Sketch(object):
                             self.context.clear()
 
                         self.context.draw(self.renderer.frame_buffer,
+                                          self.renderer.background_color,
                                           self.renderer.color_pair)
 
                         if self.is_log_frame_buffer == True:
@@ -144,6 +149,7 @@ class Renderer(object):
         self.fill_color = Color(' ', constants.BLACK)
         self.stroke_color = Color('*')
         self.tint_color = Color('·')
+        self.background_color = constants.BLACK
         self.stroke_weight = 0
         self.is_stroke_enabled = True
         self.is_fill_enabled = True
@@ -193,8 +199,7 @@ class Renderer(object):
     def _reset_frame_buffer(self):
         width, height = self.size
         self.frame_buffer = [Color(' ', constants.BLACK)
-                             for _ in range(width * height)
-                             ]
+                             for _ in range(width * height)]
 
     def _render_shape(self, shape):
         vertices = self._vertex_processing(
@@ -715,279 +720,20 @@ class Renderer(object):
             for j in range(width):
                 index = i * width + j
                 color = self.frame_buffer[index]
-                if not color:
+                if color:
+                    ch, _, _ = color
+                    if isinstance(ch, tuple):
+                        ch, _ = ch
+                    s = "*" if ch == " " else ch
+                    line += s
+                else:
                     line += 'n'
-                    continue
-                ch, _, _ = color
-                if isinstance(ch, tuple):
-                    ch, _ = ch
-                s = "*" if ch == " " else ch
-                line += s
             line += "\n"
             matrix += line
         logger.debug(matrix)
 
 
 class Context(metaclass=ABCMeta):
-
-    color_palette = [
-        0x00, 0x00, 0x00,
-        0x80, 0x00, 0x00,
-        0x00, 0x80, 0x00,
-        0x80, 0x80, 0x00,
-        0x00, 0x00, 0x80,
-        0x80, 0x00, 0x80,
-        0x00, 0x80, 0x80,
-        0xc0, 0xc0, 0xc0,
-        0x80, 0x80, 0x80,
-        0xff, 0x00, 0x00,
-        0x00, 0xff, 0x00,
-        0xff, 0xff, 0x00,
-        0x00, 0x00, 0xff,
-        0xff, 0x00, 0xff,
-        0x00, 0xff, 0xff,
-        0xff, 0xff, 0xff,
-        0x00, 0x00, 0x00,
-        0x00, 0x00, 0x5f,
-        0x00, 0x00, 0x87,
-        0x00, 0x00, 0xaf,
-        0x00, 0x00, 0xd7,
-        0x00, 0x00, 0xff,
-        0x00, 0x5f, 0x00,
-        0x00, 0x5f, 0x5f,
-        0x00, 0x5f, 0x87,
-        0x00, 0x5f, 0xaf,
-        0x00, 0x5f, 0xd7,
-        0x00, 0x5f, 0xff,
-        0x00, 0x87, 0x00,
-        0x00, 0x87, 0x5f,
-        0x00, 0x87, 0x87,
-        0x00, 0x87, 0xaf,
-        0x00, 0x87, 0xd7,
-        0x00, 0x87, 0xff,
-        0x00, 0xaf, 0x00,
-        0x00, 0xaf, 0x5f,
-        0x00, 0xaf, 0x87,
-        0x00, 0xaf, 0xaf,
-        0x00, 0xaf, 0xd7,
-        0x00, 0xaf, 0xff,
-        0x00, 0xd7, 0x00,
-        0x00, 0xd7, 0x5f,
-        0x00, 0xd7, 0x87,
-        0x00, 0xd7, 0xaf,
-        0x00, 0xd7, 0xd7,
-        0x00, 0xd7, 0xff,
-        0x00, 0xff, 0x00,
-        0x00, 0xff, 0x5f,
-        0x00, 0xff, 0x87,
-        0x00, 0xff, 0xaf,
-        0x00, 0xff, 0xd7,
-        0x00, 0xff, 0xff,
-        0x5f, 0x00, 0x00,
-        0x5f, 0x00, 0x5f,
-        0x5f, 0x00, 0x87,
-        0x5f, 0x00, 0xaf,
-        0x5f, 0x00, 0xd7,
-        0x5f, 0x00, 0xff,
-        0x5f, 0x5f, 0x00,
-        0x5f, 0x5f, 0x5f,
-        0x5f, 0x5f, 0x87,
-        0x5f, 0x5f, 0xaf,
-        0x5f, 0x5f, 0xd7,
-        0x5f, 0x5f, 0xff,
-        0x5f, 0x87, 0x00,
-        0x5f, 0x87, 0x5f,
-        0x5f, 0x87, 0x87,
-        0x5f, 0x87, 0xaf,
-        0x5f, 0x87, 0xd7,
-        0x5f, 0x87, 0xff,
-        0x5f, 0xaf, 0x00,
-        0x5f, 0xaf, 0x5f,
-        0x5f, 0xaf, 0x87,
-        0x5f, 0xaf, 0xaf,
-        0x5f, 0xaf, 0xd7,
-        0x5f, 0xaf, 0xff,
-        0x5f, 0xd7, 0x00,
-        0x5f, 0xd7, 0x5f,
-        0x5f, 0xd7, 0x87,
-        0x5f, 0xd7, 0xaf,
-        0x5f, 0xd7, 0xd7,
-        0x5f, 0xd7, 0xff,
-        0x5f, 0xff, 0x00,
-        0x5f, 0xff, 0x5f,
-        0x5f, 0xff, 0x87,
-        0x5f, 0xff, 0xaf,
-        0x5f, 0xff, 0xd7,
-        0x5f, 0xff, 0xff,
-        0x87, 0x00, 0x00,
-        0x87, 0x00, 0x5f,
-        0x87, 0x00, 0x87,
-        0x87, 0x00, 0xaf,
-        0x87, 0x00, 0xd7,
-        0x87, 0x00, 0xff,
-        0x87, 0x5f, 0x00,
-        0x87, 0x5f, 0x5f,
-        0x87, 0x5f, 0x87,
-        0x87, 0x5f, 0xaf,
-        0x87, 0x5f, 0xd7,
-        0x87, 0x5f, 0xff,
-        0x87, 0x87, 0x00,
-        0x87, 0x87, 0x5f,
-        0x87, 0x87, 0x87,
-        0x87, 0x87, 0xaf,
-        0x87, 0x87, 0xd7,
-        0x87, 0x87, 0xff,
-        0x87, 0xaf, 0x00,
-        0x87, 0xaf, 0x5f,
-        0x87, 0xaf, 0x87,
-        0x87, 0xaf, 0xaf,
-        0x87, 0xaf, 0xd7,
-        0x87, 0xaf, 0xff,
-        0x87, 0xd7, 0x00,
-        0x87, 0xd7, 0x5f,
-        0x87, 0xd7, 0x87,
-        0x87, 0xd7, 0xaf,
-        0x87, 0xd7, 0xd7,
-        0x87, 0xd7, 0xff,
-        0x87, 0xff, 0x00,
-        0x87, 0xff, 0x5f,
-        0x87, 0xff, 0x87,
-        0x87, 0xff, 0xaf,
-        0x87, 0xff, 0xd7,
-        0x87, 0xff, 0xff,
-        0xaf, 0x00, 0x00,
-        0xaf, 0x00, 0x5f,
-        0xaf, 0x00, 0x87,
-        0xaf, 0x00, 0xaf,
-        0xaf, 0x00, 0xd7,
-        0xaf, 0x00, 0xff,
-        0xaf, 0x5f, 0x00,
-        0xaf, 0x5f, 0x5f,
-        0xaf, 0x5f, 0x87,
-        0xaf, 0x5f, 0xaf,
-        0xaf, 0x5f, 0xd7,
-        0xaf, 0x5f, 0xff,
-        0xaf, 0x87, 0x00,
-        0xaf, 0x87, 0x5f,
-        0xaf, 0x87, 0x87,
-        0xaf, 0x87, 0xaf,
-        0xaf, 0x87, 0xd7,
-        0xaf, 0x87, 0xff,
-        0xaf, 0xaf, 0x00,
-        0xaf, 0xaf, 0x5f,
-        0xaf, 0xaf, 0x87,
-        0xaf, 0xaf, 0xaf,
-        0xaf, 0xaf, 0xd7,
-        0xaf, 0xaf, 0xff,
-        0xaf, 0xd7, 0x00,
-        0xaf, 0xd7, 0x5f,
-        0xaf, 0xd7, 0x87,
-        0xaf, 0xd7, 0xaf,
-        0xaf, 0xd7, 0xd7,
-        0xaf, 0xd7, 0xff,
-        0xaf, 0xff, 0x00,
-        0xaf, 0xff, 0x5f,
-        0xaf, 0xff, 0x87,
-        0xaf, 0xff, 0xaf,
-        0xaf, 0xff, 0xd7,
-        0xaf, 0xff, 0xff,
-        0xd7, 0x00, 0x00,
-        0xd7, 0x00, 0x5f,
-        0xd7, 0x00, 0x87,
-        0xd7, 0x00, 0xaf,
-        0xd7, 0x00, 0xd7,
-        0xd7, 0x00, 0xff,
-        0xd7, 0x5f, 0x00,
-        0xd7, 0x5f, 0x5f,
-        0xd7, 0x5f, 0x87,
-        0xd7, 0x5f, 0xaf,
-        0xd7, 0x5f, 0xd7,
-        0xd7, 0x5f, 0xff,
-        0xd7, 0x87, 0x00,
-        0xd7, 0x87, 0x5f,
-        0xd7, 0x87, 0x87,
-        0xd7, 0x87, 0xaf,
-        0xd7, 0x87, 0xd7,
-        0xd7, 0x87, 0xff,
-        0xd7, 0xaf, 0x00,
-        0xd7, 0xaf, 0x5f,
-        0xd7, 0xaf, 0x87,
-        0xd7, 0xaf, 0xaf,
-        0xd7, 0xaf, 0xd7,
-        0xd7, 0xaf, 0xff,
-        0xd7, 0xd7, 0x00,
-        0xd7, 0xd7, 0x5f,
-        0xd7, 0xd7, 0x87,
-        0xd7, 0xd7, 0xaf,
-        0xd7, 0xd7, 0xd7,
-        0xd7, 0xd7, 0xff,
-        0xd7, 0xff, 0x00,
-        0xd7, 0xff, 0x5f,
-        0xd7, 0xff, 0x87,
-        0xd7, 0xff, 0xaf,
-        0xd7, 0xff, 0xd7,
-        0xd7, 0xff, 0xff,
-        0xff, 0x00, 0x00,
-        0xff, 0x00, 0x5f,
-        0xff, 0x00, 0x87,
-        0xff, 0x00, 0xaf,
-        0xff, 0x00, 0xd7,
-        0xff, 0x00, 0xff,
-        0xff, 0x5f, 0x00,
-        0xff, 0x5f, 0x5f,
-        0xff, 0x5f, 0x87,
-        0xff, 0x5f, 0xaf,
-        0xff, 0x5f, 0xd7,
-        0xff, 0x5f, 0xff,
-        0xff, 0x87, 0x00,
-        0xff, 0x87, 0x5f,
-        0xff, 0x87, 0x87,
-        0xff, 0x87, 0xaf,
-        0xff, 0x87, 0xd7,
-        0xff, 0x87, 0xff,
-        0xff, 0xaf, 0x00,
-        0xff, 0xaf, 0x5f,
-        0xff, 0xaf, 0x87,
-        0xff, 0xaf, 0xaf,
-        0xff, 0xaf, 0xd7,
-        0xff, 0xaf, 0xff,
-        0xff, 0xd7, 0x00,
-        0xff, 0xd7, 0x5f,
-        0xff, 0xd7, 0x87,
-        0xff, 0xd7, 0xaf,
-        0xff, 0xd7, 0xd7,
-        0xff, 0xd7, 0xff,
-        0xff, 0xff, 0x00,
-        0xff, 0xff, 0x5f,
-        0xff, 0xff, 0x87,
-        0xff, 0xff, 0xaf,
-        0xff, 0xff, 0xd7,
-        0xff, 0xff, 0xff,
-        0x08, 0x08, 0x08,
-        0x12, 0x12, 0x12,
-        0x1c, 0x1c, 0x1c,
-        0x26, 0x26, 0x26,
-        0x30, 0x30, 0x30,
-        0x3a, 0x3a, 0x3a,
-        0x44, 0x44, 0x44,
-        0x4e, 0x4e, 0x4e,
-        0x58, 0x58, 0x58,
-        0x62, 0x62, 0x62,
-        0x6c, 0x6c, 0x6c,
-        0x76, 0x76, 0x76,
-        0x80, 0x80, 0x80,
-        0x8a, 0x8a, 0x8a,
-        0x94, 0x94, 0x94,
-        0x9e, 0x9e, 0x9e,
-        0xa8, 0xa8, 0xa8,
-        0xb2, 0xb2, 0xb2,
-        0xbc, 0xbc, 0xbc,
-        0xc6, 0xc6, 0xc6,
-        0xd0, 0xd0, 0xd0,
-        0xda, 0xda, 0xda,
-        0xe4, 0xe4, 0xe4,
-        0xee, 0xee, 0xee,
-    ]
 
     @abstractclassmethod
     def close(self):
@@ -1029,6 +775,10 @@ class Context(metaclass=ABCMeta):
     def refresh(self):
         """ refresh the physical sceen """
 
+    @abstractclassmethod
+    def background(self, color):
+        """ set the background of the screen """
+
     def __init__(self):
         self.window_width = 0
         self.window_height = 0
@@ -1046,6 +796,7 @@ class Context(metaclass=ABCMeta):
         self._pad_x = 0
         self._pad_y = 0
         self._screen = None
+        self._background_color = constants.BLACK
 
     def open(self, size, is_full_screen):
         self.init()
@@ -1062,38 +813,36 @@ class Context(metaclass=ABCMeta):
         self._update_pad()
         return (self._content_width, self._content_height)
 
-    def draw(self, buffer, color_pair):
+    def draw(self, buffer, background_color, color_pair):
         self._buffer = buffer
         self._color_pair = color_pair
+        self._background_color = background_color
         self.enable_colors()
         self._count_cell_width()
+        self.background(background_color)
 
         for y in range(self._pad_height):
             for x in range(self._pad_width):
                 _x = x + self._pad_x
                 _y = y + self._pad_y
-                x_out = _x < 0 or _x > self.window_width - 2
-                y_out = _y < 0 or _y > self.window_height - 1
-                if x_out or y_out:
-                    continue
-                border_ch = self._get_border(x, y)
-                if border_ch:
-                    r = x == self._pad_width - 1 and y > 0 and y < self._pad_height - 1
-                    if r:
-                        cnt = self._cell_poss[y - 1]['cnt']
-                        self.addch(_x - cnt, _y, border_ch)
+                x_in = _x >= 0 and _x < self.window_width
+                y_in = _y >= 0 and _y < self.window_height
+                if x_in and y_in:
+                    border_ch = self._get_border(x, y)
+                    if border_ch:
+                        r = x == self._pad_width - 1 and y > 0 and y < self._pad_height - 1
+                        if r:
+                            cnt = self._cell_poss[y - 1]['cnt']
+                            self.addch(_x - cnt, _y, border_ch)
+                        else:
+                            self.addch(_x, _y, border_ch)
                     else:
-                        self.addch(_x, _y, border_ch)
-                else:
-                    index = (x - 1) + (y - 1) * (self._pad_width - 2)
-                    color = buffer[index]
-                    if not color:
-                        continue
-                    ch, fg, bg = color
-                    ch = ch[0] if isinstance(ch, tuple) else ch
-
-                    # It is strange that can't draw at (self.window_height - 1, self.window_width - 1)
-                    self.addch(_x, _y, ch, fg, bg)
+                        index = (x - 1) + (y - 1) * (self._pad_width - 2)
+                        color = buffer[index]
+                        if color:
+                            ch, fg, bg = color
+                            ch = ch[0] if isinstance(ch, tuple) else ch
+                            self.addch(_x, _y, ch, fg, bg)
 
         # update the physical sceen
         self.refresh()
@@ -1131,17 +880,16 @@ class Context(metaclass=ABCMeta):
                 index = j + i * width
                 color = self._buffer[index]
 
-                if not color:
+                if color:
+                    ch, _, _ = color
+                    ch_width = get_char_width(ch)
+                    poss.append(ch_width + poss[-1])
+
+                    if ch_width == 2:
+                        cnt += 1
+                else:
                     poss.append(-1)
-                    continue
 
-                ch, _, _ = color
-                ch_width = get_char_width(ch)
-                poss.append(ch_width + poss[-1])
-
-                if ch_width == 2:
-                    cnt += 1
-                
             self._cell_poss.append({
                 "cnt": cnt,
                 "list": poss
@@ -1155,7 +903,7 @@ class Context(metaclass=ABCMeta):
         self.update_window()
         self._update_pad()
         self._screen.clear()
-        self.draw(self._buffer, self._color_pair)
+        self.draw(self._buffer, self._background_color, self._color_pair)
 
 
 if sys.platform == WINDOWS:
@@ -1193,14 +941,16 @@ if sys.platform == WINDOWS:
         def refresh(self):
             pass
 
+        def background(self, color):
+            pass
+
 
 elif sys.platform == BROWSER:
 
-    from browser import document as doc  # pylint: disable=imports
-    from browser import window   # pylint: disable=imports
-
-    Terminal = window.Terminal
-    FitAddon = window.FitAddon.FitAddon
+    from js import document as doc  # pylint: disable=imports
+    from js import window  # pylint: disable=imports
+    from js import term  # pylint: disable=imports
+    from js import fit_addon  # pylint: disable=imports
 
     class BrowserContext(Context):
 
@@ -1213,15 +963,20 @@ elif sys.platform == BROWSER:
             self.options = None
             self._write_content = ''
             self._has_cursor = True
+            self._container = None
+            self._color_palette = generate_color_palette()
 
         def init(self):
             if self.options == None:
                 self.options = {}
-            self._screen = Terminal.new(self.options)
+
+            self._screen = term
+            for key, value in self.options.items():
+                self._screen.setOption(key, value)
 
             # set the css styles of container
-            container = doc.getElementById("terminal")
-            self._styles(container, {
+            self._container = doc.getElementById("terminal")
+            self._styles(self._container, {
                 'background': 'black',
                 'width': self.terminal_width,
                 'height': self.terminal_height,
@@ -1230,10 +985,9 @@ elif sys.platform == BROWSER:
                 'alignItems': 'center'
             })
 
-            # fit the container
-            fit_addon = FitAddon.new()
+            self.fit_addon = fit_addon
             self._screen.loadAddon(fit_addon)
-            self._screen.open(container)
+            self._screen.open(self._container)
             fit_addon.fit()
 
             self.window_height = self._screen.rows
@@ -1244,7 +998,7 @@ elif sys.platform == BROWSER:
             _y = y - self._pad_y
 
             if _y > 0 and _y < self._pad_height - 1:
-                 x = self._cell_poss[_y - 1]['list'][_x] + self._pad_x
+                x = self._cell_poss[_y - 1]['list'][_x] + self._pad_x
 
             if fg == None:
                 fg = 7
@@ -1281,6 +1035,19 @@ elif sys.platform == BROWSER:
 
         def update_window(self):
             pass
+
+        def background(self, color):
+            index = color * 3
+            r = self._color_palette[index]
+            g = self._color_palette[index + 1]
+            b = self._color_palette[index + 2]
+            color = f'rgb({r}, {g}, {b})'
+            self._styles(self._container, {
+                'background': color
+            })
+            self._screen.setOption('theme', {
+                'background': color
+            })
 
         def refresh(self):
             cursor_control = '\x1b[?25h' if self._has_cursor else '\x1b[?25l'
@@ -1353,6 +1120,10 @@ else:
             return event_queue
 
         def addch(self, x, y, ch, fg=None, bg=None):
+            # It is strange that can't draw at (self.window_height - 1, self.window_width - 1)
+            if x >= self.window_width - 1 and y >= self.window_height - 1:
+                return
+
             if fg != None and bg != None:
                 for i, color in enumerate(self._color_pair):
                     c, _ = color
@@ -1371,6 +1142,9 @@ else:
 
         def refresh(self):
             self._screen.refresh()
+
+        def background(self, color):
+            pass
 
         def enable_colors(self):
             for i, c in enumerate(self._color_pair):
@@ -1407,7 +1181,7 @@ class Timer(metaclass=ABCMeta):
 
 class ImageLoader(metaclass=ABCMeta):
     def __init__(self):
-        pass
+        self._color_palette = generate_color_palette()
 
     @abstractclassmethod
     def load(self, src):
@@ -1416,11 +1190,11 @@ class ImageLoader(metaclass=ABCMeta):
 
     def convert_color(self, data):
         hue_palette = []
-        for i, c in enumerate(Context.color_palette):
-            if i < len(Context.color_palette) - 3 and i % 3 == 0:
+        for i, c in enumerate(self._color_palette):
+            if i < len(self._color_palette) - 3 and i % 3 == 0:
                 r = c
-                g = Context.color_palette[i + 1]
-                b = Context.color_palette[i + 2]
+                g = self._color_palette[i + 1]
+                b = self._color_palette[i + 2]
                 h, _, _ = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
                 hue_palette.append((h, i // 3))
         sorted_hue_palette = sorted(hue_palette, key=lambda x: x[0])
@@ -1437,14 +1211,15 @@ class ImageLoader(metaclass=ABCMeta):
 
 
 if sys.platform == BROWSER:
-    from browser import timer  # pylint: disable=imports
+    # from browser import timer  # pylint: disable=imports
+    from js import window
 
     class BrowserTimer(Timer):
         def run(self, ms, callback):
-            self.t = timer.set_interval(callback, ms)
+            self.t = window.setInterval(callback, ms)
 
         def stop(self):
-            timer.clear_interval(self.t)
+            window.clearInterval(self.t)
 
     class BrowserLogger(Logger):
 

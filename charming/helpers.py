@@ -2,8 +2,9 @@ import sys
 from .app import sketch
 from .core import logger
 
-def log(msg):
-    logger.log(msg)
+
+def log(*args, **kw):
+    logger.log(*args, **kw)
 
 
 def begin_log_frame_buffer():

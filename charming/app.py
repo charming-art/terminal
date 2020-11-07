@@ -1,14 +1,17 @@
 from sys import platform
-from .core import Sketch, Renderer
+from .core import Sketch
+from .core import Renderer
+from .core import BROWSER
+from .core import WINDOWS
 
 
 def get_components_by_platform(platform):
-    if platform == "win32":
+    if platform == WINDOWS:
         from .core import WindowsContext
         from .core import PILImageLoader
         from .core import LocalTimer
         return (WindowsContext(), PILImageLoader(), LocalTimer())
-    elif platform == "brython":
+    elif platform == BROWSER:
         from .core import BrowserContext
         from .core import BrowserImageLoader
         from .core import BrowserTimer

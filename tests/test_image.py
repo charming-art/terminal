@@ -26,7 +26,7 @@ def draw():
     
     app.image(img, 0, 0, 20, 10)
     app.translate(app.get_width() / 2, app.get_height() / 2)
-    app.rotate(app.PI)
+    # app.rotate(app.PI)
     app.image(img, 0, 0, 20, 10)
     # app.scale(3)
     # app.scale(3)
