@@ -68,7 +68,7 @@ class Sketch(object):
                 print('Call size to open context.')
                 return
 
-            self.renderer.setup((self.context.width, self.context.height))
+            self.renderer.setup(self.context.width, self.context.height)
 
             # main loop
             def loop():
@@ -155,10 +155,12 @@ class Renderer(object):
 
         self.has_background_called = False
         self.transform_matrix_stack = []
-        self.size = (10, 10)
+        self.width = 10
+        self.height = 10
 
-    def setup(self, size):
-        self.size = size
+    def setup(self, width, height):
+        self.width = width
+        self.height = height
         self._reset_frame_buffer()
 
     def render(self):
@@ -185,10 +187,9 @@ class Renderer(object):
             self.frame_buffer[i] = color
 
     def _reset_frame_buffer(self):
-        width, height = self.size
         self.frame_buffer = [
             CColor(' ', constants.BLACK)
-            for _ in range(width * height)
+            for _ in range(self.width * self.height)
         ]
 
     def _render_shape(self, shape):
@@ -459,8 +460,7 @@ class Renderer(object):
         fragments_clipped = []
 
         def is_in(p):
-            content_width, content_height = self.size
-            return p.x >= 0 and p.x < content_width and p.y >= 0 and p.y < content_height
+            return p.x >= 0 and p.x < self.width and p.y >= 0 and p.y < self.height
 
         for pixels in fragments:
             pixels_clipped = [p for p in pixels if is_in(p)]
@@ -471,7 +471,7 @@ class Renderer(object):
     def _fragment_processing(self, fragemnts):
         for pixels in fragemnts:
             for p in pixels:
-                index = p.x + p.y * self.size[0]
+                index = p.x + p.y * self.width
                 self.frame_buffer[index] = p.color
 
     def _scan_line_filling(self, polygon, fill_color):
@@ -690,15 +690,14 @@ class Renderer(object):
             return edges
 
     def _adjust_unicode_char(self):
-        width, height = self.size
-        flags = [0 for i in range(width)]
+        flags = [0 for i in range(self.width)]
         wider_chars = []
 
         # scan the buffer to record unicode
-        for i in range(height):
+        for i in range(self.height):
             wider_cnt = 0
-            for j in range(width):
-                index = j + i * width
+            for j in range(self.width):
+                index = j + i * self.width
                 ch, _, _ = self.frame_buffer[index]
                 ch_width = get_char_width(ch)
                 if ch_width == 2:
@@ -707,17 +706,17 @@ class Renderer(object):
             wider_chars.append(wider_cnt)
 
         # insert and move the buffer
-        for i in range(height):
+        for i in range(self.height):
             insert_indice = []
-            for j in range(width):
-                index = j + i * width
+            for j in range(self.width):
+                index = j + i * self.width
                 color = self.frame_buffer[index]
                 ch, _, _ = color
                 ch_width = get_char_width(ch)
-                if flags[j] == 1 and j < width - 1 and ch_width == 1:
+                if flags[j] == 1 and j < self.width - 1 and ch_width == 1:
                     insert_indice.append((index + 1, color))
 
-            last_index = (i + 1) * width - 1
+            last_index = (i + 1) * self.width - 1
             while len(insert_indice):
                 insert_index, color = insert_indice.pop()
 
@@ -733,9 +732,9 @@ class Renderer(object):
 
             # remove chars exceed the screen
             wider_cnt = wider_chars[i]
-            j = width - 1
+            j = self.width - 1
             while wider_cnt > 0:
-                index = j + i * width
+                index = j + i * self.width
                 ch, _, _ = self.frame_buffer[index]
                 self.frame_buffer[index] = None
                 ch_width = get_char_width(ch)
@@ -748,12 +747,11 @@ class Renderer(object):
                 j -= 1
 
     def log_frame_buffer(self):
-        width, height = self.size
         matrix = '\n'
-        for i in range(height):
+        for i in range(self.height):
             line = ''
-            for j in range(width):
-                index = i * width + j
+            for j in range(self.width):
+                index = i * self.width + j
                 color = self.frame_buffer[index]
                 if color:
                     ch, _, _ = color
