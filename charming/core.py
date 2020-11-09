@@ -65,9 +65,11 @@ class Sketch(object):
             if is_static_mode:
                 self.renderer.setup((self.context.width, self.context.height))
                 self.renderer.render()
-                self.context.draw(self.renderer.frame_buffer,
-                                  self.renderer.background_color,
-                                  self.renderer.color_pair)
+                self.context.draw(
+                    self.renderer.frame_buffer,
+                    self.renderer.background_color,
+                    self.renderer.color_pair
+                )
 
                 if self.is_log_frame_buffer == True:
                     self.renderer.log_frame_buffer()
@@ -101,9 +103,11 @@ class Sketch(object):
                         if self.renderer.has_background_called:
                             self.context.clear()
 
-                        self.context.draw(self.renderer.frame_buffer,
-                                          self.renderer.background_color,
-                                          self.renderer.color_pair)
+                        self.context.draw(
+                            self.renderer.frame_buffer,
+                            self.renderer.background_color,
+                            self.renderer.color_pair
+                        )
 
                         if self.is_log_frame_buffer == True:
                             self.renderer.log_frame_buffer()
@@ -208,13 +212,15 @@ class Renderer(object):
             shape.stroke_color,
             shape.stroke_weight,
             shape.transform_matrix_stack,
-            shape.primitive_type)
+            shape.primitive_type
+        )
 
         primitives = self._primitive_assembly(
             vertices,
             shape.primitive_type,
             shape.close_mode,
-            shape.options)
+            shape.options
+        )
 
         fragments = self._rasterization(
             primitives,
@@ -223,7 +229,8 @@ class Renderer(object):
             shape.is_stroke_enabled,
             shape.is_fill_enabled,
             shape.is_tint_enabled,
-            shape.primitive_type)
+            shape.primitive_type
+        )
 
         fragments_clipped = self._clipping(fragments)
 
@@ -337,16 +344,19 @@ class Renderer(object):
                     i2 = j * w + i + 1
                     i3 = (j + 1) * w + i + 1
                     i4 = (j + 1) * w + i
-                    ps.append([vertices[i1], vertices[i2],
-                               vertices[i3], vertices[i4]])
+                    ps.append(
+                        [vertices[i1], vertices[i2],
+                         vertices[i3], vertices[i4]]
+                    )
 
         # edges
         edges_list = []
         for vertices in ps:
-            unique_vertices = [v for i, v in enumerate(vertices)
-                               if i == 0
-                               or (v.x != vertices[i - 1].x or v.y != vertices[i - 1].y)
-                               ]
+            unique_vertices = [
+                v for i, v in enumerate(vertices)
+                if i == 0
+                or (v.x != vertices[i - 1].x or v.y != vertices[i - 1].y)
+            ]
             normal_vertices = [
                 v for v in unique_vertices
                 if v.type == "normal"
@@ -583,10 +593,13 @@ class Renderer(object):
 
                 rotated_x = math.cos(rotation) * x - math.sin(rotation) * y
                 rotated_y = math.sin(rotation) * x + math.cos(rotation) * y
-                points.append(Point(round(rotated_x + x0),
-                                    round(rotated_y + y0),
-                                    color=color)
-                              )
+                points.append(
+                    Point(
+                        round(rotated_x + x0),
+                        round(rotated_y + y0),
+                        color=color
+                    )
+                )
         if mode == constants.PIE:
             points.insert(0, Point(x0, y0, color=color))
             points.append(points[0])
@@ -824,8 +837,8 @@ class Context(metaclass=ABCMeta):
         self._color_pair = color_pair
         self._background_color = background_color
         self.enable_colors()
-        self._count_cell_width()
         self.background(background_color)
+        self._count_cell_width()
 
         for y in range(self._pad_height):
             for x in range(self._pad_width):
