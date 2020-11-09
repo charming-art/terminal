@@ -39,6 +39,12 @@ from .constants import BLUE
 from .constants import WHITE
 from .constants import MAGENTA
 
+from .constants import ANSI_NORMAL
+from .constants import ANSI_RAINBOW
+from .constants import ANSI_STRIP
+from .constants import RGB
+from .constants import HSB
+
 from .structure import setup
 from .structure import draw
 from .structure import run
@@ -94,6 +100,7 @@ from .cmath import log
 from .cmath import mag
 from .cmath import max
 from .cmath import min
+from .cmath import map
 from .cmath import norm
 from .cmath import pow
 from .cmath import round
@@ -153,6 +160,7 @@ from .color import fg
 from .color import bg
 from .color import background
 from .color import color
+from .color import color_mode
 
 from .transform import translate
 from .transform import scale
@@ -167,6 +175,7 @@ from .typography import text_align
 from .typography import text_leading
 from .typography import text_space
 from .typography import text
+from .typography import figlet_text
 
 from .image import image
 from .image import image_mode

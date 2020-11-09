@@ -1,4 +1,4 @@
-from .core import Color
+from .core import CColor
 from .core import CShape
 from .core import Point
 from .app import renderer
@@ -57,7 +57,7 @@ def no_tint():
 
 def tint(ch=" ", fg=None, bg=None):
     renderer.is_tint_enabled = True
-    c = Color(ch, fg, bg)
+    c = CColor(ch, fg, bg)
     renderer.tint_color = c
 
 # Pixels

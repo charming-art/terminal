@@ -14,7 +14,7 @@ def setup():
 
 @app.draw
 def draw():
-    # app.log('hello world')
+    app.log('hello world')
     # app.background(' ')
     # global x
     # x += 1

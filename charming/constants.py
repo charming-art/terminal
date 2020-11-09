@@ -90,3 +90,15 @@ TOP = 3
 BOTTOM = 4
 
 MIDDLE = 5
+
+# Color Mode
+
+ANSI_NORMAL = 0
+
+ANSI_RAINBOW = 1
+
+ANSI_STRIP = 2
+
+RGB = 3
+
+HSB = 4

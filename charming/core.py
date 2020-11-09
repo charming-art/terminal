@@ -12,8 +12,10 @@ from .utils import get_char_width
 from .utils import to_left
 from .utils import generate_color_palette
 
+# three platforms
 WINDOWS = "win32"
 BROWSER = "emscripten"
+POSIX = ""
 
 
 class Sketch(object):
@@ -27,8 +29,6 @@ class Sketch(object):
         self.frame_rate = 30
         self.is_loop = True
         self.frame_count = 0
-        self.is_full_screen = False
-        self.size = (10, 10)
         self.key = 0
         self.key_code = 0
         self.mouse_x = 0
@@ -56,13 +56,15 @@ class Sketch(object):
         self.is_log_frame_buffer = False
 
     def run(self):
+        if not self.context.has_open:
+            print('Call size to open context.')
+            return
+
         try:
             is_static_mode = not self.has_draw_hook or not self.has_setup_hook
             if is_static_mode:
-                self.size = self.context.open(self.size, self.is_full_screen)
-                self.renderer.setup(self.size)
+                self.renderer.setup((self.context.width, self.context.height))
                 self.renderer.render()
-
                 self.context.draw(self.renderer.frame_buffer,
                                   self.renderer.background_color,
                                   self.renderer.color_pair)
@@ -83,8 +85,7 @@ class Sketch(object):
                 setup_hook = self.hooks_map['setup']
                 draw_hook = self.hooks_map['draw']
                 setup_hook()
-                self.size = self.context.open(self.size, self.is_full_screen)
-                self.renderer.setup(self.size)
+                self.renderer.setup((self.context.width, self.context.height))
 
                 # main loop
                 def loop():
@@ -146,9 +147,9 @@ class Renderer(object):
 
         # styles
         # set fg color to solve unicode problem
-        self.fill_color = Color(' ', constants.BLACK)
-        self.stroke_color = Color('*')
-        self.tint_color = Color('·')
+        self.fill_color = CColor(' ', constants.BLACK)
+        self.stroke_color = CColor('*')
+        self.tint_color = CColor('·')
         self.background_color = constants.BLACK
         self.stroke_weight = 0
         self.is_stroke_enabled = True
@@ -198,7 +199,7 @@ class Renderer(object):
 
     def _reset_frame_buffer(self):
         width, height = self.size
-        self.frame_buffer = [Color(' ', constants.BLACK)
+        self.frame_buffer = [CColor(' ', constants.BLACK)
                              for _ in range(width * height)]
 
     def _render_shape(self, shape):
@@ -382,7 +383,7 @@ class Renderer(object):
                             ch, _, _ = tint_color
                         stroke_pixels += self._rasterize_point(
                             e[0].x, e[0].y,
-                            Color(ch, fg, bg),
+                            CColor(ch, fg, bg),
                             e[0].weight_x, e[0].weight_y,
                             e[0].rotation
                         )
@@ -409,7 +410,7 @@ class Renderer(object):
                         ch, fg, bg = first_point.color
                         if is_tint_enbaled:
                             ch, _, _ = tint_color
-                        fill_color = Color(ch, fg, bg)
+                        fill_color = CColor(ch, fg, bg)
                     fill_pixels += self._scan_line_filling(
                         fill_edges, fill_color
                     )
@@ -549,6 +550,9 @@ class Renderer(object):
         )
         edges = self._vertices_to_edges(vertices)
         return self._scan_line_filling(edges, color)
+
+    def _discretize_ellipse(self, x0, y0, color, rotation):
+        pass
 
     def _discretize_arc(self, x0, y0, a, b, start, stop, color, rotation=0, mode=constants.CHORD):
         if a == 0 or b == 0:
@@ -709,7 +713,7 @@ class Renderer(object):
                 # it will remove more if the last one is wider char
                 # in that case, wider_cnt == -1
                 if wider_cnt == -1:
-                    self.frame_buffer[index] = Color(" ")
+                    self.frame_buffer[index] = CColor(" ")
                 j -= 1
 
     def log_frame_buffer(self):
@@ -786,8 +790,9 @@ class Context(metaclass=ABCMeta):
         self.terminal_height = 0
         self.inner_width = 0
         self.inner_height = 0
-        self._content_width = 0
-        self._content_height = 0
+        self.width = 0
+        self.height = 0
+        self.has_open = False
         self._pad_width = 0
         self._pad_height = 0
         self._buffer = []
@@ -797,21 +802,22 @@ class Context(metaclass=ABCMeta):
         self._pad_y = 0
         self._screen = None
         self._background_color = constants.BLACK
+        self._color_palette = generate_color_palette()
 
-    def open(self, size, is_full_screen):
+    def open(self, width=10, height=10, is_full_screen=False):
         self.init()
 
         if is_full_screen:
-            self._content_width = self.window_width
-            self._content_height = self.window_height
+            self.width = self.window_width
+            self.height = self.window_height
         else:
-            self._content_width = size[0]
-            self._content_height = size[1]
+            self.width = width
+            self.height = height
 
-        self._pad_width = self._content_width + 2
-        self._pad_height = self._content_height + 2
+        self._pad_width = self.width + 2
+        self._pad_height = self.height + 2
         self._update_pad()
-        return (self._content_width, self._content_height)
+        self.has_open = True
 
     def draw(self, buffer, background_color, color_pair):
         self._buffer = buffer
@@ -964,7 +970,6 @@ elif sys.platform == BROWSER:
             self._write_content = ''
             self._has_cursor = True
             self._container = None
-            self._color_palette = generate_color_palette()
 
         def init(self):
             if self.options == None:
@@ -1036,12 +1041,9 @@ elif sys.platform == BROWSER:
         def update_window(self):
             pass
 
-        def background(self, color):
-            index = color * 3
-            r = self._color_palette[index]
-            g = self._color_palette[index + 1]
-            b = self._color_palette[index + 2]
-            color = f'rgb({r}, {g}, {b})'
+        def background(self, color_index):
+            r, g, b = self._color_palette[color_index][0]['rgb']
+            color = f'rgb({r * 255}, {g * 255}, {b * 255})'
             self._styles(self._container, {
                 'background': color
             })
@@ -1070,6 +1072,8 @@ else:
             self._screen = curses.initscr()
             self.window_width = self._screen.getmaxyx()[1]
             self.window_height = self._screen.getmaxyx()[0]
+
+        def init(self):
             self._screen.keypad(1)
             self._screen.nodelay(1)
             self._screen.leaveok(False)
@@ -1082,9 +1086,6 @@ else:
             # Enable mouse events
             curses.mousemask(curses.ALL_MOUSE_EVENTS |
                              curses.REPORT_MOUSE_POSITION)
-
-        def init(self):
-            pass
 
         def close(self):
             self._screen.keypad(0)
@@ -1149,7 +1150,12 @@ else:
         def enable_colors(self):
             for i, c in enumerate(self._color_pair):
                 if not c[1]:
-                    curses.init_pair(i + 1, c[0].fg, c[0].bg)
+                    # logger.debug(self._color_palette)
+                    _, fg, bg = c[0]
+                    fg_index = self._color_palette[fg][1]
+                    bg_index = self._color_palette[bg][1]
+                    # logger.log(fg_index, bg_index)
+                    curses.init_pair(i + 1, fg_index, bg_index)
                     c[1] = True
 
         def update_window(self):
@@ -1189,30 +1195,18 @@ class ImageLoader(metaclass=ABCMeta):
         pass
 
     def convert_color(self, data):
-        hue_palette = []
-        for i, c in enumerate(self._color_palette):
-            if i < len(self._color_palette) - 3 and i % 3 == 0:
-                r = c
-                g = self._color_palette[i + 1]
-                b = self._color_palette[i + 2]
-                h, _, _ = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
-                hue_palette.append((h, i // 3))
-        sorted_hue_palette = sorted(hue_palette, key=lambda x: x[0])
-        sorted_palette = [h[0] for h in sorted_hue_palette]
-        palette_len = len(sorted_palette)
         pixels = []
+        hue_palette = [c['hsl'][0] for c in self._color_palette]
         for r, g, b, _ in data:
             h, _, _ = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
-            index = bisect.bisect_left(sorted_palette, h)
-            index = max(min(index, palette_len - 1), 0)
-            _, hue_index = sorted_hue_palette[index]
-            pixels.append(Color('·', min(index + 1, 255), hue_index))
+            index = bisect.bisect_left(hue_palette, h, 0, len(hue_palette) - 1)
+            _, hue_index = hue_palette[index]
+            pixels.append(CColor('·', min(index + 1, 255), hue_index))
         return pixels
 
 
 if sys.platform == BROWSER:
-    # from browser import timer  # pylint: disable=imports
-    from js import window
+    from js import window  # pylint: disable=imports
 
     class BrowserTimer(Timer):
         def run(self, ms, callback):
@@ -1244,8 +1238,12 @@ else:
 
         def run(self, ms, callback):
             while True:
+                t1 = time.time()
                 callback()
-                time.sleep(ms / 1000)
+                t2 = time.time()
+                d = ms / 1000 - (t2 - t1)
+                if d > 0:
+                    time.sleep(d)
 
         def stop(self):
             pass
@@ -1312,7 +1310,7 @@ class Point(object):
         self.color = color
         self.type = type
         self.rotation = rotation
-        self.color = Color(' ') if color == None else color
+        self.color = CColor(' ') if color == None else color
 
     def __str__(self):
         attrs = {
@@ -1336,7 +1334,7 @@ class Point(object):
     __repr__ = __str__
 
 
-class Color(object):
+class CColor(object):
 
     def __init__(self, ch=" ", fg=constants.WHITE, bg=constants.BLACK):
         self.index = 0
@@ -1385,6 +1383,37 @@ class Color(object):
         return attrs.__str__()
 
     __repr__ = __str__
+
+
+class ColorManager(object):
+
+    def __init__(self):
+        self.color_mode = constants.ANSI_NORMAL
+
+    @classmethod
+    def rgb_to_ansi256(cls, r, g, b):
+        if r == g and g == b:
+            if r < 8:
+                return 16
+            if r > 248:
+                return 231
+            return round(((r - 8) / 247) * 24) + 232
+
+        ansi = 16 \
+            + (36 * round(r / 255 * 5)) \
+            + (6 * round(g / 255 * 5)) \
+            + round(b / 255 * 5)
+
+        return ansi
+
+    @classmethod
+    def hsv_to_ansi256(cls, h, s, v):
+        r, g, b = colorsys.hsv_to_rgb(h / 360, h / 100, v / 100)
+        return cls.rgb_to_ansi256(round(r * 255), round(g * 255), round(b * 255))
+
+
+class Color(object):
+    pass
 
 
 class CImage(object):

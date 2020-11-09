@@ -1,13 +1,15 @@
 import string
 from . import constants
-from .core import Color
 from .app import renderer
-from .color import Color
 from .color import no_fill
 from .color import stroke
 from .shape import point
 from .shape import stroke_weight
 from .structure import open_context
+
+
+def figlet_text(text, font_family):
+    pass
 
 
 def text(text, x, y):

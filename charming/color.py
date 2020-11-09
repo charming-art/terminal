@@ -1,11 +1,11 @@
 from . import constants
-from .core import Color
+from .core import CColor
 from .app import renderer
 
 
 def stroke(ch=" ", fg=None, bg=None):
     renderer.is_stroke_enabled = True
-    c = Color(ch, fg, bg)
+    c = CColor(ch, fg, bg)
     renderer.stroke_color = c
 
 
@@ -16,7 +16,7 @@ def fill(ch=" ", fg=None, bg=None):
     if ch == " " and (fg == None or fg == constants.WHITE):
         fg = constants.BLACK
 
-    c = Color(ch, fg, bg)
+    c = CColor(ch, fg, bg)
     renderer.fill_color = c
 
 
@@ -29,7 +29,7 @@ def no_fill():
 
 
 def background(ch=" ", fg=None, bg=None):
-    c = Color(ch, fg, bg)
+    c = CColor(ch, fg, bg)
     renderer.has_background_called = True
     if bg == None:
         bg = constants.BLACK
@@ -38,7 +38,7 @@ def background(ch=" ", fg=None, bg=None):
 
 
 def color(ch=" ", fg=None, bg=None):
-    return Color(ch, fg, bg)
+    return CColor(ch, fg, bg)
 
 
 def ch(color):
@@ -51,3 +51,7 @@ def fg(color):
 
 def bg(color):
     return color.bg
+
+
+def color_mode(mode=constants.ANSI_NORMAL, max1=255, max2=255, max3=255):
+    pass

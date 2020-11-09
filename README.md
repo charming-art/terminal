@@ -1,6 +1,6 @@
 # Charming
 
-Charming(Character Terminal Art Programming) is a coss-platform python package for creating interactive character terminal art program.
+Charming is a creative coding language based on Processing and Python for character terminal art programing(charming).
 
 ## Getting Started
 
@@ -128,6 +128,7 @@ Try it one an online editor.
 - [x] no_fill()
 - [x] no_stroke()
 - [x] stroke()
+- [ ] color_mode()
 
 #### Creating && Reading
 
@@ -244,6 +245,7 @@ Try it one an online editor.
 - [x] text_leading()
 - [x] text_size()
 - [x] text_height()
+- [ ] figlet_text()
 
 ### Image
   

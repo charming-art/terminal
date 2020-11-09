@@ -1,6 +1,6 @@
 import math
-from abc import ABCMeta, abstractclassmethod
-
+import colorsys
+import logging
 widths = [
     (126,    1), (159,    0), (687,     1), (710,   0), (711,   1),
     (727,    0), (733,    1), (879,     0), (1154,  1), (1161,  0),
@@ -49,14 +49,6 @@ def to_left(x1, y1, x2, y2, px, py):
 
 
 def map(value, start1, stop1, start2, stop2):
-    '''
-    Re-maps a number from one range to another.
-
-    Example:
-
-        >>> map(1.5, 1, 2, 10, 20)
-        15.0
-    '''
     if start1 == stop1:
         return stop2
     t = (value - start1) / (stop1 - start1)
@@ -64,39 +56,44 @@ def map(value, start1, stop1, start2, stop2):
 
 
 def dist(x1, y1, x2, y2):
-    '''
-    Calculates the distance between two points.
-
-    Example:
-
-        >>> dist(0, 0, 1, 0)
-        1.0
-        >>> dist(-1, -1, 2, 3)
-        5.0
-    '''
     p = [x1, y1]
     q = [x2, y2]
     return math.sqrt(sum((px - qx) ** 2 for px, qx in zip(p, q)))
 
 
 def generate_color_palette():
+    def normalize(r, g, b):
+        return {
+            'rgb': (r / 255, g / 255, b / 255),
+            'hls': colorsys.rgb_to_hls(r / 255, g / 255, b / 255),
+            'hsv': colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+        }
+
+    def sort_color(c):
+        h, s, v = c[0]['hsv']
+        return (s, v, h)
+
+    def sort_color_2(c):
+        h, s, v = c[0]['hsv']
+        return (h, s, v)
+
     colors = [
-        0x2e, 0x34, 0x36,
-        0xcc, 0x00, 0x00,
-        0x4e, 0x9a, 0x06,
-        0xc4, 0xa0, 0x00,
-        0x34, 0x65, 0xa4,
-        0x75, 0x50, 0x7b,
-        0x06, 0x98, 0x9a,
-        0xd3, 0xd7, 0xcf,
-        0x55, 0x57, 0x53,
-        0xef, 0x29, 0x29,
-        0x8a, 0xe2, 0x34,
-        0xfc, 0xe9, 0x4f,
-        0x72, 0x9f, 0xcf,
-        0xad, 0x7f, 0xa8,
-        0x34, 0xe2, 0xe2,
-        0xee, 0xee, 0xec
+        normalize(0x2e, 0x34, 0x36),
+        normalize(0xcc, 0x00, 0x00),
+        normalize(0x4e, 0x9a, 0x06),
+        normalize(0xc4, 0xa0, 0x00),
+        normalize(0x34, 0x65, 0xa4),
+        normalize(0x75, 0x50, 0x7b),
+        normalize(0x06, 0x98, 0x9a),
+        normalize(0xd3, 0xd7, 0xcf),
+        normalize(0x55, 0x57, 0x53),
+        normalize(0xef, 0x29, 0x29),
+        normalize(0x8a, 0xe2, 0x34),
+        normalize(0xfc, 0xe9, 0x4f),
+        normalize(0x72, 0x9f, 0xcf),
+        normalize(0xad, 0x7f, 0xa8),
+        normalize(0x34, 0xe2, 0xe2),
+        normalize(0xee, 0xee, 0xec)
     ]
 
     # Fill in the remaining 240 ANSI colors.
@@ -106,18 +103,31 @@ def generate_color_palette():
         r = v[int((i / 36) % 6)]
         g = v[int((i / 6) % 6)]
         b = v[int(i % 6)]
-        colors.append(r)
-        colors.append(g)
-        colors.append(b)
+        colors.append(normalize(r, g, b))
 
     # Generate greys (232-255)
     for i in range(24):
         c = 8 + i * 10
-        colors.append(c)
-        colors.append(c)
-        colors.append(c)
+        colors.append(normalize(c, c, c))
 
-    return colors
+    colors_palette = [(c, i) for i, c in enumerate(colors)]
+    s = sorted(colors_palette[16:], key=sort_color_2)
+    # colors_palette = sorted(
+    #     colors_palette, key=sort_color
+    # )
+    # logging.debug([c[0]['hls'][1] for c in colors_palette[:16] + s])
+
+    return colors_palette[:16] + s
+
+
+# class CSSColor(object):
+
+#     def __init__(self, a, b, c, index):
+#         self.index = index
+#         self.rgb = (r / 255, b / 255, g / 255)
+#         self.hls = colorsys.rgb_to_hls(r / 255, b / 255, g / 255)
+
+#     def __
 
 
 class Matrix(object):
