@@ -56,64 +56,49 @@ class Sketch(object):
         self.is_log_frame_buffer = False
 
     def run(self):
-        if not self.context.has_open:
-            print('Call size to open context.')
-            return
 
         try:
-            is_static_mode = not self.has_draw_hook or not self.has_setup_hook
-            if is_static_mode:
-                self.renderer.setup((self.context.width, self.context.height))
-                self.renderer.render()
-                self.context.draw(
-                    self.renderer.frame_buffer,
-                    self.renderer.background_color,
-                    self.renderer.color_pair
-                )
+            setup_hook = self.hooks_map['setup']
+            draw_hook = self.hooks_map['draw']
 
-                if self.is_log_frame_buffer == True:
-                    self.renderer.log_frame_buffer()
-
-                # only listen window resize event
-                def loop():
-                    events = self.context.get_events()
-                    for e in events:
-                        if e.type == "window":
-                            self._handle_event(e)
-
-                self.timer.run(1000, loop)
-            else:
-                # setup
-                setup_hook = self.hooks_map['setup']
-                draw_hook = self.hooks_map['draw']
+            if self.has_draw_hook:
                 setup_hook()
-                self.renderer.setup((self.context.width, self.context.height))
 
-                # main loop
-                def loop():
-                    events = self.context.get_events()
-                    for e in events:
-                        self._handle_event(e)
+            if not self.context.has_open:
+                print('Call size to open context.')
+                return
 
-                    if self.is_loop:
-                        self.renderer.has_background_called = False
-                        draw_hook()
-                        self.renderer.render()
+            self.renderer.setup((self.context.width, self.context.height))
 
-                        if self.renderer.has_background_called:
-                            self.context.clear()
+            # main loop
+            def loop():
+                events = self.context.get_events()
+                for e in events:
+                    self._handle_event(e)
 
-                        self.context.draw(
-                            self.renderer.frame_buffer,
-                            self.renderer.background_color,
-                            self.renderer.color_pair
-                        )
+                if self.is_loop:
+                    self.renderer.has_background_called = False
+                    draw_hook()
+                    self.renderer.render()
 
-                        if self.is_log_frame_buffer == True:
-                            self.renderer.log_frame_buffer()
-                    self.frame_count += 1
+                    if self.renderer.has_background_called:
+                        self.context.clear()
 
+                    self.context.draw(
+                        self.renderer.frame_buffer,
+                        self.renderer.background_color,
+                        self.renderer.color_pair
+                    )
+
+                    if self.is_log_frame_buffer == True:
+                        self.renderer.log_frame_buffer()
+                self.frame_count += 1
+
+            loop()
+            if self.has_draw_hook and self.has_setup_hook:
                 self.timer.run(1000 / self.frame_rate, loop)
+            else:
+                self.timer.wait()
         except Exception as e:
             logger.debug(e)
             raise e
@@ -192,9 +177,7 @@ class Renderer(object):
             shape.is_tint_enabled = self.is_tint_enabled
             shape.is_fill_enabled = self.is_fill_enabled
             shape.is_stroke_enabled = self.is_stroke_enabled
-            shape.transform_matrix_stack = [
-                m for m in self.transform_matrix_stack
-            ]
+            shape.transform_matrix_stack = self.transform_matrix_stack[:]
         self.shape_queue.append(shape)
 
     def set_frame_buffer(self, color):
@@ -203,8 +186,10 @@ class Renderer(object):
 
     def _reset_frame_buffer(self):
         width, height = self.size
-        self.frame_buffer = [CColor(' ', constants.BLACK)
-                             for _ in range(width * height)]
+        self.frame_buffer = [
+            CColor(' ', constants.BLACK)
+            for _ in range(width * height)
+        ]
 
     def _render_shape(self, shape):
         vertices = self._vertex_processing(
@@ -273,33 +258,62 @@ class Renderer(object):
         # vertices
         if primitive_type == constants.POLYGON:
             if close_mode == constants.CLOSE:
-                normal_vertices = [v for v in vertices if v.type == "normal"]
+                normal_vertices = [
+                    v for v in vertices
+                    if v.type == "normal"
+                ]
                 vertices.append(normal_vertices[0])
             ps = [vertices]
         elif primitive_type == constants.POINTS:
             ps = [[v] for v in vertices]
         elif primitive_type == constants.LINES:
-            ps = [[vertices[i], vertices[i + 1]]
-                  for i in range(len(vertices) - 1)
-                  if i % 2 == 0]
+            ps = [
+                [vertices[i],
+                 vertices[i + 1]]
+                for i in range(0, len(vertices) - 1, 2)
+            ]
         elif primitive_type == constants.TRIANGLES:
-            ps = [[vertices[i], vertices[i + 1], vertices[i + 2], vertices[i]]
-                  for i in range(len(vertices) - 2)
-                  if i % 3 == 0]
+            ps = [
+                [vertices[i],
+                 vertices[i + 1],
+                 vertices[i + 2],
+                 vertices[i]]
+                for i in range(0, len(vertices) - 2, 3)
+            ]
         elif primitive_type == constants.TRIANGLE_STRIP:
-            ps = [[vertices[i], vertices[i + 1], vertices[i + 2], vertices[i]]
-                  for i in range(len(vertices) - 2)]
+            ps = [
+                [vertices[i],
+                 vertices[i + 1],
+                 vertices[i + 2],
+                 vertices[i]]
+                for i in range(len(vertices) - 2)
+            ]
         elif primitive_type == constants.TRIANGLE_FAN:
-            ps = [[vertices[0], vertices[i], vertices[i + 1], vertices[0]]
-                  for i in range(1, len(vertices) - 1)]
+            ps = [
+                [vertices[0],
+                 vertices[i],
+                 vertices[i + 1],
+                 vertices[0]]
+                for i in range(1, len(vertices) - 1)
+            ]
         elif primitive_type == constants.QUADS:
-            ps = [[vertices[i], vertices[i + 1], vertices[i + 2], vertices[i + 3], vertices[i]]
-                  for i in range(len(vertices) - 3)
-                  if i % 4 == 0]
+            ps = [
+                [vertices[i],
+                 vertices[i + 1],
+                 vertices[i + 2],
+                 vertices[i + 3],
+                 vertices[i]]
+                for i in range(0, len(vertices) - 3, 4)
+            ]
         elif primitive_type == constants.QUAD_STRIP:
-            ps = [[vertices[i], vertices[i + 1], vertices[i + 3], vertices[i + 2], vertices[i]]
-                  for i in range(len(vertices) - 3)
-                  if i % 2 == 0]
+            ps = [
+                [vertices[i],
+                 vertices[i + 1],
+                 vertices[i + 3],
+                 vertices[i + 2],
+                 vertices[i]]
+                for i in range(len(vertices) - 3, 2)
+            ]
         elif primitive_type == constants.ARC:
             start = options['start']
             stop = options['stop']
@@ -317,22 +331,26 @@ class Renderer(object):
         elif primitive_type == constants.CURVE:
             points = []
             curve_tightness = options['curve_tightness']
-            for i, v in enumerate(vertices):
-                if i < len(vertices) - 3:
-                    points += self._discretize_curve(
-                        v, vertices[i + 1], vertices[i + 2], vertices[i + 3],
-                        v.color,
-                        curve_tightness
-                    )
+            for i in range(len(vertices) - 3):
+                points += self._discretize_curve(
+                    vertices[i],
+                    vertices[i + 1],
+                    vertices[i + 2],
+                    vertices[i + 3],
+                    vertices[i].color,
+                    curve_tightness
+                )
             ps = [points]
         elif primitive_type == constants.BEZIER:
             points = []
-            for i, v in enumerate(vertices):
-                if i < len(vertices) - 3 and i % 3 == 0:
-                    points += self._discretize_bezier(
-                        v, vertices[i + 1], vertices[i + 2], vertices[i + 3],
-                        v.color
-                    )
+            for i in range(0, len(vertices) - 3, 3):
+                points += self._discretize_bezier(
+                    vertices[i],
+                    vertices[i + 1],
+                    vertices[i + 2],
+                    vertices[i + 3],
+                    vertices[i].color
+                )
             ps = [points]
         elif primitive_type == constants.IMAGE:
             w = options['width']
@@ -1190,11 +1208,15 @@ class Logger(metaclass=ABCMeta):
 
 class Timer(metaclass=ABCMeta):
     @abstractclassmethod
-    def run(ms, callback):
+    def run(self, ms, callback):
         pass
 
     @abstractclassmethod
-    def stop(ms, callback):
+    def stop(self, ms, callback):
+        pass
+
+    @abstractclassmethod
+    def wait(self):
         pass
 
 
@@ -1228,6 +1250,9 @@ if sys.platform == BROWSER:
         def stop(self):
             window.clearInterval(self.t)
 
+        def wait(self):
+            pass
+
     class BrowserLogger(Logger):
 
         def log(self, *args, **kw):
@@ -1260,6 +1285,9 @@ else:
 
         def stop(self):
             pass
+
+        def wait(self):
+            input()
 
     class LocalLogger(Logger):
 
