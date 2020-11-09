@@ -223,7 +223,6 @@ class Renderer(object):
         self._fragment_processing(fragments_clipped)
 
     def _vertex_processing(self, points, stroke_color, stroke_weight, transform_matrix_stack, primitive_type):
-        # transform
         tm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         sm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         rotation = 0
@@ -238,20 +237,18 @@ class Renderer(object):
         sy = sm[1][1]
 
         for p in points:
+            # transform
             mp = Matrix([[p.x], [p.y], [1]])
             tp = tm * mp
-            p.x = tp[0][0]
-            p.y = tp[1][0]
+            p.x = int(tp[0][0])
+            p.y = int(tp[1][0])
             p.weight_x = sx * stroke_weight if stroke_weight != 0 else sx - 1
             p.weight_y = sy * stroke_weight if stroke_weight != 0 else sy - 1
             p.rotation = rotation
 
-        # screen map && color
-        for p in points:
+            # screen map && color
             if primitive_type != constants.IMAGE:
                 p.color = stroke_color
-            p.x = int(p.x)
-            p.y = int(p.y)
 
         return points
 
@@ -457,16 +454,16 @@ class Renderer(object):
         return fragments
 
     def _clipping(self, fragments):
-        fragments_clipped = []
-
-        def is_in(p):
-            return p.x >= 0 and p.x < self.width and p.y >= 0 and p.y < self.height
-
-        for pixels in fragments:
-            pixels_clipped = [p for p in pixels if is_in(p)]
-            fragments_clipped.append(pixels_clipped)
-
-        return fragments_clipped
+        return [
+            [
+                p for p in pixels
+                if p.x >= 0
+                and p.x < self.width
+                and p.y >= 0
+                and p.y < self.height
+            ]
+            for pixels in fragments
+        ]
 
     def _fragment_processing(self, fragemnts):
         for pixels in fragemnts:

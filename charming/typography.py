@@ -6,10 +6,17 @@ from .color import stroke
 from .shape import point
 from .shape import stroke_weight
 from .structure import open_context
+from pyfiglet import Figlet
+from pyfiglet import FigletFont
 
 
-def figlet_text(text, font_family):
-    pass
+def figlet_text(text, width=80, font_family='standard'):
+    f = Figlet(font=font_family, width=width)
+    return f.renderText(text)
+
+
+def get_font_list():
+    return FigletFont().getFonts()
 
 
 def text(text, x, y):

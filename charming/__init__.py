@@ -176,6 +176,7 @@ from .typography import text_leading
 from .typography import text_space
 from .typography import text
 from .typography import figlet_text
+from .typography import get_font_list
 
 from .image import image
 from .image import image_mode
