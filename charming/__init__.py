@@ -39,9 +39,7 @@ from .constants import BLUE
 from .constants import WHITE
 from .constants import MAGENTA
 
-from .constants import ANSI_NORMAL
-from .constants import ANSI_RAINBOW
-from .constants import ANSI_STRIP
+from .constants import ANSI
 from .constants import RGB
 from .constants import HSB
 

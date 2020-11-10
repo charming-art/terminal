@@ -245,7 +245,8 @@ Try it one an online editor.
 - [x] text_leading()
 - [x] text_size()
 - [x] text_height()
-- [ ] figlet_text()
+- [x] figlet_text()
+- [x] get_font_list
 
 ### Image
   

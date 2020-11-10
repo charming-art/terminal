@@ -10,7 +10,7 @@ from .utils import Matrix
 from .utils import angle_between
 from .utils import get_char_width
 from .utils import to_left
-from .utils import generate_color_palette
+from .utils import generate_xtermjs_colors
 
 # three platforms
 WINDOWS = "win32"
@@ -135,10 +135,8 @@ class Renderer(object):
         self.shape_queue = []
 
         # styles
-        # set fg color to solve unicode problem
-        self.fill_color = CColor(' ', constants.BLACK)
-        self.stroke_color = CColor('*')
-        self.tint_color = CColor('·')
+        self.color_mode = constants.ANSI
+        self.color_channels = (255,)
         self.background_color = constants.BLACK
         self.stroke_weight = 0
         self.is_stroke_enabled = True
@@ -157,6 +155,12 @@ class Renderer(object):
         self.transform_matrix_stack = []
         self.width = 10
         self.height = 10
+
+    def init(self):
+        self.fill_color = CColor.blank_fill()
+        self._bg_color = CColor.blank_fill()
+        self.stroke_color = CColor('*')
+        self.tint_color = CColor('·')
 
     def setup(self, width, height):
         self.width = width
@@ -188,7 +192,7 @@ class Renderer(object):
 
     def _reset_frame_buffer(self):
         self.frame_buffer = [
-            CColor(' ', constants.BLACK)
+            self._bg_color
             for _ in range(self.width * self.height)
         ]
 
@@ -409,7 +413,7 @@ class Renderer(object):
                             ch, _, _ = tint_color
                         stroke_pixels += self._rasterize_point(
                             e[0].x, e[0].y,
-                            CColor(ch, fg, bg),
+                            CColor.create(ch, fg, bg),
                             e[0].weight_x, e[0].weight_y,
                             e[0].rotation
                         )
@@ -436,7 +440,7 @@ class Renderer(object):
                         ch, fg, bg = first_point.color
                         if is_tint_enbaled:
                             ch, _, _ = tint_color
-                        fill_color = CColor(ch, fg, bg)
+                        fill_color = CColor.create(ch, fg, bg)
                     fill_pixels += self._scan_line_filling(
                         fill_edges, fill_color
                     )
@@ -605,7 +609,6 @@ class Renderer(object):
             if x != pre_x or y != pre_y:
                 pre_x = x
                 pre_y = y
-
                 rotated_x = math.cos(rotation) * x - math.sin(rotation) * y
                 rotated_y = math.sin(rotation) * x + math.cos(rotation) * y
                 points.append(
@@ -740,7 +743,7 @@ class Renderer(object):
                 # it will remove more if the last one is wider char
                 # in that case, wider_cnt == -1
                 if wider_cnt == -1:
-                    self.frame_buffer[index] = CColor(" ")
+                    self.frame_buffer[index] = CColor.blank_fill()
                 j -= 1
 
     def log_frame_buffer(self):
@@ -828,7 +831,6 @@ class Context(metaclass=ABCMeta):
         self._pad_y = 0
         self._screen = None
         self._background_color = constants.BLACK
-        self._color_palette = generate_color_palette()
 
     def open(self, width=10, height=10, is_full_screen=False):
         self.init()
@@ -996,6 +998,7 @@ elif sys.platform == BROWSER:
             self._write_content = ''
             self._has_cursor = True
             self._container = None
+            self._color_palette = generate_xtermjs_colors()
 
         def init(self):
             if self.options == None:
@@ -1024,17 +1027,12 @@ elif sys.platform == BROWSER:
             self.window_height = self._screen.rows
             self.window_width = self._screen.cols
 
-        def addch(self, x, y, ch, fg=None, bg=None):
+        def addch(self, x, y, ch, fg=constants.WHITE, bg=constants.BLACK):
             _x = x - self._pad_x
             _y = y - self._pad_y
 
             if _y > 0 and _y < self._pad_height - 1:
                 x = self._cell_poss[_y - 1]['list'][_x] + self._pad_x
-
-            if fg == None:
-                fg = 7
-            if bg == None:
-                bg = 0
 
             csi_fg = f'\x1b[38;5;{fg}m'
             csi_bg = f'\x1b[48;5;{bg}m'
@@ -1068,8 +1066,8 @@ elif sys.platform == BROWSER:
             pass
 
         def background(self, color_index):
-            r, g, b = self._color_palette[color_index][0]['rgb']
-            color = f'rgb({r * 255}, {g * 255}, {b * 255})'
+            r, g, b = self._color_palette[color_index]
+            color = f'rgb({r}, {g}, {b})'
             self._styles(self._container, {
                 'background': color
             })
@@ -1152,8 +1150,7 @@ else:
                 return
 
             if fg != None and bg != None:
-                for i, color in enumerate(self._color_pair):
-                    c, _ = color
+                for i, c in enumerate(self._color_pair):
                     if fg == c.fg and bg == c.bg:
                         color_index = i + 1
                 self._screen.addstr(
@@ -1175,14 +1172,10 @@ else:
 
         def enable_colors(self):
             for i, c in enumerate(self._color_pair):
-                if not c[1]:
-                    # logger.debug(self._color_palette)
-                    _, fg, bg = c[0]
-                    fg_index = self._color_palette[fg][1]
-                    bg_index = self._color_palette[bg][1]
-                    # logger.log(fg_index, bg_index)
-                    curses.init_pair(i + 1, fg_index, bg_index)
-                    c[1] = True
+                if not c.has_init:
+                    _, fg, bg = c
+                    curses.init_pair(i + 1, fg, bg)
+                    c.has_init = True
 
         def update_window(self):
             curses.update_lines_cols()
@@ -1216,8 +1209,6 @@ class Timer(metaclass=ABCMeta):
 
 
 class ImageLoader(metaclass=ABCMeta):
-    def __init__(self):
-        self._color_palette = generate_color_palette()
 
     @abstractclassmethod
     def load(self, src):
@@ -1226,12 +1217,13 @@ class ImageLoader(metaclass=ABCMeta):
 
     def convert_color(self, data):
         pixels = []
-        hue_palette = [c['hsl'][0] for c in self._color_palette]
+        CColor.save()
+        CColor.color_mode = constants.RGB
+        CColor.color_channels = (255, 255, 255)
         for r, g, b, _ in data:
-            h, _, _ = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
-            index = bisect.bisect_left(hue_palette, h, 0, len(hue_palette) - 1)
-            _, hue_index = hue_palette[index]
-            pixels.append(CColor('·', min(index + 1, 255), hue_index))
+            c = (r, g, b)
+            pixels.append(CColor('·', c, c))
+        CColor.restore()
         return pixels
 
 
@@ -1346,7 +1338,7 @@ class Point(object):
         self.color = color
         self.type = type
         self.rotation = rotation
-        self.color = CColor(' ') if color == None else color
+        self.color = CColor.blank_fill() if color == None else color
 
     def __str__(self):
         attrs = {
@@ -1365,69 +1357,81 @@ class Point(object):
         return x and y and weight_x and weight_y and color and type
 
     def __hash__(self):
-        return hash('(%s, %s)' % (self.x, self.y))
+        return hash(f'({self.x}, {self.y})')
 
     __repr__ = __str__
 
 
 class CColor(object):
 
-    def __init__(self, ch=" ", fg=constants.WHITE, bg=constants.BLACK):
-        self.index = 0
+    color_mode = constants.ANSI
+    color_channels = (255,)
 
+    def __init__(self, ch=" ", fg=None, bg=None):
+        self.index = 0
+        self.has_init = False
         if isinstance(ch, self.__class__):
             self.ch = ch.ch
             self.fg = ch.fg
             self.bg = ch.bg
         else:
             self.ch = ch
-            self.fg = fg
-            self.bg = bg
+            if self.color_mode == constants.ANSI:
+                self.fg = self._init_ansi(fg, constants.WHITE)
+                self.bg = self._init_ansi(bg, constants.BLACK)
+            elif self.color_mode == constants.RGB:
+                m1, m2, m3 = self.color_channels  # pylint: disable=unbalanced-tuple-unpacking
+                self.fg = self._init_truecolor(fg, (m1, m2, m3))
+                self.bg = self._init_truecolor(bg, (0, 0, 0))
+            else:
+                m1, m2, m3 = self.color_channels  # pylint: disable=unbalanced-tuple-unpacking
+                self.fg = self._init_truecolor(fg, (m1, 0, m3))
+                self.bg = self._init_truecolor(bg, (0, 0, 0))
 
-            self.fg = constants.WHITE if self.fg == None else self.fg
-            self.bg = constants.BLACK if self.bg == None else self.bg
+        self.add_color(self)
 
-        # add to color pair
-        if not self.has_color(self.fg, self.bg, Renderer.color_pair):
-            Renderer.color_pair.append([self, False])
+    def _init_ansi(self, index, default):
+        if index == None:
+            index = default
+        return round(map(index, 0, self.color_channels[0], 0, 255))
 
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.index > 2:
-            self.index = 0
-            raise StopIteration()
-        attrs = [self.ch, self.fg, self.bg]
-        a = attrs[self.index]
-        self.index += 1
-        return a
-
-    def has_color(self, fg, bg, color_pair):
-        equal_colors = [
-            color for color, enable in color_pair
-            if color.fg == fg and color.bg == bg
+    def _init_truecolor(self, channels, default):
+        if channels == None:
+            channels = default
+        elif len(channels) == 1:
+            g = channels[0]
+            channels = (g, g, g)
+        c1, c2, c3 = [
+            map(c, 0, self.color_channels[i], 0, 1)
+            for i, c in enumerate(channels)
         ]
-        return len(equal_colors) > 0
+        if self.color_mode == constants.RGB:
+            return self.rgb_to_ansi256(c1, c2, c3)
+        else:
+            return self.hsv_to_ansi256(c1, c2, c3)
 
-    def __str__(self):
-        attrs = {
-            "ch": self.ch,
-            "fg": self.fg,
-            "bg": self.bg
-        }
-        return attrs.__str__()
+    @classmethod
+    def create(cls, ch, fg, bg):
+        cls.save()
+        cls.color_mode = constants.ANSI
+        cls.color_channels = (255,)
+        c = cls(ch, fg, bg)
+        cls.restore()
+        return c
 
-    __repr__ = __str__
-
-
-class ColorManager(object):
-
-    def __init__(self):
-        self.color_mode = constants.ANSI_NORMAL
+    @classmethod
+    def blank_fill(cls):
+        # solve unicode problem
+        if cls.color_mode == constants.ANSI:
+            return cls(" ", constants.BLACK)
+        else:
+            return cls(" ", (0, 0, 0))
 
     @classmethod
     def rgb_to_ansi256(cls, r, g, b):
+        r *= 255
+        g *= 255
+        b *= 255
         if r == g and g == b:
             if r < 8:
                 return 16
@@ -1444,12 +1448,48 @@ class ColorManager(object):
 
     @classmethod
     def hsv_to_ansi256(cls, h, s, v):
-        r, g, b = colorsys.hsv_to_rgb(h / 360, h / 100, v / 100)
-        return cls.rgb_to_ansi256(round(r * 255), round(g * 255), round(b * 255))
+        r, g, b = colorsys.hsv_to_rgb(h, s, v)
+        return cls.rgb_to_ansi256(r, g, b)
 
+    @classmethod
+    def save(cls):
+        cls._color_channels = cls.color_channels
+        cls._color_mode = cls.color_mode
 
-class Color(object):
-    pass
+    @classmethod
+    def restore(cls):
+        cls.color_channels = cls._color_channels
+        cls.color_mode = cls._color_mode
+
+    @classmethod
+    def add_color(cls, c):
+        _, fg, bg = c
+        for color in Renderer.color_pair:
+            if color.fg == fg and color.bg == bg:
+                return None
+        Renderer.color_pair.append(c)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.index > 2:
+            self.index = 0
+            raise StopIteration()
+        attrs = [self.ch, self.fg, self.bg]
+        a = attrs[self.index]
+        self.index += 1
+        return a
+
+    def __str__(self):
+        attrs = {
+            "ch": self.ch,
+            "fg": self.fg,
+            "bg": self.bg
+        }
+        return attrs.__str__()
+
+    __repr__ = __str__
 
 
 class CImage(object):

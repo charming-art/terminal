@@ -11,12 +11,10 @@ def stroke(ch=" ", fg=None, bg=None):
 
 def fill(ch=" ", fg=None, bg=None):
     renderer.is_fill_enabled = True
-
-    # set fg color to solve unicode problem
-    if ch == " " and (fg == None or fg == constants.WHITE):
-        fg = constants.BLACK
-
-    c = CColor(ch, fg, bg)
+    if ch == " ":
+        c = CColor.blank_fill()
+    else:
+        c = CColor(ch, fg, bg)
     renderer.fill_color = c
 
 
@@ -31,9 +29,7 @@ def no_fill():
 def background(ch=" ", fg=None, bg=None):
     c = CColor(ch, fg, bg)
     renderer.has_background_called = True
-    if bg == None:
-        bg = constants.BLACK
-    renderer.background_color = bg
+    renderer.background_color = c.bg
     renderer.set_frame_buffer(c)
 
 
@@ -53,5 +49,18 @@ def bg(color):
     return color.bg
 
 
-def color_mode(mode=constants.ANSI_NORMAL, max1=255, max2=255, max3=255):
-    pass
+def color_mode(mode=constants.ANSI, max1=None, max2=None, max3=None):
+    CColor.color_mode = mode
+    if mode == constants.ANSI:
+        if max1 != None:
+            CColor.color_channels = (max1,)
+    else:
+        if max1 != None and (max2 == None and max3 == None):
+            CColor.color_channels = (max1, max1, max1)
+        elif max1 != None and max2 != None and max3 != None:
+            CColor.color_channels = (max1, max2, max3)
+        else:
+            if mode == constants.RGB:
+                CColor.color_channels = (255, 255, 255)
+            else:
+                CColor.color_channels = (360, 100, 100)

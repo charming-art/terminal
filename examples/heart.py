@@ -23,7 +23,7 @@ def draw():
 
     app.fill("@", 1, 9)
     # app.square(0, 0, size)    
-    app.circle(0, -n1, size)
+    # app.circle(0, -n1, size)
     app.circle(n2, 0, size)
     app.no_loop()
 

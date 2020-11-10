@@ -93,12 +93,8 @@ MIDDLE = 5
 
 # Color Mode
 
-ANSI_NORMAL = 0
+ANSI = 0
 
-ANSI_RAINBOW = 1
+RGB = 1
 
-ANSI_STRIP = 2
-
-RGB = 3
-
-HSB = 4
+HSB = 2
