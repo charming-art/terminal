@@ -171,8 +171,8 @@ Try it one an online editor.
 
 - [x] delay()
 - [x] cursor()
-- [x] get_window_width(): the cols of the termianl
-- [x] get_window_height(): the lines of the terminal
+- [x] get_window_width()
+- [x] get_window_height()
 - [x] frame_rate()
 - [x] full_screen()
 - [x] get_frame_count()
@@ -242,11 +242,10 @@ Try it one an online editor.
 - [x] text()
 - [x] text_width()
 - [x] text_align()
-- [x] text_leading()
 - [x] text_size()
 - [x] text_height()
-- [x] figlet_text()
 - [x] get_font_list()
+- [x] text_font()
 
 ### Image
   

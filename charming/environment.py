@@ -17,9 +17,11 @@ def terminal_size(width, height, options=None):
 
 
 def full_terminal(options=None):
-    terminal_size(sketch.context.inner_width,
-                  sketch.context.inner_height,
-                  options)
+    terminal_size(
+        sketch.context.inner_width,
+        sketch.context.inner_height,
+        options
+    )
 
 
 def full_screen():

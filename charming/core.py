@@ -146,9 +146,8 @@ class Renderer(object):
         self.image_mode = constants.CORNER
         self.text_align_x = constants.LEFT
         self.text_align_y = constants.TOP
-        self.text_size = 1
-        self.text_leading = self.text_size - 1
-        self.text_space = 0
+        self.text_size = constants.NORMAL
+        self.text_font = 'standard'
 
         self.has_background_called = False
         self.transform_matrix_stack = []
@@ -199,6 +198,8 @@ class Renderer(object):
         vertices = self._vertex_processing(
             shape.points,
             shape.stroke_color,
+            shape.tint_color,
+            shape.is_tint_enabled,
             shape.stroke_weight,
             shape.transform_matrix_stack,
             shape.primitive_type
@@ -217,7 +218,6 @@ class Renderer(object):
             shape.tint_color,
             shape.is_stroke_enabled,
             shape.is_fill_enabled,
-            shape.is_tint_enabled,
             shape.primitive_type
         )
 
@@ -225,7 +225,7 @@ class Renderer(object):
 
         self._fragment_processing(fragments_clipped)
 
-    def _vertex_processing(self, points, stroke_color, stroke_weight, transform_matrix_stack, primitive_type):
+    def _vertex_processing(self, points, stroke_color, tint_color, is_tint_enabled, stroke_weight, transform_matrix_stack, primitive_type):
         tm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         sm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         rotation = 0
@@ -250,7 +250,16 @@ class Renderer(object):
             p.rotation = rotation
 
             # screen map && color
-            if primitive_type != constants.IMAGE:
+            if primitive_type == constants.IMAGE:
+                ch, fg, bg = p.color
+                if is_tint_enabled:
+                    ch, _, _ = tint_color
+                p.color = CColor.create(ch, fg, bg)
+            elif primitive_type == constants.TEXT:
+                _, fg, bg = stroke_color
+                ch, _, _ = p.color
+                p.color = CColor.create(ch, fg, bg)
+            else:
                 p.color = stroke_color
 
         return points
@@ -364,9 +373,13 @@ class Renderer(object):
                     i3 = (j + 1) * w + i + 1
                     i4 = (j + 1) * w + i
                     ps.append(
-                        [vertices[i1], vertices[i2],
-                         vertices[i3], vertices[i4]]
+                        [vertices[i1],
+                         vertices[i2],
+                         vertices[i3],
+                         vertices[i4]]
                     )
+        elif primitive_type == constants.TEXT:
+            ps = [[v] for v in vertices]
 
         # edges
         edges_list = []
@@ -390,11 +403,8 @@ class Renderer(object):
 
         return edges_list
 
-    def _rasterization(self, primitives, fill_color, tint_color, is_stroke_enabled, is_fill_enabled, is_tint_enbaled, primitive_type):
+    def _rasterization(self, primitives, fill_color, tint_color, is_stroke_enabled, is_fill_enabled, primitive_type):
         fragments = []
-        is_image = primitive_type == constants.IMAGE
-        if is_image:
-            is_stroke_enabled = False
 
         for edges in primitives:
             fill_pixels = []
@@ -403,50 +413,25 @@ class Renderer(object):
             if len(edges) == 0:
                 fragments.append([])
             elif len(edges) == 1:
-                e = edges[0]
-                if len(e) == 1:
-                    # point
-                    if is_image or is_stroke_enabled:
-                        ch, fg, bg = e[0].color
-                        if is_tint_enbaled:
-                            ch, _, _ = tint_color
-                        stroke_pixels += self._rasterize_point(
-                            e[0].x, e[0].y,
-                            CColor.create(ch, fg, bg),
-                            e[0].weight_x, e[0].weight_y,
-                            e[0].rotation
-                        )
-                else:
-                    # line
-                    stroke_pixels += self._rasterize_line(e[0], e[1])
+                stroke_pixels += self._rasterize_line(
+                    edges[0][0], edges[0][-1]
+                )
                 fragments.append(stroke_pixels)
             else:
                 # fill polygon
                 if is_fill_enabled:
-                    # close the polygon
-                    fill_edges = edges.copy()
-                    normal_edges = [
-                        e for e in fill_edges
-                        if e[0].type == "normal"
-                    ]
-                    first_point = normal_edges[0][0]
-                    last_point = normal_edges[-1][1]
-                    if last_point.x != first_point.x or last_point.y != first_point.y:
-                        fill_edges.append((last_point, first_point))
+                    fill_edges = self._close_polygon(edges)
 
-                    # filling
-                    if is_image:
-                        ch, fg, bg = first_point.color
-                        if is_tint_enbaled:
-                            ch, _, _ = tint_color
-                        fill_color = CColor.create(ch, fg, bg)
+                    if primitive_type == constants.IMAGE or primitive_type == constants.TEXT:
+                        fill_color = fill_edges[0][0].color
+
                     fill_pixels += self._scan_line_filling(
                         fill_edges, fill_color
                     )
 
                 # stroke the polygon
                 if is_stroke_enabled:
-                    for _, e in enumerate(edges):
+                    for e in edges:
                         stroke_pixels += self._rasterize_line(
                             e[0],
                             e[1],
@@ -687,6 +672,18 @@ class Renderer(object):
                 v2 = vertices[i]
                 edges.append((v1, v2))
             return edges
+
+    def _close_polygon(self, edges):
+        fill_edges = edges.copy()
+        normal_edges = [
+            e for e in fill_edges
+            if e[0].type == "normal"
+        ]
+        first_point = normal_edges[0][0]
+        last_point = normal_edges[-1][1]
+        if last_point.x != first_point.x or last_point.y != first_point.y:
+            fill_edges.append((last_point, first_point))
+        return fill_edges
 
     def _adjust_unicode_char(self):
         flags = [0 for i in range(self.width)]
@@ -1342,7 +1339,8 @@ class Point(object):
     def __str__(self):
         attrs = {
             "x": self.x,
-            "y": self.y
+            "y": self.y,
+            "color": self.color
         }
         return attrs.__str__()
 

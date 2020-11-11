@@ -51,7 +51,7 @@ def push():
         "ellipse_mode": renderer.ellipse_mode,
         "text_align_x": renderer.text_align_x,
         "text_align_y": renderer.text_align_y,
-        "text_leading": renderer.text_leading,
+        "text_font": renderer.text_font,
         "text_size": renderer.text_size,
         "image_mode": renderer.image_mode
     })
@@ -71,7 +71,7 @@ def pop():
     renderer.ellipse_mode = state["ellipse_mode"]
     renderer.text_align_x = state["text_align_x"]
     renderer.text_align_y = state["text_align_y"]
-    renderer.text_leading = state["text_leading"]
+    renderer.text_font = state["text_font"]
     renderer.text_size = state["text_size"]
     renderer.tint_color = state["tint_color"]
     renderer.is_tint_enabled = state["is_tint_enabled"]

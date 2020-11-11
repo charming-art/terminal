@@ -40,6 +40,8 @@ BEZIER = 11
 
 IMAGE = 12
 
+TEXT = 13
+
 # Close type
 
 OPEN = 0
@@ -65,6 +67,7 @@ CYAN = 6
 WHITE = 7
 
 # Rect && Ellipse
+
 CORNER = 0
 
 CORNERS = 1
@@ -90,6 +93,14 @@ TOP = 3
 BOTTOM = 4
 
 MIDDLE = 5
+
+# Text Size
+
+NORMAL = 0
+
+BIG = 1
+
+LARGE = 2
 
 # Color Mode
 

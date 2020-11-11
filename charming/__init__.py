@@ -29,6 +29,10 @@ from .constants import RIGHT
 from .constants import MIDDLE
 from .constants import TOP
 from .constants import BOTTOM
+from .constants import NORMAL
+from .constants import BIG
+from .constants import LARGE
+
 
 from .constants import RED
 from .constants import BLACK
@@ -171,10 +175,8 @@ from .typography import text_size
 from .typography import text_width
 from .typography import text_height
 from .typography import text_align
-from .typography import text_leading
-from .typography import text_space
 from .typography import text
-from .typography import figlet_text
+from .typography import text_font
 from .typography import get_font_list
 
 from .image import image
