@@ -159,6 +159,7 @@ from .color import bg
 from .color import background
 from .color import color
 from .color import color_mode
+from .color import lerp_color
 
 from .transform import translate
 from .transform import scale

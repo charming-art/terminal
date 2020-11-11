@@ -128,7 +128,7 @@ Try it one an online editor.
 - [x] no_fill()
 - [x] no_stroke()
 - [x] stroke()
-- [ ] color_mode()
+- [x] color_mode()
 
 #### Creating && Reading
 
@@ -181,8 +181,8 @@ Try it one an online editor.
 - [x] get_height()
 - [x] size()
 - [x] get_width()
-- [ ] terminal_size()
-- [ ] full_terminal()
+- [x] terminal_size()
+- [x] full_terminal()
 
 ### Constants
 
@@ -246,7 +246,7 @@ Try it one an online editor.
 - [x] text_size()
 - [x] text_height()
 - [x] figlet_text()
-- [x] get_font_list
+- [x] get_font_list()
 
 ### Image
   

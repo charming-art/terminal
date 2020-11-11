@@ -1,4 +1,5 @@
 import math
+import logging
 
 widths = [
     (126,    1), (159,    0), (687,     1), (710,   0), (711,   1),
@@ -41,6 +42,34 @@ def angle_between(x1, y1, x2, y2):
     return theta
 
 
+def lerp_color(colors, amt=None):
+    '''
+    :param colors: RGB
+    '''
+
+    def get_step(amt):
+        if len(colors) == 2:
+            return (0, 1, amt)
+        step = 1 / (len(colors) - 1)
+        start = math.floor(amt / step)
+        end = math.ceil(amt / step)
+        return [start, end, (amt - start * step) / step]
+
+    def lerp(amt):
+        if len(colors) == 1:
+            return colors[1]
+        start, end, t = get_step(amt)
+        c1 = colors[start]
+        c2 = colors[end]
+        logging.debug([c1, c2, [c1[i] * (1 - t) + t * c2[i] for i in range(3)], amt])
+        return [c1[i] * (1 - t) + t * c2[i] for i in range(3)]
+
+    if amt == None:
+        return lerp
+    else:
+        return lerp(amt)
+
+
 def to_left(x1, y1, x2, y2, px, py):
     v1 = [x2 - x1, y2 - y1]
     v2 = [px - x1, py - y1]
@@ -62,22 +91,22 @@ def dist(x1, y1, x2, y2):
 
 def generate_xtermjs_colors():
     colors = [
-        0x2e, 0x34, 0x36,
-        0xcc, 0x00, 0x00,
-        0x4e, 0x9a, 0x06,
-        0xc4, 0xa0, 0x00,
-        0x34, 0x65, 0xa4,
-        0x75, 0x50, 0x7b,
-        0x06, 0x98, 0x9a,
-        0xd3, 0xd7, 0xcf,
-        0x55, 0x57, 0x53,
-        0xef, 0x29, 0x29,
-        0x8a, 0xe2, 0x34,
-        0xfc, 0xe9, 0x4f,
-        0x72, 0x9f, 0xcf,
-        0xad, 0x7f, 0xa8,
-        0x34, 0xe2, 0xe2,
-        0xee, 0xee, 0xec
+        (0x2e, 0x34, 0x36),
+        (0xcc, 0x00, 0x00),
+        (0x4e, 0x9a, 0x06),
+        (0xc4, 0xa0, 0x00),
+        (0x34, 0x65, 0xa4),
+        (0x75, 0x50, 0x7b),
+        (0x06, 0x98, 0x9a),
+        (0xd3, 0xd7, 0xcf),
+        (0x55, 0x57, 0x53),
+        (0xef, 0x29, 0x29),
+        (0x8a, 0xe2, 0x34),
+        (0xfc, 0xe9, 0x4f),
+        (0x72, 0x9f, 0xcf),
+        (0xad, 0x7f, 0xa8),
+        (0x34, 0xe2, 0xe2),
+        (0xee, 0xee, 0xec)
     ]
 
     # Fill in the remaining 240 ANSI colors.
@@ -87,16 +116,12 @@ def generate_xtermjs_colors():
         r = v[int((i / 36) % 6)]
         g = v[int((i / 6) % 6)]
         b = v[int(i % 6)]
-        colors.append(r)
-        colors.append(g)
-        colors.append(b)
+        colors.append((r, g, b))
 
     # Generate greys (232-255)
     for i in range(24):
         c = 8 + i * 10
-        colors.append(c)
-        colors.append(c)
-        colors.append(c)
+        colors.append((c, c, c))
 
     return colors
 

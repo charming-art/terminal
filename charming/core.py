@@ -135,7 +135,6 @@ class Renderer(object):
         self.shape_queue = []
 
         # styles
-        self.color_mode = constants.ANSI
         self.color_channels = (255,)
         self.background_color = constants.BLACK
         self.stroke_weight = 0
@@ -1445,6 +1444,45 @@ class CColor(object):
             + round(b / 255 * 5)
 
         return ansi
+
+    @classmethod
+    def ansi256_to_rgb(cls, v):
+        if v < 16:
+            return cls.ansi16_to_rgb(v)
+
+        if v >= 232:
+            c = (v - 232) * 10 + 8
+            return (c, c, c)
+
+        v -= 16
+        rem = v % 36
+        r = math.floor(v / 36) / 5 * 255
+        g = math.floor(rem / 6) / 5 * 255
+        b = (rem % 6) / 5 * 255
+        return (r / 255, g / 255, b / 255)
+
+    @classmethod
+    def ansi16_to_rgb(cls, v):
+        color = v % 10
+        if color == 0 or color == 7:
+            if v > 50:
+                color += 3.5
+            color = color / 10.5 * 255
+            return (color / 255, color / 255, color / 255)
+
+        mult = (~~(v > 50) + 1) * 0.5
+        r = (color & 1) * mult
+        g = ((color >> 1) & 1) * mult
+        b = ((color >> 2) & 1) * mult
+        return (r, g, b)
+
+    @classmethod
+    def rgb_to_hsb(cls, r, g, b):
+        return colorsys.rgb_to_hsv(r, g, b)
+
+    @classmethod
+    def hsb_to_rgb(cls, h, s, b):
+        return colorsys.hsv_to_rgb(h, s, b)
 
     @classmethod
     def hsv_to_ansi256(cls, h, s, v):
