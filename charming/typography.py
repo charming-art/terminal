@@ -4,16 +4,10 @@ from pyfiglet import Figlet
 from pyfiglet import FigletFont
 from . import constants
 from .app import renderer
-from .color import no_fill
-from .color import stroke
-from .shape import point
-from .shape import stroke_weight
-from .structure import open_context
 from .common import add_on_return
 from .core import CShape
 from .core import CColor
 from .core import Point
-from .core import logger
 from .utils import Matrix
 
 _font_list = FigletFont().getFonts()

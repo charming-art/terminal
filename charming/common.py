@@ -5,7 +5,7 @@ from .app import context
 from .core import logger
 
 
-def charming_foo(foo):
+def capture_exception(foo):
     @functools.wraps(foo)
     def wrapped(*args, **kw):
         try:
@@ -14,9 +14,9 @@ def charming_foo(foo):
                 return ret
         except Exception as e:
             logger.debug(e)
-            raise e
-        finally:
             context.close()
+            raise e
+
     return wrapped
 
 

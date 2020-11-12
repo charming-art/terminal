@@ -56,7 +56,6 @@ class Sketch(object):
         self.is_log_frame_buffer = False
 
     def run(self):
-
         try:
             setup_hook = self.hooks_map['setup']
             draw_hook = self.hooks_map['draw']
