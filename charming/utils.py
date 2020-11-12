@@ -1,5 +1,10 @@
 import math
-import logging
+import sys
+from abc import ABCMeta, abstractclassmethod
+from .globals import WINDOWS
+from .globals import BROWSER
+from .globals import POSIX
+from .globals import DEBUG_MODE
 
 widths = [
     (126,    1), (159,    0), (687,     1), (710,   0), (711,   1),
@@ -153,3 +158,111 @@ class Matrix(object):
         return self.matrix.__str__()
 
     __repr__ = __str__
+
+
+class Logger(metaclass=ABCMeta):
+
+    def __init__(self, should_record=False):
+        self.time_by_key = {}
+        self.should_record = should_record
+        self.inclues = [
+            'processing buffer',
+            'flush screen',
+            'render shape'
+        ]
+
+    @abstractclassmethod
+    def log(self, *kw, **args):
+        pass
+
+    @abstractclassmethod
+    def debug(self, *kw, **args):
+        pass
+
+    @abstractclassmethod
+    def time(self):
+        pass
+
+    @abstractclassmethod
+    def plot(self, records):
+        pass
+
+    def record(self, key):
+        def decorator(foo):
+            def wrapped(*args, **kw):
+                if self.should_record and key in self.inclues:
+                    t1 = self.time()
+                    ret = foo(*args, **kw)
+                    t2 = self.time()
+                    d = t2 - t1
+                    if hasattr(self.time_by_key, key):
+                        self.time_by_key[key] += d
+                    else:
+                        self.time_by_key[key] = d
+                    return ret
+                else:
+                    return foo(*args, **kw)
+            return wrapped
+        return decorator
+
+    def log_record(self):
+        if self.should_record:
+            records = [(key, value) for key, value in self.time_by_key.items()]
+            records.sort(key=lambda x: x[1])
+            self.plot(records)
+
+
+if sys.platform == BROWSER:
+    class BrowserLogger(Logger):
+
+        def __init__(self, should_record):
+            super(BrowserLogger, self).__init__(should_record)
+
+        def log(self, *args, **kw):
+            print(*args, **kw)
+
+        def debug(self, *args, **kw):
+            print(*args, **kw)
+
+        def time(self):
+            pass
+
+        def plot(self, records):
+            pass
+
+    logger = BrowserLogger(DEBUG_MODE)
+else:
+    import logging
+    import time
+    import matplotlib.pyplot as plt
+
+    logging.basicConfig(filename='charming.log', level=logging.DEBUG)
+
+    class LocalLogger(Logger):
+
+        def __init__(self, should_record):
+            super(LocalLogger, self).__init__(should_record)
+
+        def debug(self, *args, **kw):
+            logging.debug(*args, **kw)
+
+        def log(self, *args, **kw):
+            logging.log(*args, **kw)
+
+        def time(self):
+            return time.time()
+
+        def plot(self, records):
+            total = 0
+            for _, value in records:
+                total += value
+            keys = [r[0] for r in records]
+            values = [r[1] / total for r in records]
+            plt.pie(
+                values,
+                labels=keys,
+                autopct='%1.1f%%',
+            )
+            plt.show()
+
+    logger = LocalLogger(DEBUG_MODE)

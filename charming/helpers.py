@@ -1,6 +1,6 @@
 import sys
 from .app import sketch
-from .core import logger
+from .utils import logger
 
 
 def log(*args, **kw):

@@ -2,6 +2,7 @@ import string
 import functools
 from pyfiglet import Figlet
 from pyfiglet import FigletFont
+
 from . import constants
 from .app import renderer
 from .common import add_on_return

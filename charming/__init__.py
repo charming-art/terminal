@@ -10,7 +10,7 @@ charming = sys.modules[__name__]
 def attributes_mapping(source, target):
     '''
     Capture exception when call all of charming function in order to call context.close().
-    This will ensure that exit the program without staying funny terminal state, 
+    This will ensure that exit the program without staying in funny terminal state, 
     espicailly in static mode.
     '''
     for name in dir(source):

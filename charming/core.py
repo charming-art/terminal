@@ -4,6 +4,11 @@ import colorsys
 import bisect
 from abc import ABCMeta, abstractclassmethod
 from . import constants
+
+from .globals import WINDOWS
+from .globals import BROWSER
+from .globals import POSIX
+
 from .utils import map
 from .utils import dist
 from .utils import Matrix
@@ -11,11 +16,7 @@ from .utils import angle_between
 from .utils import get_char_width
 from .utils import to_left
 from .utils import generate_xtermjs_colors
-
-# three platforms
-WINDOWS = "win32"
-BROWSER = "emscripten"
-POSIX = ""
+from .utils import logger
 
 
 class Sketch(object):
@@ -103,6 +104,7 @@ class Sketch(object):
             raise e
         finally:
             self.context.close()
+            logger.log_record()
 
     def add_hook(self, name, hook):
         self.hooks_map[name] = hook
@@ -169,7 +171,7 @@ class Renderer(object):
             shape = self.shape_queue.pop(0)
             self._render_shape(shape)
         self.transform_matrix_stack.clear()
-        self._adjust_unicode_char()
+        self._processing_buffer()
 
     def add_shape(self, shape):
         if shape.is_auto:
@@ -193,6 +195,7 @@ class Renderer(object):
             for _ in range(self.width * self.height)
         ]
 
+    @logger.record('render shape')
     def _render_shape(self, shape):
         vertices = self._vertex_processing(
             shape.points,
@@ -224,6 +227,7 @@ class Renderer(object):
 
         self._fragment_processing(fragments_clipped)
 
+    @logger.record('vertex processing')
     def _vertex_processing(self, points, stroke_color, tint_color, is_tint_enabled, stroke_weight, transform_matrix_stack, primitive_type):
         tm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         sm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
@@ -263,6 +267,7 @@ class Renderer(object):
 
         return points
 
+    @logger.record('primitive assembly')
     def _primitive_assembly(self, vertices, primitive_type, close_mode, options):
         # vertices
         if primitive_type == constants.POLYGON:
@@ -402,6 +407,7 @@ class Renderer(object):
 
         return edges_list
 
+    @logger.record('rasterizatioin')
     def _rasterization(self, primitives, fill_color, tint_color, is_stroke_enabled, is_fill_enabled, primitive_type):
         fragments = []
 
@@ -440,6 +446,7 @@ class Renderer(object):
                 fragments.append(pixels)
         return fragments
 
+    @logger.record('clipping')
     def _clipping(self, fragments):
         return [
             [
@@ -452,6 +459,7 @@ class Renderer(object):
             for pixels in fragments
         ]
 
+    @logger.record('fragment processing')
     def _fragment_processing(self, fragemnts):
         for pixels in fragemnts:
             for p in pixels:
@@ -684,7 +692,8 @@ class Renderer(object):
             fill_edges.append((last_point, first_point))
         return fill_edges
 
-    def _adjust_unicode_char(self):
+    @logger.record('processing buffer')
+    def _processing_buffer(self):
         flags = [0 for i in range(self.width)]
         wider_chars = []
 
@@ -842,6 +851,7 @@ class Context(metaclass=ABCMeta):
         self._update_pad()
         self.has_open = True
 
+    @logger.record('flush screen')
     def draw(self, buffer, background_color, color_pair):
         self._buffer = buffer
         self._color_pair = color_pair
@@ -1178,17 +1188,6 @@ else:
             self.window_height = self._screen.getmaxyx()[0]
 
 
-class Logger(metaclass=ABCMeta):
-
-    @abstractclassmethod
-    def log(self, *kw, **args):
-        pass
-
-    @abstractclassmethod
-    def debug(self, *kw, **args):
-        pass
-
-
 class Timer(metaclass=ABCMeta):
     @abstractclassmethod
     def run(self, ms, callback):
@@ -1235,24 +1234,12 @@ if sys.platform == BROWSER:
         def wait(self):
             pass
 
-    class BrowserLogger(Logger):
-
-        def log(self, *args, **kw):
-            print(*args, **kw)
-
-        def debug(self, *args, **kw):
-            print(*args, **kw)
-
     class BrowserImageLoader(ImageLoader):
         def load(self, src):
             pass
-
-    logger = BrowserLogger()
 else:
     import time
-    import logging
     from PIL import Image
-    logging.basicConfig(filename='charming.log', level=logging.DEBUG)
 
     class LocalTimer(Timer):
 
@@ -1271,14 +1258,6 @@ else:
         def wait(self):
             input()
 
-    class LocalLogger(Logger):
-
-        def debug(self, *args, **kw):
-            logging.debug(*args, **kw)
-
-        def log(self, *args, **kw):
-            logging.log(*args, **kw)
-
     class PILImageLoader(ImageLoader):
         def load(self, src):
             image = Image.open(src)
@@ -1286,8 +1265,6 @@ else:
             data = image.getdata()
             pixels = self.convert_color(data)
             return CImage(pixels, w, h)
-
-    logger = LocalLogger()
 
 
 class CShape(object):

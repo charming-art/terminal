@@ -2,16 +2,14 @@ import functools
 from . import constants
 from .app import renderer
 from .app import context
-from .core import logger
+from .utils import logger
 
 
 def capture_exception(foo):
     @functools.wraps(foo)
     def wrapped(*args, **kw):
         try:
-            ret = foo(*args, **kw)
-            if ret:
-                return ret
+            return foo(*args, **kw)
         except Exception as e:
             logger.debug(e)
             context.close()
