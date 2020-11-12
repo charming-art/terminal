@@ -466,6 +466,7 @@ class Renderer(object):
                 index = p.x + p.y * self.width
                 self.frame_buffer[index] = p.color
 
+    @logger.record('polygan filling')
     def _scan_line_filling(self, polygon, fill_color):
         '''
         https://www.cs.uic.edu/~jbell/CourseNotes/ComputerGraphics/PolygonFilling.html
@@ -524,6 +525,7 @@ class Renderer(object):
                     is_draw = not is_draw
         return pixels
 
+    @logger.record('draw line')
     def _rasterize_line(self, v1, v2):
         pixels = []
 

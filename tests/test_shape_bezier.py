@@ -1,8 +1,8 @@
 import charming as app
 
 app.full_screen()
-# app.fill('@', app.RED, app.YELLOW)
-app.no_fill()
+app.fill('@', app.RED, app.YELLOW)
+# app.no_fill()
 app.stroke('e', app.BLUE, app.GREEN)
 with app.open_shape():
     app.vertex(30, 10)

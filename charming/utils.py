@@ -169,6 +169,13 @@ class Logger(metaclass=ABCMeta):
             'processing buffer',
             'flush screen',
             'render shape'
+            # 'vertex processing',
+            # 'primitive assembly',
+            # 'rasterizatioin',
+            # 'clipping',
+            # 'fragment processing',
+            # 'polygan filling',
+            # 'draw line',
         ]
 
     @abstractclassmethod
@@ -253,16 +260,29 @@ else:
             return time.time()
 
         def plot(self, records):
+            # pie chart
+            plt.figure(dpi=70, figsize=(24, 12))
             total = 0
             for _, value in records:
                 total += value
             keys = [r[0] for r in records]
-            values = [r[1] / total for r in records]
+            values = [r[1] for r in records]
+            proportions = [r[1] / total for r in records]
+            plt.subplot(121)
             plt.pie(
-                values,
+                proportions,
                 labels=keys,
                 autopct='%1.1f%%',
             )
+
+            plt.subplot(122)
+            # bar chart
+            plt.bar(
+                keys,
+                values,
+                color="steelblue"
+            )
+
             plt.show()
 
     logger = LocalLogger(DEBUG_MODE)
