@@ -20,6 +20,7 @@ _font_list = FigletFont().getFonts()
 
 
 def _preprocess_text(foo):
+
     @functools.wraps(foo)
     def wrapped(text, *args, **kw):
         if renderer.text_size == constants.BIG:
@@ -27,7 +28,54 @@ def _preprocess_text(foo):
             text = f.renderText(text)
         elif renderer.text_size == constants.LARGE:
             f = Figlet(font=renderer.text_font)
-        return foo(text, *args, **kw)
+            matrix = _matrixlize(text)
+            max_width_list = [-1 for _ in range(matrix.col)]
+            max_height = -1
+            total_width = 0
+            steps = []
+
+            for j in range(matrix.col):
+                for i in range(matrix.row):
+                    ftext = f.renderText(matrix[i][j])
+                    m = _matrixlize(ftext, False)
+                    max_width_list[j] = max(max_width_list[j], m.col)
+                    max_height = max(max_height, m.row)
+                    matrix[i][j] = m
+                start = total_width
+                end = start + max_width_list[j]
+                total_width = end
+                steps.append((start, end))
+
+            def get_info(n):
+                for i, (start, end) in enumerate(steps):
+                    if n >= start and n < end:
+                        return [i, start, end]
+                return -1
+
+            text = ""
+            for i in range(matrix.row * max_height):
+                for j in range(total_width):
+                    y0 = int(i / max_height)
+                    x0, start, _ = get_info(j)
+                    y = i % max_height
+                    x = j - start
+
+                    width = max_width_list[x0]
+                    m = matrix[y0][x0]
+                    mx1 = int((width - m.col) / 2)
+                    mx2 = mx1 + m.col
+                    my1 = int((max_height - m.row) / 2)
+                    my2 = my1 + m.row
+
+                    if x < mx1 or x >= mx2 or y < my1 or y >= my2:
+                        text += " "
+                    else:
+                        text += m[y - my1][x - mx1]
+                text += "\n"
+
+        matrix = _matrixlize(text)
+        return foo(matrix, *args, **kw)
+
     return wrapped
 
 
@@ -41,8 +89,7 @@ def get_font_list():
 
 @add_on_return
 @_preprocess_text
-def text(text, x, y):
-    matrix = _matrixlize(text)
+def text(matrix, x, y):
     height = matrix.row
     width = matrix.col
 
@@ -68,14 +115,12 @@ def text(text, x, y):
 
 
 @_preprocess_text
-def text_width(text):
-    matrix = _matrixlize(text)
+def text_width(matrix):
     return matrix.col
 
 
 @_preprocess_text
-def text_height(text):
-    matrix = _matrixlize(text)
+def text_height(matrix):
     return matrix.row
 
 
@@ -91,13 +136,18 @@ def text_size(size=constants.NORMAL):
     renderer.text_size = size
 
 
-def _matrixlize(text):
-    lines = [
-        line for line in text.split('\n')
-        if not line in string.whitespace
-    ]
+def _matrixlize(text, no_empty_line=True):
+
+    if no_empty_line:
+        lines = [
+            line for line in text.split('\n')
+            if not line in string.whitespace or len(line) == 1
+        ]
+    else:
+        lines = [line for line in text.split('\n')]
+
     if len(lines) == 0:
-        return [[]]
+        return Matrix([[]])
 
     max_width = max([len(line) for line in lines])
     matrix = [

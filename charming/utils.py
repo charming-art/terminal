@@ -61,7 +61,8 @@ def lerp_color(colors, amt=None):
         start, end, t = get_step(amt)
         c1 = colors[start]
         c2 = colors[end]
-        logging.debug([c1, c2, [c1[i] * (1 - t) + t * c2[i] for i in range(3)], amt])
+        logging.debug([c1, c2, [c1[i] * (1 - t) + t * c2[i]
+                                for i in range(3)], amt])
         return [c1[i] * (1 - t) + t * c2[i] for i in range(3)]
 
     if amt == None:
@@ -141,7 +142,8 @@ class Matrix(object):
         for i in range(self.row):
             for j in range(other.col):
                 new_matrix[i][j] = sum(
-                    [self[i][k] * other[k][j] for k in range(self.col)])
+                    [self[i][k] * other[k][j] for k in range(self.col)]
+                )
         return new_matrix
 
     def __getitem__(self, n):

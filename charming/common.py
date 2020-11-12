@@ -1,6 +1,24 @@
 import functools
 from . import constants
 from .app import renderer
+from .app import context
+from .core import logger
+
+
+def charming_foo(foo):
+    @functools.wraps(foo)
+    def wrapped(*args, **kw):
+        try:
+            ret = foo(*args, **kw)
+            if ret:
+                return ret
+        except Exception as e:
+            logger.debug(e)
+            raise e
+        finally:
+            context.close()
+    return wrapped
+
 
 def add_on_return(foo):
     @functools.wraps(foo)
@@ -8,6 +26,7 @@ def add_on_return(foo):
         shape = foo(*args, **kw)
         renderer.add_shape(shape)
     return wrapped
+
 
 def get_bounding_rect_by_mode(a, b, c, d, mode):
     if mode == constants.RADIUS:
