@@ -254,14 +254,14 @@ class Renderer(object):
 
             # screen map && color
             if primitive_type == constants.IMAGE:
-                ch, fg, bg = p.color
-                if is_tint_enabled:
-                    ch, _, _ = tint_color
-                p.color = CColor.create(ch, fg, bg)
+                ch = p.color.ch if not is_tint_enabled else tint_color.ch
+                p.color = CColor.create(ch, p.color.fg, p.color.bg)
             elif primitive_type == constants.TEXT:
-                _, fg, bg = stroke_color
-                ch, _, _ = p.color
-                p.color = CColor.create(ch, fg, bg)
+                p.color = CColor.create(
+                    p.color.ch,
+                    stroke_color.fg,
+                    stroke_color.bg
+                )
             else:
                 p.color = stroke_color
 
@@ -702,7 +702,7 @@ class Renderer(object):
             wider_cnt = 0
             for j in range(self.width):
                 index = j + i * self.width
-                ch, _, _ = self.frame_buffer[index]
+                ch = self.frame_buffer[index].ch
                 ch_width = get_char_width(ch)
                 if ch_width == 2:
                     flags[j] = 1
@@ -715,7 +715,7 @@ class Renderer(object):
             for j in range(self.width):
                 index = j + i * self.width
                 color = self.frame_buffer[index]
-                ch, _, _ = color
+                ch = color.ch
                 ch_width = get_char_width(ch)
                 if flags[j] == 1 and j < self.width - 1 and ch_width == 1:
                     insert_indice.append((index + 1, color))
@@ -725,7 +725,7 @@ class Renderer(object):
                 insert_index, color = insert_indice.pop()
 
                 # change the count of wider chars if remove a wider char
-                ch, _, _ = self.frame_buffer[last_index]
+                ch = self.frame_buffer[last_index].ch
                 ch_width = get_char_width(ch)
                 if ch_width == 2:
                     wider_chars[i] -= 1
@@ -739,7 +739,7 @@ class Renderer(object):
             j = self.width - 1
             while wider_cnt > 0:
                 index = j + i * self.width
-                ch, _, _ = self.frame_buffer[index]
+                ch = self.frame_buffer[index].ch
                 self.frame_buffer[index] = None
                 ch_width = get_char_width(ch)
                 wider_cnt -= ch_width
@@ -878,10 +878,10 @@ class Context(metaclass=ABCMeta):
                     else:
                         index = (x - 1) + (y - 1) * (self._pad_width - 2)
                         color = buffer[index]
+                        ch = color.ch
                         if color:
-                            ch, fg, bg = color
                             ch = ch[0] if isinstance(ch, tuple) else ch
-                            self.addch(_x, _y, ch, fg, bg)
+                            self.addch(_x, _y, ch, color.fg, color.bg)
 
         # update the physical sceen
         self.refresh()
@@ -920,7 +920,7 @@ class Context(metaclass=ABCMeta):
                 color = self._buffer[index]
 
                 if color:
-                    ch, _, _ = color
+                    ch = color.ch
                     ch_width = get_char_width(ch)
                     poss.append(ch_width + poss[-1])
 
@@ -1178,8 +1178,7 @@ else:
         def enable_colors(self):
             for i, c in enumerate(self._color_pair):
                 if not c.has_init:
-                    _, fg, bg = c
-                    curses.init_pair(i + 1, fg, bg)
+                    curses.init_pair(i + 1, c.fg, c.bg)
                     c.has_init = True
 
         def update_window(self):
@@ -1341,7 +1340,6 @@ class CColor(object):
     color_channels = (255,)
 
     def __init__(self, ch=" ", fg=None, bg=None):
-        self.index = 0
         self.has_init = False
         if isinstance(ch, self.__class__):
             self.ch = ch.ch
@@ -1475,23 +1473,10 @@ class CColor(object):
 
     @classmethod
     def add_color(cls, c):
-        _, fg, bg = c
         for color in Renderer.color_pair:
-            if color.fg == fg and color.bg == bg:
+            if color.fg == c.fg and color.bg == c.bg:
                 return None
         Renderer.color_pair.append(c)
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.index > 2:
-            self.index = 0
-            raise StopIteration()
-        attrs = [self.ch, self.fg, self.bg]
-        a = attrs[self.index]
-        self.index += 1
-        return a
 
     def __str__(self):
         attrs = {
