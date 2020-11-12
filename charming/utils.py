@@ -195,7 +195,7 @@ class Logger(metaclass=ABCMeta):
                     ret = foo(*args, **kw)
                     t2 = self.time()
                     d = t2 - t1
-                    if hasattr(self.time_by_key, key):
+                    if key in self.time_by_key.keys():
                         self.time_by_key[key] += d
                     else:
                         self.time_by_key[key] = d
