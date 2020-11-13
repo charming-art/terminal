@@ -58,45 +58,10 @@ class Sketch(object):
 
     def run(self):
         try:
-            setup_hook = self.hooks_map['setup']
-            draw_hook = self.hooks_map['draw']
-
-            if self.has_draw_hook:
-                setup_hook()
-
-            if not self.context.has_open:
-                print('Call size to open context.')
-                return
-
-            self.renderer.setup(self.context.width, self.context.height)
-
-            # main loop
-            def loop():
-                events = self.context.get_events()
-                for e in events:
-                    self._handle_event(e)
-
-                if self.is_loop:
-                    self.renderer.has_background_called = False
-                    draw_hook()
-                    self.renderer.render()
-
-                    if self.renderer.has_background_called:
-                        self.context.clear()
-
-                    self.context.draw(
-                        self.renderer.frame_buffer,
-                        self.renderer.background_color,
-                        self.renderer.color_pair
-                    )
-
-                    if self.is_log_frame_buffer == True:
-                        self.renderer.log_frame_buffer()
-                self.frame_count += 1
-
-            loop()
+            self._setup()
+            self._loop()
             if self.has_draw_hook and self.has_setup_hook:
-                self.timer.run(1000 / self.frame_rate, loop)
+                self.timer.run(1000 / self.frame_rate, self._loop)
             else:
                 self.timer.wait()
         except Exception as e:
@@ -105,6 +70,45 @@ class Sketch(object):
         finally:
             self.context.close()
             logger.log_record()
+
+    @logger.record('setup')
+    def _setup(self):
+        if self.has_setup_hook:
+            setup_hook = self.hooks_map['setup']
+            setup_hook()
+
+        if not self.context.has_open:
+            print('Call size to open context.')
+            return
+
+        self.renderer.setup(self.context.width, self.context.height)
+
+    @logger.record('loop')
+    def _loop(self):
+        events = self.context.get_events()
+        for e in events:
+            self._handle_event(e)
+
+        if self.is_loop:
+            if self.has_draw_hook:
+                draw_hook = self.hooks_map['draw']
+                draw_hook()
+
+            if self.renderer.has_background_called:
+                self.context.background(self.renderer.background_color)
+                self.context.clear()
+                self.renderer.has_background_called = False
+
+            self.renderer.render()
+            self.context.draw(
+                self.renderer.diff_buffer,
+                self.renderer.color_pair
+            )
+
+            if self.is_log_frame_buffer == True:
+                self.renderer.log_frame_buffer()
+
+            self.frame_count += 1
 
     def add_hook(self, name, hook):
         self.hooks_map[name] = hook
@@ -132,12 +136,13 @@ class Renderer(object):
 
     def __init__(self):
         self.frame_buffer = []
+        self.diff_buffer = []
         self.tmp_frame_buffer = []
+        self.unicode_cnt = []
         self.shape_queue = []
 
         # styles
         self.color_channels = (255,)
-        self.background_color = constants.BLACK
         self.stroke_weight = 0
         self.is_stroke_enabled = True
         self.is_fill_enabled = True
@@ -156,8 +161,8 @@ class Renderer(object):
         self.height = 10
 
     def init(self):
-        self.fill_color = CColor.blank_fill()
-        self._bg_color = CColor.blank_fill()
+        self.fill_color = CColor.empty()
+        self.background_color = CColor.empty()
         self.stroke_color = CColor('*')
         self.tint_color = CColor('·')
 
@@ -167,11 +172,12 @@ class Renderer(object):
         self._reset_frame_buffer()
 
     def render(self):
+        self.diff_buffer.clear()
         while len(self.shape_queue) > 0:
             shape = self.shape_queue.pop(0)
             self._render_shape(shape)
+        self._processing_unicode()
         self.transform_matrix_stack.clear()
-        self._processing_buffer()
 
     def add_shape(self, shape):
         if shape.is_auto:
@@ -189,11 +195,19 @@ class Renderer(object):
         for i, _ in enumerate(self.frame_buffer):
             self.frame_buffer[i] = color
 
+    def background(self, color):
+        self.has_background_called = True
+        self.background_color = color
+
+    @logger.record('set frame buffer')
     def _reset_frame_buffer(self):
         self.frame_buffer = [
-            self._bg_color
+            self.background_color
             for _ in range(self.width * self.height)
         ]
+        cnt = 0 if len(self.background_color) == 1 else self.height
+        self.unicode_cnt = [cnt for _ in range(self.width)]
+        self.diff_buffer.clear()
 
     @logger.record('render shape')
     def _render_shape(self, shape):
@@ -224,7 +238,6 @@ class Renderer(object):
         )
 
         fragments_clipped = self._clipping(fragments)
-
         self._fragment_processing(fragments_clipped)
 
     @logger.record('vertex processing')
@@ -464,7 +477,23 @@ class Renderer(object):
         for pixels in fragemnts:
             for p in pixels:
                 index = p.x + p.y * self.width
+                old = self.frame_buffer[index]
+                old_len = len(old)
+
+                if old != p.color:
+                    self.diff_buffer.append(p)
+
+                if old_len != len(p.color):
+                    if old_len == 1:
+                        self.unicode_cnt[p.x] += 1
+                    else:
+                        self.unicode_cnt[p.x] -= 1
+
                 self.frame_buffer[index] = p.color
+
+    @logger.record('processing unicode')
+    def _processing_unicode(self):
+        pass
 
     @logger.record('polygan filling')
     def _scan_line_filling(self, polygon, fill_color):
@@ -694,64 +723,6 @@ class Renderer(object):
             fill_edges.append((last_point, first_point))
         return fill_edges
 
-    @logger.record('processing buffer')
-    def _processing_buffer(self):
-        flags = [0 for i in range(self.width)]
-        wider_chars = []
-
-        # scan the buffer to record unicode
-        for i in range(self.height):
-            wider_cnt = 0
-            for j in range(self.width):
-                index = j + i * self.width
-                ch = self.frame_buffer[index].ch
-                ch_width = get_char_width(ch)
-                if ch_width == 2:
-                    flags[j] = 1
-                    wider_cnt += 1
-            wider_chars.append(wider_cnt)
-
-        # insert and move the buffer
-        for i in range(self.height):
-            insert_indice = []
-            for j in range(self.width):
-                index = j + i * self.width
-                color = self.frame_buffer[index]
-                ch = color.ch
-                ch_width = get_char_width(ch)
-                if flags[j] == 1 and j < self.width - 1 and ch_width == 1:
-                    insert_indice.append((index + 1, color))
-
-            last_index = (i + 1) * self.width - 1
-            while len(insert_indice):
-                insert_index, color = insert_indice.pop()
-
-                # change the count of wider chars if remove a wider char
-                ch = self.frame_buffer[last_index].ch
-                ch_width = get_char_width(ch)
-                if ch_width == 2:
-                    wider_chars[i] -= 1
-
-                # remove and insert
-                self.frame_buffer.pop(last_index)
-                self.frame_buffer.insert(insert_index, color)
-
-            # remove chars exceed the screen
-            wider_cnt = wider_chars[i]
-            j = self.width - 1
-            while wider_cnt > 0:
-                index = j + i * self.width
-                ch = self.frame_buffer[index].ch
-                self.frame_buffer[index] = None
-                ch_width = get_char_width(ch)
-                wider_cnt -= ch_width
-
-                # it will remove more if the last one is wider char
-                # in that case, wider_cnt == -1
-                if wider_cnt == -1:
-                    self.frame_buffer[index] = CColor.blank_fill()
-                j -= 1
-
     def log_frame_buffer(self):
         matrix = '\n'
         for i in range(self.height):
@@ -854,97 +825,68 @@ class Context(metaclass=ABCMeta):
         self.has_open = True
 
     @logger.record('flush screen')
-    def draw(self, buffer, background_color, color_pair):
+    def draw(self, buffer, color_pair):
         self._buffer = buffer
         self._color_pair = color_pair
-        self._background_color = background_color
+        self._update_pad()
         self.enable_colors()
-        self.background(background_color)
-        self._count_cell_width()
 
-        for y in range(self._pad_height):
-            for x in range(self._pad_width):
-                _x = x + self._pad_x
-                _y = y + self._pad_y
-                x_in = _x >= 0 and _x < self.window_width
-                y_in = _y >= 0 and _y < self.window_height
-                if x_in and y_in:
-                    border_ch = self._get_border(x, y)
-                    if border_ch:
-                        r = x == self._pad_width - 1 and y > 0 and y < self._pad_height - 1
-                        if r:
-                            cnt = self._cell_poss[y - 1]['cnt']
-                            self.addch(_x - cnt, _y, border_ch)
-                        else:
-                            self.addch(_x, _y, border_ch)
-                    else:
-                        index = (x - 1) + (y - 1) * (self._pad_width - 2)
-                        color = buffer[index]
-                        ch = color.ch
-                        if color:
-                            ch = ch[0] if isinstance(ch, tuple) else ch
-                            self.addch(_x, _y, ch, color.fg, color.bg)
+        for p in buffer:
+            x = p.x + self._pad_x + 1
+            y = p.y + self._pad_y + 1
+            ch = p.color.ch
+            ch = ch[0] if isinstance(ch, tuple) else ch
+            if self._in(x, y):
+                self.addch(x, y, ch, p.color.fg, p.color.bg)
 
         # update the physical sceen
         self.refresh()
 
-    def _get_border(self, x, y):
-        lb = x == 0 and y == 0
-        rb = x == self._pad_width - 1 and y == 0
-        lt = x == 0 and y == self._pad_height - 1
-        rt = x == self._pad_width - 1 and y == self._pad_height - 1
-        b = y == 0 and x > 0 and x < self._pad_width - 1
-        r = x == self._pad_width - 1 and y > 0 and y < self._pad_height - 1
-        t = y == self._pad_height - 1 and x > 0 and x < self._pad_width - 1
-        l = x == 0 and y > 0 and y < self._pad_height - 1
-
-        if lb or rb or lt or rt:
-            return "+"
-
-        if b or t:
-            return '-'
-
-        if r or l:
-            return '|'
-
-        return None
-
-    def _count_cell_width(self):
-        self._cell_poss.clear()
-        width = self._pad_width - 2
-        height = self._pad_height - 2
-
-        for i in range(height):
-            cnt = 0
-            poss = [0, 1]
-            for j in range(width):
-                index = j + i * width
-                color = self._buffer[index]
-
-                if color:
-                    ch = color.ch
-                    ch_width = get_char_width(ch)
-                    poss.append(ch_width + poss[-1])
-
-                    if ch_width == 2:
-                        cnt += 1
-                else:
-                    poss.append(-1)
-
-            self._cell_poss.append({
-                "cnt": cnt,
-                "list": poss
-            })
-
     def _update_pad(self):
+        # update location
         self._pad_x = (self.window_width - self._pad_width) // 2
         self._pad_y = (self.window_height - self._pad_height) // 2
 
+        # draw pad
+        for i in range(self._pad_width):
+            x = self._pad_x + i
+            y = self._pad_y
+            if self._in(x, y):
+                ch = '+' if i == 0 else '-'
+                self.addch(x, y, ch)
+
+        # right
+        for i in range(self._pad_height - 1):
+            x = self._pad_x + self._pad_width - 1
+            y = self._pad_y + i
+            if self._in(x, y):
+                ch = '+' if i == 0 else '|'
+                self.addch(x, y, ch)
+
+        # left
+        for i in range(self._pad_height - 1):
+            x = self._pad_x
+            y = self._pad_y + 1 + i
+            if self._in(x, y):
+                ch = '+' if i == self._pad_height - 2 else '|'
+                self.addch(x, y, ch)
+
+        # bottom
+        for i in range(self._pad_width - 1):
+            x = self._pad_x + 1 + i
+            y = self._pad_y + self._pad_height - 1
+            if self._in(x, y):
+                ch = '+' if i == self._pad_width - 2 else '-'
+                self.addch(x, y, ch)
+
+    def _in(self, x, y):
+        return x >= 0 and x < self.window_width and y >= 0 and y < self.window_height
+
     def _resize(self):
-        self.update_window()
-        self._update_pad()
         self._screen.clear()
-        self.draw(self._buffer, self._background_color, self._color_pair)
+        self.update_window()
+        self.draw(self._buffer, self._color_pair)
+        self.background(self._background_color)
 
 
 if sys.platform == WINDOWS:
@@ -1152,14 +1094,12 @@ else:
             return event_queue
 
         def addch(self, x, y, ch, fg=None, bg=None):
-            # It is strange that can't draw at (self.window_height - 1, self.window_width - 1)
+            # (window_height - 1, window_width - 1) is not available
             if x >= self.window_width - 1 and y >= self.window_height - 1:
                 return
 
             if fg != None and bg != None:
-                for i, c in enumerate(self._color_pair):
-                    if fg == c.fg and bg == c.bg:
-                        color_index = i + 1
+                color_index = self._get_color_index(fg, bg)
                 self._screen.addstr(
                     y, x, ch, curses.color_pair(color_index)
                 )
@@ -1175,7 +1115,15 @@ else:
             self._screen.refresh()
 
         def background(self, color):
-            pass
+            self._background_color = color
+            fg = color.fg
+            bg = color.bg
+            ch = color.ch[0] if isinstance(color.ch, tuple) else color.ch
+            if fg != None and bg != None:
+                color_index = self._get_color_index(fg, bg)
+                self._screen.bkgd(ch, curses.color_pair(color_index))
+            else:
+                self._screen.bkgd(ch)
 
         def enable_colors(self):
             for i, c in enumerate(self._color_pair):
@@ -1187,6 +1135,13 @@ else:
             curses.update_lines_cols()
             self.window_width = self._screen.getmaxyx()[1]
             self.window_height = self._screen.getmaxyx()[0]
+
+        def _get_color_index(self, fg, bg):
+            color_index = -1
+            for i, c in enumerate(self._color_pair):
+                if fg == c.fg and bg == c.bg:
+                    color_index = i + 1
+            return color_index
 
 
 class Timer(metaclass=ABCMeta):
@@ -1311,7 +1266,7 @@ class Point(object):
         self.color = color
         self.type = type
         self.rotation = rotation
-        self.color = CColor.blank_fill() if color == None else color
+        self.color = CColor.empty() if color == None else color
 
     def __str__(self):
         attrs = {
@@ -1383,6 +1338,20 @@ class CColor(object):
         else:
             return self.hsv_to_ansi256(c1, c2, c3)
 
+    def __eq__(self, other):
+        if other == None:
+            return False
+        ch = self.ch == other.ch
+        fg = self.fg == other.fg
+        bg = self.bg == other.bg
+        if ch and self.ch == " ":
+            return bg
+        else:
+            return ch and fg and bg
+
+    def __len__(self):
+        return get_char_width(self.ch)
+
     @classmethod
     def create(cls, ch, fg, bg):
         cls.save()
@@ -1393,7 +1362,7 @@ class CColor(object):
         return c
 
     @classmethod
-    def blank_fill(cls):
+    def empty(cls):
         # solve unicode problem
         if cls.color_mode == constants.ANSI:
             return cls(" ", constants.BLACK)

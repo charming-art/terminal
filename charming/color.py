@@ -14,7 +14,7 @@ def stroke(ch=" ", fg=None, bg=None):
 def fill(ch=" ", fg=None, bg=None):
     renderer.is_fill_enabled = True
     if ch == " ":
-        c = CColor.blank_fill()
+        c = CColor.empty()
     else:
         c = CColor(ch, fg, bg)
     renderer.fill_color = c
@@ -30,9 +30,7 @@ def no_fill():
 
 def background(ch=" ", fg=None, bg=None):
     c = CColor(ch, fg, bg)
-    renderer.has_background_called = True
-    renderer.background_color = c.bg
-    renderer.set_frame_buffer(c)
+    renderer.background(c)
 
 
 def color(ch=" ", fg=None, bg=None):

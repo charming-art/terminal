@@ -166,9 +166,11 @@ class Logger(metaclass=ABCMeta):
         self.time_by_key = {}
         self.should_record = should_record
         self.inclues = [
-            'processing buffer',
+            # 'loop',
+            # 'setup',
             'flush screen',
-            'render shape'
+            'render shape',
+            'set frame buffer',
             # 'vertex processing',
             # 'primitive assembly',
             # 'rasterizatioin',
