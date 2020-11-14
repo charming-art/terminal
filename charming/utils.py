@@ -170,7 +170,6 @@ class Logger(metaclass=ABCMeta):
             # 'setup',
             'flush screen',
             'render shape',
-            'set frame buffer',
             # 'vertex processing',
             # 'primitive assembly',
             # 'rasterizatioin',
@@ -204,7 +203,7 @@ class Logger(metaclass=ABCMeta):
                     ret = foo(*args, **kw)
                     t2 = self.time()
                     d = t2 - t1
-                    if key in self.time_by_key.keys():
+                    if key in self.time_by_key:
                         self.time_by_key[key] += d
                     else:
                         self.time_by_key[key] = d
@@ -262,14 +261,16 @@ else:
             return time.time()
 
         def plot(self, records):
-            # pie chart
-            plt.figure(dpi=70, figsize=(24, 12))
             total = 0
             for _, value in records:
                 total += value
             keys = [r[0] for r in records]
             values = [r[1] for r in records]
             proportions = [r[1] / total for r in records]
+
+            plt.figure(dpi=70, figsize=(24, 12))
+
+            # pie chart
             plt.subplot(121)
             plt.pie(
                 proportions,

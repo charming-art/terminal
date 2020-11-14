@@ -189,5 +189,3 @@ from .image import get_pixels
 from .image import update_pixels
 
 from .helpers import log
-from .helpers import begin_log_frame_buffer
-from .helpers import end_log_frame_buffer

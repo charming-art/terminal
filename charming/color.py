@@ -29,7 +29,10 @@ def no_fill():
 
 
 def background(ch=" ", fg=None, bg=None):
-    c = CColor(ch, fg, bg)
+    if ch == " ":
+        c = CColor.empty()
+    else:
+        c = CColor(ch, fg, bg)
     renderer.background(c)
 
 

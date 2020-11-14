@@ -11,6 +11,8 @@ from .common import add_on_return
 
 #### Loading & Displaying
 
+_pixels = []
+
 
 @add_on_return
 def image(img, a, b, c=None, d=None):
@@ -64,12 +66,18 @@ def tint(ch=" ", fg=None, bg=None):
 
 
 def load_pixels():
-    renderer.tmp_frame_buffer = [p for p in renderer.frame_buffer]
+    global _pixels
+    _pixels = renderer.get_pixels()
 
 
 def get_pixels():
-    return renderer.tmp_frame_buffer
+    return _pixels
 
 
+@add_on_return
 def update_pixels():
-    renderer.frame_buffer = [p for p in renderer.tmp_frame_buffer]
+    options = {
+        'width': renderer.width,
+        'height': renderer.height
+    }
+    return CShape(points=_pixels, primitive_type=constants.IMAGE, options=options, is_auto=False)

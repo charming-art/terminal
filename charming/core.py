@@ -54,8 +54,6 @@ class Sketch(object):
             'window_resized': lambda: None,
         }
 
-        self.is_log_frame_buffer = False
-
     def run(self):
         try:
             self._setup()
@@ -96,8 +94,6 @@ class Sketch(object):
 
             if self.renderer.has_background_called:
                 self.context.background(self.renderer.background_color)
-                self.context.clear()
-                self.renderer.has_background_called = False
 
             self.renderer.render()
             self.context.draw(
@@ -105,9 +101,7 @@ class Sketch(object):
                 self.renderer.color_pair
             )
 
-            if self.is_log_frame_buffer == True:
-                self.renderer.log_frame_buffer()
-
+            self.renderer.has_background_called = False
             self.frame_count += 1
 
     def add_hook(self, name, hook):
@@ -135,11 +129,10 @@ class Renderer(object):
     color_pair = []
 
     def __init__(self):
-        self.frame_buffer = []
-        self.diff_buffer = []
-        self.tmp_frame_buffer = []
-        self.unicode_cnt = []
         self.shape_queue = []
+        self._flag = True
+        self._color_by_pos = {}
+        self.diff_buffer = []
 
         # styles
         self.color_channels = (255,)
@@ -163,13 +156,13 @@ class Renderer(object):
     def init(self):
         self.fill_color = CColor.empty()
         self.background_color = CColor.empty()
+        self.pre_background_color = CColor.empty()
         self.stroke_color = CColor('*')
         self.tint_color = CColor('·')
 
     def setup(self, width, height):
         self.width = width
         self.height = height
-        self._reset_frame_buffer()
 
     def render(self):
         self.diff_buffer.clear()
@@ -191,23 +184,10 @@ class Renderer(object):
             shape.transform_matrix_stack = self.transform_matrix_stack[:]
         self.shape_queue.append(shape)
 
-    def set_frame_buffer(self, color):
-        for i, _ in enumerate(self.frame_buffer):
-            self.frame_buffer[i] = color
-
     def background(self, color):
         self.has_background_called = True
+        self.pre_background_color = self.background_color
         self.background_color = color
-
-    @logger.record('set frame buffer')
-    def _reset_frame_buffer(self):
-        self.frame_buffer = [
-            self.background_color
-            for _ in range(self.width * self.height)
-        ]
-        cnt = 0 if len(self.background_color) == 1 else self.height
-        self.unicode_cnt = [cnt for _ in range(self.width)]
-        self.diff_buffer.clear()
 
     @logger.record('render shape')
     def _render_shape(self, shape):
@@ -474,22 +454,66 @@ class Renderer(object):
 
     @logger.record('fragment processing')
     def _fragment_processing(self, fragemnts):
+        color_by_pos = {}
+
         for pixels in fragemnts:
             for p in pixels:
-                index = p.x + p.y * self.width
-                old = self.frame_buffer[index]
-                old_len = len(old)
+                key = f'({p.x},{p.y})'
+                color_by_pos[key] = [p, self._flag]
 
-                if old != p.color:
-                    self.diff_buffer.append(p)
+        diff_colors = color_by_pos.copy()
 
-                if old_len != len(p.color):
-                    if old_len == 1:
-                        self.unicode_cnt[p.x] += 1
-                    else:
-                        self.unicode_cnt[p.x] -= 1
+        # remove
+        remove_keys = []
+        for key, value in diff_colors.items():
+            if key in self._color_by_pos:
+                self._color_by_pos[key][1] = self._flag
+                pvalue = self._color_by_pos[key]
+                if pvalue[0] == value[0]:
+                    remove_keys.append(key)
 
-                self.frame_buffer[index] = p.color
+        for key in remove_keys:
+            diff_colors.pop(key)
+
+        # add
+        if self.has_background_called:
+            keys = [
+                key for key, value in self._color_by_pos.items()
+                if value[1] != self._flag
+            ]
+            for key in keys:
+                pp = self._color_by_pos[key][0]
+                if pp.color != self.background_color:
+                    diff_colors[key] = [
+                        Point(pp.x, pp.y, self.background_color),
+                        pp, self._flag
+                    ]
+
+            if self.background_color != self.pre_background_color:
+                for x in range(self.width):
+                    for y in range(self.height):
+                        key = f'({x},{y})'
+                        if not key in color_by_pos and not key in diff_colors:
+                            diff_colors[key] = [
+                                Point(x, y, self.background_color),
+                                self._flag
+                            ]
+
+        self.diff_buffer = [value[0] for value in diff_colors.values()]
+        self._color_by_pos = color_by_pos
+        self._flag = not self._flag
+        logger.debug(len(diff_colors))
+
+    def get_pixels(self):
+        pixels = []
+        for i in range(self.width):
+            for j in range(self.height):
+                key = f'({i},{j})'
+                if key in self._color_by_pos:
+                    pixels.append(self._color_by_pos[key][0])
+                else:
+                    pixels.append(self.background_color)
+        return pixels
 
     @logger.record('processing unicode')
     def _processing_unicode(self):
@@ -723,25 +747,6 @@ class Renderer(object):
             fill_edges.append((last_point, first_point))
         return fill_edges
 
-    def log_frame_buffer(self):
-        matrix = '\n'
-        for i in range(self.height):
-            line = ''
-            for j in range(self.width):
-                index = i * self.width + j
-                color = self.frame_buffer[index]
-                if color:
-                    ch, _, _ = color
-                    if isinstance(ch, tuple):
-                        ch, _ = ch
-                    s = "*" if ch == " " else ch
-                    line += s
-                else:
-                    line += 'n'
-            line += "\n"
-            matrix += line
-        logger.debug(matrix)
-
 
 class Context(metaclass=ABCMeta):
 
@@ -885,8 +890,8 @@ class Context(metaclass=ABCMeta):
     def _resize(self):
         self._screen.clear()
         self.update_window()
-        self.draw(self._buffer, self._color_pair)
         self.background(self._background_color)
+        self.draw(self._buffer, self._color_pair)
 
 
 if sys.platform == WINDOWS:
@@ -1115,15 +1120,14 @@ else:
             self._screen.refresh()
 
         def background(self, color):
-            self._background_color = color
-            fg = color.fg
-            bg = color.bg
-            ch = color.ch[0] if isinstance(color.ch, tuple) else color.ch
-            if fg != None and bg != None:
-                color_index = self._get_color_index(fg, bg)
-                self._screen.bkgd(ch, curses.color_pair(color_index))
-            else:
-                self._screen.bkgd(ch)
+            pass
+            # self.clear()
+            # self._background_color = color
+            # fg = color.fg
+            # bg = color.bg
+            # ch = color.ch[0] if isinstance(color.ch, tuple) else color.ch
+            # color_index = self._get_color_index(fg, bg)
+            # self._screen.bkgd(ch, curses.color_pair(color_index))
 
         def enable_colors(self):
             for i, c in enumerate(self._color_pair):

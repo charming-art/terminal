@@ -44,7 +44,7 @@ def draw():
     app.text_size(app.LARGE)
     # app.text(face, 2, 2)
     # app.text('hello world', 0, 0)
-    app.text(face, 0, 0)
+    app.text('charming', 0, 0)
     # app.text("|     __     |", 10, 2)
     # app.scale(2)
     # app.text('hello world', 2, 2)
