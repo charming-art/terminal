@@ -79,6 +79,7 @@ class Sketch(object):
             print('Call size to open context.')
             return
 
+        self.context.init()
         self.renderer.setup(self.context.width, self.context.height)
 
     @logger.record('loop')
@@ -822,8 +823,6 @@ class Context(metaclass=ABCMeta):
         self._background_color = constants.BLACK
 
     def open(self, width=10, height=10, is_full_screen=False):
-        self.init()
-
         if is_full_screen:
             self.width = self.window_width
             self.height = self.window_height
@@ -833,7 +832,6 @@ class Context(metaclass=ABCMeta):
 
         self._pad_width = self.width + 2
         self._pad_height = self.height + 2
-        self._update_pad()
         self.has_open = True
 
     @logger.record('flush screen')
@@ -1057,8 +1055,10 @@ else:
             self._screen = curses.initscr()
             self.window_width = self._screen.getmaxyx()[1]
             self.window_height = self._screen.getmaxyx()[0]
+            curses.endwin()
 
         def init(self):
+            self._screen = curses.initscr()
             self._screen.keypad(1)
             self._screen.nodelay(1)
             self._screen.leaveok(False)
