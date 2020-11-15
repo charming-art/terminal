@@ -175,7 +175,7 @@ class Logger(metaclass=ABCMeta):
             # 'rasterizatioin',
             # 'clipping',
             # 'fragment processing',
-            # 'polygan filling',
+            # 'polygon filling',
             # 'draw line',
         ]
 

@@ -21,8 +21,8 @@ def capture_exception(foo):
 def add_on_return(foo):
     @functools.wraps(foo)
     def wrapped(*args, **kw):
-        shape = foo(*args, **kw)
-        renderer.add_shape(shape)
+        element = foo(*args, **kw)
+        renderer.add_element(element)
     return wrapped
 
 

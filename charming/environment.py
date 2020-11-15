@@ -1,13 +1,14 @@
 from .app import sketch
+from . import constants
 
 
 def frame_rate(frame_rate):
     sketch.frame_rate = frame_rate
 
 
-def size(width, height):
+def size(width, height, mode=constants.SINGLE):
     sketch.context.open(int(width), int(height))
-    sketch.renderer.init()
+    sketch.renderer.init(mode)
 
 
 def terminal_size(width, height, options=None):
@@ -24,9 +25,9 @@ def full_terminal(options=None):
     )
 
 
-def full_screen():
+def full_screen(mode=constants.SINGLE):
     sketch.context.open(is_full_screen=True)
-    sketch.renderer.init()
+    sketch.renderer.init(mode)
 
 
 def get_window_width():

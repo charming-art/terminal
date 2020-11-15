@@ -1,8 +1,8 @@
-import math
+from math import pi
 
 # Trigonometry
 
-PI = math.pi
+PI = pi
 
 HALF_PI = PI / 2
 
@@ -109,3 +109,9 @@ ANSI = 0
 RGB = 1
 
 HSB = 2
+
+# MODE
+
+SINGLE = 0
+
+DOUBLIE = 1

@@ -4,4 +4,4 @@ BROWSER = "emscripten"
 
 POSIX = ""
 
-DEBUG_MODE = True
+DEBUG_MODE = False

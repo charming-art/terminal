@@ -40,8 +40,9 @@ def draw():
     # h = app.text_height(text)
 
     # app.stroke(" ", fg=app.YELLOW, bg=app.GREEN)
-    # app.translate(app.get_width() / 2, 0)
-    app.text_size(app.LARGE)
+    app.translate(app.get_width() / 2, app.get_height() / 2)
+    app.text_align(app.CENTER, app.MIDDLE)
+    app.text_size(app.BIG)
     # app.text(face, 2, 2)
     # app.text('hello world', 0, 0)
     app.text('charming', 0, 0)

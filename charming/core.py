@@ -1,8 +1,9 @@
 import sys
 import math
 import colorsys
-import bisect
+import string
 from abc import ABCMeta, abstractclassmethod
+from pyfiglet import Figlet
 from . import constants
 
 from .globals import WINDOWS
@@ -153,12 +154,13 @@ class Renderer(object):
         self.width = 10
         self.height = 10
 
-    def init(self):
+    def init(self, mode):
         self.fill_color = CColor.empty()
         self.background_color = CColor.empty()
         self.pre_background_color = CColor.empty()
         self.stroke_color = CColor('*')
         self.tint_color = CColor('·')
+        self.mode = mode
 
     def setup(self, width, height):
         self.width = width
@@ -169,25 +171,39 @@ class Renderer(object):
         while len(self.shape_queue) > 0:
             shape = self.shape_queue.pop(0)
             self._render_shape(shape)
-        self._processing_unicode()
         self.transform_matrix_stack.clear()
 
-    def add_shape(self, shape):
-        if shape.is_auto:
-            shape.fill_color = self.fill_color
-            shape.stroke_color = self.stroke_color
-            shape.tint_color = self.tint_color
-            shape.stroke_weight = self.stroke_weight
-            shape.is_tint_enabled = self.is_tint_enabled
-            shape.is_fill_enabled = self.is_fill_enabled
-            shape.is_stroke_enabled = self.is_stroke_enabled
-            shape.transform_matrix_stack = self.transform_matrix_stack[:]
-        self.shape_queue.append(shape)
+    def add_element(self, element):
+        if isinstance(element, CImage):
+            element = self._image_to_shape(element)
+        elif isinstance(element, CText):
+            element = self._text_to_shape(element)
+        if element.is_auto:
+            element.fill_color = self.fill_color
+            element.stroke_color = self.stroke_color
+            element.tint_color = self.tint_color
+            element.stroke_weight = self.stroke_weight
+            element.is_tint_enabled = self.is_tint_enabled
+            element.is_fill_enabled = self.is_fill_enabled
+            element.is_stroke_enabled = self.is_stroke_enabled
+            element.transform_matrix_stack = self.transform_matrix_stack[:]
+        self.shape_queue.append(element)
 
     def background(self, color):
         self.has_background_called = True
         self.pre_background_color = self.background_color
         self.background_color = color
+
+    def _text_to_shape(self, text):
+        return text.to_shape(
+            self.text_size,
+            self.text_font,
+            self.text_align_x,
+            self.text_align_y
+        )
+
+    def _image_to_shape(self, image):
+        return 1
 
     @logger.record('render shape')
     def _render_shape(self, shape):
@@ -502,7 +518,6 @@ class Renderer(object):
         self.diff_buffer = [value[0] for value in diff_colors.values()]
         self._color_by_pos = color_by_pos
         self._flag = not self._flag
-        logger.debug(len(diff_colors))
 
     def get_pixels(self):
         pixels = []
@@ -515,11 +530,7 @@ class Renderer(object):
                     pixels.append(self.background_color)
         return pixels
 
-    @logger.record('processing unicode')
-    def _processing_unicode(self):
-        pass
-
-    @logger.record('polygan filling')
+    @logger.record('polygon filling')
     def _scan_line_filling(self, polygon, fill_color):
         '''
         https://www.cs.uic.edu/~jbell/CourseNotes/ComputerGraphics/PolygonFilling.html
@@ -1496,6 +1507,126 @@ class CImage(object):
         return attrs.__repr__()
 
     __str__ = __repr__
+
+
+class CText(object):
+
+    def __init__(self, text, x, y):
+        self.text = text
+        self.x = x
+        self.y = y
+
+    def to_shape(self, size, font, align_x, align_y):
+        text = self._convert(self.text, size, font)
+        matrix = self._matrixlize(text)
+        height = matrix.row
+        width = matrix.col
+
+        if align_x == constants.RIGHT:
+            self.x -= width
+        elif align_x == constants.CENTER:
+            self.x -= width / 2
+
+        if align_y == constants.BOTTOM:
+            self.y -= height
+        elif align_y == constants.MIDDLE:
+            self.y -= height / 2
+
+        points = []
+        for i, chars in enumerate(matrix):
+            for j, ch in enumerate(chars):
+                x0 = self.x + j
+                y0 = self.y + i
+                color = CColor(ch)
+                points.append(Point(x0, y0, color=color))
+
+        return CShape(points=points, primitive_type=constants.TEXT)
+
+    @classmethod
+    def text_width(cls, text, size, font):
+        text = cls._convert(text, size, font)
+        matrix = cls._matrixlize(text)
+        return matrix.col
+
+    @classmethod
+    def text_height(cls, text, size, font):
+        text = cls._convert(text, size, font)
+        matrix = cls._matrixlize(text)
+        return matrix.row
+
+    @classmethod
+    def _convert(cls, text, size, font):
+        if size == constants.BIG:
+            f = Figlet(font=font)
+            text = f.renderText(text)
+        elif size == constants.LARGE:
+            f = Figlet(font=font)
+            matrix = cls._matrixlize(text)
+            max_width_list = [-1 for _ in range(matrix.col)]
+            max_height = -1
+            total_width = 0
+            steps = []
+
+            for j in range(matrix.col):
+                for i in range(matrix.row):
+                    ftext = f.renderText(matrix[i][j])
+                    m = cls._matrixlize(ftext, False)
+                    max_width_list[j] = max(max_width_list[j], m.col)
+                    max_height = max(max_height, m.row)
+                    matrix[i][j] = m
+                start = total_width
+                end = start + max_width_list[j]
+                total_width = end
+                steps.append((start, end))
+
+            def get_info(n):
+                for i, (start, end) in enumerate(steps):
+                    if n >= start and n < end:
+                        return [i, start, end]
+                return -1
+
+            text = ""
+            for i in range(matrix.row * max_height):
+                for j in range(total_width):
+                    y0 = int(i / max_height)
+                    x0, start, _ = get_info(j)
+                    y = i % max_height
+                    x = j - start
+
+                    width = max_width_list[x0]
+                    m = matrix[y0][x0]
+                    mx1 = int((width - m.col) / 2)
+                    mx2 = mx1 + m.col
+                    my1 = int((max_height - m.row) / 2)
+                    my2 = my1 + m.row
+
+                    if x < mx1 or x >= mx2 or y < my1 or y >= my2:
+                        text += " "
+                    else:
+                        text += m[y - my1][x - mx1]
+                text += "\n"
+        return text
+
+    @staticmethod
+    def _matrixlize(text, no_empty_line=True):
+        if no_empty_line:
+            lines = [
+                line for line in text.split('\n')
+                if not line in string.whitespace or len(line) == 1
+            ]
+        else:
+            lines = [line for line in text.split('\n')]
+
+        if len(lines) == 0:
+            return Matrix([[]])
+
+        max_width = max([len(line) for line in lines])
+        matrix = [
+            [line[i] if i < len(line) else ' '
+             for i in range(max_width)]
+            for line in lines
+        ]
+        return Matrix(matrix)
 
 
 class Event(object):
