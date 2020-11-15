@@ -3,8 +3,9 @@ import charming as app
 
 @app.setup
 def setup():
-    # app.size(30, 20)
-    app.full_screen()
+    app.size(30, 20)
+    # app.full_screen()
+    # app.no_cursor()
     # app.begin_log_frame_buffer()
 
 
@@ -23,10 +24,10 @@ def draw():
     app.fill('0', app.YELLOW, app.RED)
     app.stroke('1', app.GREEN, app.BLUE)
     app.rect(x, 0, 10, 10)
-    x += 1
+    # x += 0.1
     # app.no_loop()
-    # if x >= 10:
-    #     app.no_loop()
+    if x >= 10:
+        app.no_loop()
 
 
 app.run()

@@ -3,6 +3,7 @@ from .core import Color
 from .app import renderer
 from .common import check_color
 from .utils import lerp_color as utils_lerp_color
+from .utils import logger
 from .utils import map
 
 @check_color

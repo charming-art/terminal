@@ -66,6 +66,7 @@ class Sketch(object):
             logger.debug(e)
             raise e
         finally:
+            self.context.exit()
             self.context.close()
             logger.log_record()
 
@@ -97,10 +98,7 @@ class Sketch(object):
                 self.context.background(self.renderer.background_color)
 
             self.renderer.render()
-            self.context.draw(
-                self.renderer.update_cells,
-                self.renderer.color_pair
-            )
+            self.context.draw(self.renderer.update_cells)
 
             self.renderer.has_background_called = False
             self.frame_count += 1
@@ -119,6 +117,7 @@ class Sketch(object):
         elif e.type == "window":
             window_hook = self.hooks_map['window_resized']
             window_hook()
+            self.renderer.clear()
         elif e.type == "keyboard":
             self.key = e.key
             keyTyped_hook = self.hooks_map['key_typed']
@@ -126,8 +125,6 @@ class Sketch(object):
 
 
 class Renderer(object):
-
-    color_pair = []
 
     def __init__(self):
         self._flag = True
@@ -175,6 +172,9 @@ class Renderer(object):
             self._render_shape(shape)
         self._differ_buffer()
         self.transform_matrix_stack.clear()
+
+    def clear(self):
+        self._pre_color_by_pos = {}
 
     def add_element(self, element):
         if isinstance(element, Image):
@@ -763,66 +763,52 @@ class Context(metaclass=ABCMeta):
         """ close the drawing context and restore state of canvas """
 
     @abstractclassmethod
-    def no_cursor(self):
-        """ hide cursor """
-
-    @abstractclassmethod
-    def cursor(self):
-        """ show cursor """
-
-    @abstractclassmethod
     def get_events(self):
         """ get event: mouse event, keyboard event, cursor event """
-
-    @abstractclassmethod
-    def clear(self):
-        """ clear the screen when called background() """
-
-    @abstractclassmethod
-    def addch(self, x, y, ch, fg=None, bg=None):
-        """ add ch to screen """
-
-    @abstractclassmethod
-    def enable_colors(self):
-        """ enable colors """
 
     @abstractclassmethod
     def init(self):
         """ init the terminal """
 
     @abstractclassmethod
-    def update_window(self):
+    def background(self, color):
+        ''' set the backgroun color of the terminal '''
+
+    @abstractclassmethod
+    def _write(self, content):
+        """ write content to screen """
+
+    @abstractclassmethod
+    def _update_window_size(self):
         """ update the size of the window """
 
-    @abstractclassmethod
-    def refresh(self):
-        """ refresh the physical sceen """
-
-    @abstractclassmethod
-    def background(self, color):
-        """ set the background of the screen """
-
     def __init__(self):
-        self.window_width = 0
-        self.window_height = 0
-        self.terminal_width = 0
-        self.terminal_height = 0
         self.inner_width = 0
         self.inner_height = 0
+
+        self.terminal_width = 0
+        self.terminal_height = 0
+
+        self.window_width = 0
+        self.window_height = 0
+
         self.width = 0
         self.height = 0
-        self.has_open = False
-        self._pad_width = 0
-        self._pad_height = 0
-        self._buffer = []
-        self._cell_poss = []
-        self._color_pair = []
+
         self._pad_x = 0
         self._pad_y = 0
+        self._pad_width = 0
+        self._pad_height = 0
+
+        self.has_open = False
+        self._has_cursor = True
         self._screen = None
-        self._background_color = constants.BLACK
+
+        self._content = ""
 
     def open(self, width=10, height=10, is_full_screen=False):
+        self.has_open = True
+
         if is_full_screen:
             self.width = self.window_width
             self.height = self.window_height
@@ -832,14 +818,13 @@ class Context(metaclass=ABCMeta):
 
         self._pad_width = self.width + 2
         self._pad_height = self.height + 2
-        self.has_open = True
+        self._pad_x = (self.window_width - self._pad_width) // 2
+        self._pad_y = (self.window_height - self._pad_height) // 2
 
     @logger.record('flush screen')
-    def draw(self, buffer, color_pair):
-        self._buffer = buffer
-        self._color_pair = color_pair
-        self._update_pad()
-        self.enable_colors()
+    def draw(self, buffer):
+        self._draw_border()
+        self._content = ''
 
         for p in buffer:
             x = p.x + self._pad_x + 1
@@ -847,23 +832,46 @@ class Context(metaclass=ABCMeta):
             ch = p.color.ch
             ch = ch[0] if isinstance(ch, tuple) else ch
             if self._in(x, y):
-                self.addch(x, y, ch, p.color.fg, p.color.bg)
+                self._addch(x, y, ch, p.color.fg, p.color.bg)
 
-        # update the physical sceen
-        self.refresh()
+        self._refresh()
 
-    def _update_pad(self):
-        # update location
-        self._pad_x = (self.window_width - self._pad_width) // 2
-        self._pad_y = (self.window_height - self._pad_height) // 2
+    def no_cursor(self):
+        self._has_cursor = False
 
-        # draw pad
+    def cursor(self):
+        self._has_cursor = True
+
+    def exit(self):
+        self._write('\x1b[?25h')
+
+    def _addch(self, x, y, ch, fg=None, bg=None):
+        csi_pos = f'\x1b[{y + 1};{x + 1};H'
+        if fg != None and bg != None:
+            csi_fg = f'\x1b[38;5;{fg}m'
+            csi_bg = f'\x1b[48;5;{bg}m'
+            content = f'{csi_pos}{csi_fg}{csi_bg}{ch}'
+        else:
+            content = f'{csi_pos}{ch}'
+        self._content += content
+
+    def _clear(self):
+        self._write('\x1b[2J')
+
+    def _refresh(self):
+        csi_cursor = '\x1b[?25h' if self._has_cursor else '\x1b[?25l'
+        self._write(self._content + csi_cursor)
+        self._content = ''
+
+    def _draw_border(self):
+        self._content += '\x1b[0m'
+
         for i in range(self._pad_width):
             x = self._pad_x + i
             y = self._pad_y
             if self._in(x, y):
                 ch = '+' if i == 0 else '-'
-                self.addch(x, y, ch)
+                self._addch(x, y, ch)
 
         # right
         for i in range(self._pad_height - 1):
@@ -871,7 +879,7 @@ class Context(metaclass=ABCMeta):
             y = self._pad_y + i
             if self._in(x, y):
                 ch = '+' if i == 0 else '|'
-                self.addch(x, y, ch)
+                self._addch(x, y, ch)
 
         # left
         for i in range(self._pad_height - 1):
@@ -879,7 +887,7 @@ class Context(metaclass=ABCMeta):
             y = self._pad_y + 1 + i
             if self._in(x, y):
                 ch = '+' if i == self._pad_height - 2 else '|'
-                self.addch(x, y, ch)
+                self._addch(x, y, ch)
 
         # bottom
         for i in range(self._pad_width - 1):
@@ -887,163 +895,26 @@ class Context(metaclass=ABCMeta):
             y = self._pad_y + self._pad_height - 1
             if self._in(x, y):
                 ch = '+' if i == self._pad_width - 2 else '-'
-                self.addch(x, y, ch)
+                self._addch(x, y, ch)
+        self._refresh()
 
     def _in(self, x, y):
         return x >= 0 and x < self.window_width and y >= 0 and y < self.window_height
 
     def _resize(self):
-        self._screen.clear()
-        self.update_window()
-        self.background(self._background_color)
-        self.draw(self._buffer, self._color_pair)
+        self._update_window_size()
+        self._pad_x = (self.window_width - self._pad_width) // 2
+        self._pad_y = (self.window_height - self._pad_height) // 2
 
 
 if sys.platform == WINDOWS:
     class WindowsContext(Context):
-        def __init__(self):
-            super(WindowsContext, self).__init__()
-
-        def init(self):
-            print('hello windows context')
-
-        def close(self):
-            pass
-
-        def no_cursor(self):
-            pass
-
-        def cursor(self):
-            pass
-
-        def get_events(self):
-            pass
-
-        def clear(self):
-            pass
-
-        def update_window(self):
-            pass
-
-        def enable_colors(self):
-            pass
-
-        def addch(self):
-            pass
-
-        def refresh(self):
-            pass
-
-        def background(self, color):
-            pass
-
+        pass
 
 elif sys.platform == BROWSER:
 
-    from js import document as doc  # pylint: disable=imports
-    from js import window  # pylint: disable=imports
-    from js import term  # pylint: disable=imports
-    from js import fit_addon  # pylint: disable=imports
-
     class BrowserContext(Context):
-
-        def __init__(self):
-            super(BrowserContext, self).__init__()
-            self.terminal_width = 720
-            self.terminal_height = 408
-            self.inner_width = window.innerWidth
-            self.inner_height = window.innerHeight
-            self.options = None
-            self._write_content = ''
-            self._has_cursor = True
-            self._container = None
-            self._color_palette = generate_xtermjs_colors()
-
-        def init(self):
-            if self.options == None:
-                self.options = {}
-
-            self._screen = term
-            for key, value in self.options.items():
-                self._screen.setOption(key, value)
-
-            # set the css styles of container
-            self._container = doc.getElementById("terminal")
-            self._styles(self._container, {
-                'background': 'black',
-                'width': self.terminal_width,
-                'height': self.terminal_height,
-                'display': 'flex',
-                'justifyContent': 'center',
-                'alignItems': 'center'
-            })
-
-            self.fit_addon = fit_addon
-            self._screen.loadAddon(fit_addon)
-            self._screen.open(self._container)
-            fit_addon.fit()
-
-            self.window_height = self._screen.rows
-            self.window_width = self._screen.cols
-
-        def addch(self, x, y, ch, fg=constants.WHITE, bg=constants.BLACK):
-            _x = x - self._pad_x
-            _y = y - self._pad_y
-
-            if _y > 0 and _y < self._pad_height - 1:
-                x = self._cell_poss[_y - 1]['list'][_x] + self._pad_x
-
-            csi_fg = f'\x1b[38;5;{fg}m'
-            csi_bg = f'\x1b[48;5;{bg}m'
-            csi_pos = f'\x1b[{y + 1};{x};H'
-            self._write_content += f'{csi_pos}{csi_fg}{csi_bg}{ch}'
-
-            if get_char_width(ch) == 2:
-                csi_pos = f'\x1b[{y + 1};{x + 1};H'
-                ch = " "
-                self._write_content += f'{csi_pos}{csi_fg}{csi_bg}{ch}'
-
-        def close(self):
-            self._screen.clear()
-
-        def no_cursor(self):
-            self._has_cursor = False
-
-        def cursor(self):
-            self._has_cursor = True
-
-        def enable_colors(self):
-            pass
-
-        def get_events(self):
-            return []
-
-        def clear(self):
-            self._screen.clear()
-
-        def update_window(self):
-            pass
-
-        def background(self, color_index):
-            r, g, b = self._color_palette[color_index]
-            color = f'rgb({r}, {g}, {b})'
-            self._styles(self._container, {
-                'background': color
-            })
-            self._screen.setOption('theme', {
-                'background': color
-            })
-
-        def refresh(self):
-            cursor_control = '\x1b[?25h' if self._has_cursor else '\x1b[?25l'
-            self._screen.write(self._write_content + cursor_control)
-            self._write_content = ''
-
-        def _styles(self, dom, styles):
-            for key, value in styles.items():
-                dom.style[key] = f'{value}px' if isinstance(
-                    value, int) else value
-
+        pass
 
 else:
     import curses
@@ -1078,12 +949,6 @@ else:
             curses.echo()
             curses.endwin()
 
-        def no_cursor(self):
-            curses.curs_set(0)
-
-        def cursor(self):
-            curses.curs_set(1)
-
         def get_events(self):
             event_queue = []
             key = self._screen.getch()
@@ -1105,47 +970,16 @@ else:
                 key = self._screen.getch()
             return event_queue
 
-        def addch(self, x, y, ch, fg=None, bg=None):
-            # (window_height - 1, window_width - 1) is not available
-            if x >= self.window_width - 1 and y >= self.window_height - 1:
-                return
-
-            if fg != None and bg != None:
-                color_index = self._get_color_index(fg, bg)
-                self._screen.addstr(
-                    y, x, ch, curses.color_pair(color_index)
-                )
-            else:
-                self._screen.addstr(
-                    y, x, ch
-                )
-
-        def clear(self):
-            self._screen.clear()
-
-        def refresh(self):
-            self._screen.refresh()
-
         def background(self, color):
             pass
 
-        def enable_colors(self):
-            for i, c in enumerate(self._color_pair):
-                if not c.has_init:
-                    curses.init_pair(i + 1, c.fg, c.bg)
-                    c.has_init = True
+        def _write(self, content):
+            print(content, end="", flush=True)
 
-        def update_window(self):
+        def _update_window_size(self):
             curses.update_lines_cols()
             self.window_width = self._screen.getmaxyx()[1]
             self.window_height = self._screen.getmaxyx()[0]
-
-        def _get_color_index(self, fg, bg):
-            color_index = -1
-            for i, c in enumerate(self._color_pair):
-                if fg == c.fg and bg == c.bg:
-                    color_index = i + 1
-            return color_index
 
 
 class Timer(metaclass=ABCMeta):
@@ -1282,8 +1116,6 @@ class Color(object):
             self.fg = self._init_truecolor(fg, (m1, 0, m3))
             self.bg = self._init_truecolor(bg, (0, 0, 0))
 
-        self.add_color(self)
-
     def _init_ansi(self, index, default):
         if index == None:
             index = default
@@ -1407,13 +1239,6 @@ class Color(object):
     def restore(cls):
         cls.color_channels = cls._color_channels
         cls.color_mode = cls._color_mode
-
-    @classmethod
-    def add_color(cls, c):
-        for color in Renderer.color_pair:
-            if color.fg == c.fg and color.bg == c.bg:
-                return None
-        Renderer.color_pair.append(c)
 
     def __str__(self):
         attrs = {
