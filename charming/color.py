@@ -6,11 +6,13 @@ from .utils import lerp_color as utils_lerp_color
 from .utils import logger
 from .utils import map
 
+
 @check_color
 def stroke(ch=" ", fg=None, bg=None):
     renderer.is_stroke_enabled = True
     c = Color(ch, fg, bg)
     renderer.stroke_color = c
+
 
 @check_color
 def fill(ch=" ", fg=None, bg=None):
@@ -21,13 +23,14 @@ def fill(ch=" ", fg=None, bg=None):
         c = Color(ch, fg, bg)
     renderer.fill_color = c
 
-@check_color
+
 def no_stroke():
     renderer.is_stroke_enabled = False
 
 
 def no_fill():
     renderer.is_fill_enabled = False
+
 
 @check_color
 def background(ch=" ", fg=None, bg=None):

@@ -1,4 +1,5 @@
 from .app import sketch
+from .app import renderer
 from . import constants
 
 
@@ -7,7 +8,8 @@ def frame_rate(frame_rate):
 
 
 def size(width, height, mode=constants.SINGLE):
-    sketch.context.open(int(width), int(height))
+    scale = 2 if mode == constants.DOUBLIE else 1
+    sketch.context.open(int(width) * scale, int(height))
     sketch.renderer.init(mode)
 
 
@@ -39,7 +41,8 @@ def get_window_height():
 
 
 def get_width():
-    return sketch.context.width
+    scale = 2 if renderer.mode == constants.DOUBLIE else 1
+    return int(sketch.context.width / scale)
 
 
 def get_height():

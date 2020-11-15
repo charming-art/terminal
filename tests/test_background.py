@@ -25,7 +25,7 @@ def draw():
     app.stroke('1', app.GREEN, app.BLUE)
     app.rect(x, 0, 10, 10)
     # x += 0.1
-    # app.no_loop()
+    app.no_loop()
     if x >= 10:
         app.no_loop()
 

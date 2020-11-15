@@ -98,7 +98,10 @@ class Sketch(object):
                 self.context.background(self.renderer.background_color)
 
             self.renderer.render()
-            self.context.draw(self.renderer.update_cells)
+            self.context.draw(
+                self.renderer.update_cells,
+                self.renderer.mode
+            )
 
             self.renderer.has_background_called = False
             self.frame_count += 1
@@ -454,16 +457,16 @@ class Renderer(object):
 
     @logger.record('clipping')
     def _clipping(self, fragments):
-        return [
-            [
-                p for p in pixels
-                if p.x >= 0
-                and p.x < self.width
-                and p.y >= 0
-                and p.y < self.height
-            ]
-            for pixels in fragments
-        ]
+        fragments_clipped = []
+        scale = 2 if self.mode == constants.DOUBLIE else 1
+        for pixels in fragments:
+            pixels_clipped = []
+            for p in pixels:
+                p.x *= scale
+                if p.x >= 0 and p.x < self.width and p.y >= 0 and p.y < self.height:
+                    pixels_clipped.append(p)
+            fragments_clipped.append(pixels_clipped)
+        return fragments_clipped
 
     @logger.record('fragment processing')
     def _fragment_processing(self, fragemnts):
@@ -822,7 +825,7 @@ class Context(metaclass=ABCMeta):
         self._pad_y = (self.window_height - self._pad_height) // 2
 
     @logger.record('flush screen')
-    def draw(self, buffer):
+    def draw(self, buffer, mode):
         self._draw_border()
         self._content = ''
 
@@ -830,7 +833,15 @@ class Context(metaclass=ABCMeta):
             x = p.x + self._pad_x + 1
             y = p.y + self._pad_y + 1
             ch = p.color.ch
-            ch = ch[0] if isinstance(ch, tuple) else ch
+            if isinstance(ch, tuple):
+                ch_w = ch[1]
+                ch = ch[0] + ' '
+            else:
+                ch_w = get_char_width(ch)
+
+            if mode == constants.DOUBLIE and ch_w == 1:
+                ch += ch
+
             if self._in(x, y):
                 self._addch(x, y, ch, p.color.fg, p.color.bg)
 

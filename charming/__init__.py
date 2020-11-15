@@ -47,6 +47,9 @@ from .constants import ANSI
 from .constants import RGB
 from .constants import HSB
 
+from .constants import DOUBLIE
+from .constants import SINGLE
+
 from .structure import setup
 from .structure import draw
 from .structure import run

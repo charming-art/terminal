@@ -3,9 +3,11 @@ import charming as app
 
 @app.setup
 def setup():
-    app.full_screen()
+    app.full_screen(app.DOUBLIE)
     app.rect_mode(app.RADIUS)
     app.ellipse_mode(app.RADIUS)
+    app.no_cursor()
+    app.frame_rate(10)
 
 
 @app.draw
@@ -21,11 +23,10 @@ def draw():
     app.translate(app.get_width() / 2, app.get_height() / 2)
     app.rotate(app.QUARTER_PI)
 
-    app.fill("@", 1, 9)
-    # app.square(0, 0, size)    
-    # app.circle(0, -n1, size)
+    app.fill("💘", 1, 9)
+    app.square(0, 0, size)    
+    app.circle(0, -n1, size)
     app.circle(n2, 0, size)
-    app.no_loop()
 
 
 def custom_foo(x):
