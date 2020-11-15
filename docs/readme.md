@@ -186,17 +186,14 @@
 ## Image
   
 - [x] Image
-
-### Loading & Displaying
-
 - [x] image()
 - [x] image_mode()
 - [x] load_image()
 - [x] no_tint()
 - [x] tint()
   
-### Pixels
+## Cells
 
-- [x] load_xixels()
-- [x] get_pixels()
-- [x] update_pixels()
+- [ ] load_cells()
+- [ ] get_cells()
+- [ ] update_cells()

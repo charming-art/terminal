@@ -1,57 +1,87 @@
+import sys
 from .core import Color
-from .core import Shape
-from .core import Point
+from .core import Image
 from .app import renderer
-from .app import image_loader
-from . import constants
-from .cmath import map
 from .common import get_bounding_rect_by_mode
 from .common import add_on_return
 from .common import check_color
+from .utils import logger
+from .globals import BROWSER
 
 
 #### Loading & Displaying
 
-_pixels = []
+class CImage(object):
 
+    def __init__(self, data, width, height):
+        self._pixels = data
+        self.pixels = []
+        self.width = width
+        self.height = height
+
+    def load_pixels(self):
+        self.pixels = [p for p in self._pixels]
+
+    def update_pixels(self):
+        self._pixels = [p for p in self.pixels]
+
+    def copy(self):
+        return self.__class__(
+            self._pixels,
+            self.width,
+            self.height,
+        )
+
+    def __getitem__(self, index):
+        return self._pixels[index]
+
+    def __setitem__(self, key, value):
+        self._pixels[key] = value
+
+    def __repr__(self):
+        attrs = {
+            'pixels': self._pixels,
+            'width': self.width,
+            'height': self.height
+        }
+        return attrs.__repr__()
+
+    __str__ = __repr__
 
 @add_on_return
 def image(img, a, b, c=None, d=None):
     c = img.width if c == None else c
     d = img.height if d == None else d
-    x1, _, x2, y2, _, y3, _, _ = get_bounding_rect_by_mode(
+    x1, y1, x2, y2, _, y3, _, _ = get_bounding_rect_by_mode(
         a, b, c, d, renderer.image_mode)
 
     x1 = int(x1)
+    y1 = int(y1)
     x2 = int(x2)
     y2 = int(y2)
     y3 = int(y3)
     w = x2 - x1 + 1
     h = y3 - y2 + 1
 
-    points = []
-    for y in range(y2, y3 + 1):
-        for x in range(x1, x2 + 1):
-            y0 = int(map(y, y2, y3 + 1, 0, img.height))
-            x0 = int(map(x, x1, x2 + 1, 0, img.width))
-            index = y0 * img.width + x0
-            color = img[index]
-            points.append(Point(x, y, color=color))
-
-    options = {
-        'width': w,
-        'height': h
-    }
-
-    return Shape(points=points, primitive_type=constants.IMAGE, options=options)
+    return Image(img, x1, y1, w, h)
 
 
 def image_mode(mode):
     renderer.image_mode = mode
 
 
-def load_image(src):
-    return image_loader.load(src)
+if sys.platform == BROWSER:
+    def load_image(src):
+        pass
+else:
+    from PIL import Image as PImage
+
+    def load_image(src):
+        image = PImage.open(src)
+        w, h = image.size
+        data = image.getdata()
+        logger.debug('load image')
+        return CImage(data, w, h)
 
 
 def no_tint():
@@ -67,19 +97,14 @@ def tint(ch=" ", fg=None, bg=None):
 # Pixels
 
 
-def load_pixels():
-    global _pixels
-    _pixels = renderer.get_pixels()
+def load_cells():
+    pass
 
 
-def get_pixels():
-    return _pixels
+def get_cells():
+    pass
 
 
 @add_on_return
-def update_pixels():
-    options = {
-        'width': renderer.width,
-        'height': renderer.height
-    }
-    return Shape(points=_pixels, primitive_type=constants.IMAGE, options=options, is_auto=False)
+def update_cells():
+    pass

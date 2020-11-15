@@ -22,10 +22,9 @@ from .utils import logger
 
 class Sketch(object):
 
-    def __init__(self, renderer, context, image_loader, timer):
+    def __init__(self, renderer, context, timer):
         self.renderer = renderer
         self.context = context
-        self.image_loader = image_loader
         self.timer = timer
 
         self.frame_rate = 30
@@ -175,9 +174,14 @@ class Renderer(object):
 
     def add_element(self, element):
         if isinstance(element, Image):
-            element = self._image_to_shape(element)
+            element = element.to_shape()
         elif isinstance(element, Text):
-            element = self._text_to_shape(element)
+            element = element.to_shape(
+                self.text_size,
+                self.text_font,
+                self.text_align_x,
+                self.text_align_y
+            )
         if element.is_auto:
             element.fill_color = self.fill_color
             element.stroke_color = self.stroke_color
@@ -193,17 +197,6 @@ class Renderer(object):
         self.has_background_called = True
         self.pre_background_color = self.background_color
         self.background_color = color
-
-    def _text_to_shape(self, text):
-        return text.to_shape(
-            self.text_size,
-            self.text_font,
-            self.text_align_x,
-            self.text_align_y
-        )
-
-    def _image_to_shape(self, image):
-        return 1
 
     @logger.record('render shape')
     def _render_shape(self, shape):
@@ -1132,13 +1125,6 @@ else:
 
         def background(self, color):
             pass
-            # self.clear()
-            # self._background_color = color
-            # fg = color.fg
-            # bg = color.bg
-            # ch = color.ch[0] if isinstance(color.ch, tuple) else color.ch
-            # color_index = self._get_color_index(fg, bg)
-            # self._screen.bkgd(ch, curses.color_pair(color_index))
 
         def enable_colors(self):
             for i, c in enumerate(self._color_pair):
@@ -1173,25 +1159,6 @@ class Timer(metaclass=ABCMeta):
         pass
 
 
-class ImageLoader(metaclass=ABCMeta):
-
-    @abstractclassmethod
-    def load(self, src):
-        '''load image data'''
-        pass
-
-    def convert_color(self, data):
-        pixels = []
-        Color.save()
-        Color.color_mode = constants.RGB
-        Color.color_channels = (255, 255, 255)
-        for r, g, b, _ in data:
-            c = (r, g, b)
-            pixels.append(Color('·', c, c))
-        Color.restore()
-        return pixels
-
-
 if sys.platform == BROWSER:
     from js import window  # pylint: disable=imports
 
@@ -1204,14 +1171,8 @@ if sys.platform == BROWSER:
 
         def wait(self):
             pass
-
-    class BrowserImageLoader(ImageLoader):
-        def load(self, src):
-            pass
 else:
     import time
-    import PIL
-
     class LocalTimer(Timer):
 
         def run(self, ms, callback):
@@ -1228,14 +1189,6 @@ else:
 
         def wait(self):
             input()
-
-    class PILImageLoader(ImageLoader):
-        def load(self, src):
-            image = PIL.Image.open(src)
-            w, h = image.size
-            data = image.getdata()
-            pixels = self.convert_color(data)
-            return Image(pixels, w, h)
 
 
 class Shape(object):
@@ -1472,36 +1425,39 @@ class Color(object):
 
 class Image(object):
 
-    def __init__(self, pixels, width, height):
-        self._pixels = pixels
-        self.pixels = []
+    def __init__(self, image, x, y, width, height):
+        self.image = image
+        self.x = x
+        self.y = y
         self.width = width
         self.height = height
 
-    def load_pixels(self):
-        self.pixels = [p for p in self._pixels]
+    def to_shape(self):
+        Color.save()
+        Color.color_mode = constants.RGB
+        Color.color_channels = (255, 255, 255)
 
-    def update_pixels(self):
-        self._pixels = [p for p in self.pixels]
+        points = []
+        y1 = self.y
+        y2 = self.y + self.height
+        x1 = self.x
+        x2 = self.x + self.width
+        for y in range(y1, y2):
+            for x in range(x1, x2):
+                y0 = int(map(y, y1, y2, 0, self.image.height))
+                x0 = int(map(x, x1, x2, 0, self.image.width))
+                index = y0 * self.image.width + x0
+                color = self.image[index]
+                c = (color[0], color[1], color[2])
+                points.append(Point(x, y, color=Color('·', c, c)))
 
-    def copy(self):
-        return self.__class__(self.pixels, self.width, self.height)
+        Color.restore()
 
-    def __getitem__(self, index):
-        return self._pixels[index]
-
-    def __setitem__(self, key, value):
-        self._pixels[key] = value
-
-    def __repr__(self):
-        attrs = {
-            'pixels': self._pixels,
+        options = {
             'width': self.width,
             'height': self.height
         }
-        return attrs.__repr__()
-
-    __str__ = __repr__
+        return Shape(points=points, primitive_type=constants.IMAGE, options=options)
 
 
 class Text(object):

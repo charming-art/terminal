@@ -181,8 +181,8 @@ from .image import image_mode
 from .image import load_image
 from .image import no_tint
 from .image import tint
-from .image import load_pixels
-from .image import get_pixels
-from .image import update_pixels
+from .image import load_cells
+from .image import get_cells
+from .image import update_cells
 
 from .helpers import log

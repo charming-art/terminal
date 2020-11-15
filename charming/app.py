@@ -8,21 +8,18 @@ from .core import WINDOWS
 def get_components_by_platform(platform):
     if platform == WINDOWS:
         from .core import WindowsContext
-        from .core import PILImageLoader
         from .core import LocalTimer
-        return WindowsContext(), PILImageLoader(), LocalTimer()
+        return WindowsContext(),  LocalTimer()
     elif platform == BROWSER:
         from .core import BrowserContext
-        from .core import BrowserImageLoader
         from .core import BrowserTimer
-        return BrowserContext(), BrowserImageLoader(), BrowserTimer()
+        return BrowserContext(), BrowserTimer()
     else:
         from .core import CursesContext
-        from .core import PILImageLoader
         from .core import LocalTimer
-        return CursesContext(), PILImageLoader(), LocalTimer()
+        return CursesContext(),  LocalTimer()
 
 
-context, image_loader, timer = get_components_by_platform(platform)
+context, timer = get_components_by_platform(platform)
 renderer = Renderer()
-sketch = Sketch(renderer, context, image_loader, timer)
+sketch = Sketch(renderer, context, timer)
