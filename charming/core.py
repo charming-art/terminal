@@ -155,11 +155,11 @@ class Renderer(object):
         self.height = 10
 
     def init(self, mode):
-        self.fill_color = CColor.empty()
-        self.background_color = CColor.empty()
-        self.pre_background_color = CColor.empty()
-        self.stroke_color = CColor('*')
-        self.tint_color = CColor('·')
+        self.fill_color = Color.empty()
+        self.background_color = Color.empty()
+        self.pre_background_color = Color.empty()
+        self.stroke_color = Color('*')
+        self.tint_color = Color('·')
         self.mode = mode
 
     def setup(self, width, height):
@@ -174,9 +174,9 @@ class Renderer(object):
         self.transform_matrix_stack.clear()
 
     def add_element(self, element):
-        if isinstance(element, CImage):
+        if isinstance(element, Image):
             element = self._image_to_shape(element)
-        elif isinstance(element, CText):
+        elif isinstance(element, Text):
             element = self._text_to_shape(element)
         if element.is_auto:
             element.fill_color = self.fill_color
@@ -264,9 +264,9 @@ class Renderer(object):
             # screen map && color
             if primitive_type == constants.IMAGE:
                 ch = p.color.ch if not is_tint_enabled else tint_color.ch
-                p.color = CColor.create(ch, p.color.fg, p.color.bg)
+                p.color = Color.create(ch, p.color.fg, p.color.bg)
             elif primitive_type == constants.TEXT:
-                p.color = CColor.create(
+                p.color = Color.create(
                     p.color.ch,
                     stroke_color.fg,
                     stroke_color.bg
@@ -1182,13 +1182,13 @@ class ImageLoader(metaclass=ABCMeta):
 
     def convert_color(self, data):
         pixels = []
-        CColor.save()
-        CColor.color_mode = constants.RGB
-        CColor.color_channels = (255, 255, 255)
+        Color.save()
+        Color.color_mode = constants.RGB
+        Color.color_channels = (255, 255, 255)
         for r, g, b, _ in data:
             c = (r, g, b)
-            pixels.append(CColor('·', c, c))
-        CColor.restore()
+            pixels.append(Color('·', c, c))
+        Color.restore()
         return pixels
 
 
@@ -1210,7 +1210,7 @@ if sys.platform == BROWSER:
             pass
 else:
     import time
-    from PIL import Image
+    import PIL
 
     class LocalTimer(Timer):
 
@@ -1231,14 +1231,14 @@ else:
 
     class PILImageLoader(ImageLoader):
         def load(self, src):
-            image = Image.open(src)
+            image = PIL.Image.open(src)
             w, h = image.size
             data = image.getdata()
             pixels = self.convert_color(data)
-            return CImage(pixels, w, h)
+            return Image(pixels, w, h)
 
 
-class CShape(object):
+class Shape(object):
 
     def __init__(self, points=None, is_auto=True, primitive_type=constants.POLYGON, close_mode=constants.CLOSE, options=None):
         self.points = [] if points == None else points
@@ -1281,7 +1281,7 @@ class Point(object):
         self.color = color
         self.type = type
         self.rotation = rotation
-        self.color = CColor.empty() if color == None else color
+        self.color = Color.empty() if color == None else color
 
     def __str__(self):
         attrs = {
@@ -1306,30 +1306,25 @@ class Point(object):
     __repr__ = __str__
 
 
-class CColor(object):
+class Color(object):
 
     color_mode = constants.ANSI
     color_channels = (255,)
 
     def __init__(self, ch=" ", fg=None, bg=None):
         self.has_init = False
-        if isinstance(ch, self.__class__):
-            self.ch = ch.ch
-            self.fg = ch.fg
-            self.bg = ch.bg
+        self.ch = ch
+        if self.color_mode == constants.ANSI:
+            self.fg = self._init_ansi(fg, constants.WHITE)
+            self.bg = self._init_ansi(bg, constants.BLACK)
+        elif self.color_mode == constants.RGB:
+            m1, m2, m3 = self.color_channels  # pylint: disable=unbalanced-tuple-unpacking
+            self.fg = self._init_truecolor(fg, (m1, m2, m3))
+            self.bg = self._init_truecolor(bg, (0, 0, 0))
         else:
-            self.ch = ch
-            if self.color_mode == constants.ANSI:
-                self.fg = self._init_ansi(fg, constants.WHITE)
-                self.bg = self._init_ansi(bg, constants.BLACK)
-            elif self.color_mode == constants.RGB:
-                m1, m2, m3 = self.color_channels  # pylint: disable=unbalanced-tuple-unpacking
-                self.fg = self._init_truecolor(fg, (m1, m2, m3))
-                self.bg = self._init_truecolor(bg, (0, 0, 0))
-            else:
-                m1, m2, m3 = self.color_channels  # pylint: disable=unbalanced-tuple-unpacking
-                self.fg = self._init_truecolor(fg, (m1, 0, m3))
-                self.bg = self._init_truecolor(bg, (0, 0, 0))
+            m1, m2, m3 = self.color_channels  # pylint: disable=unbalanced-tuple-unpacking
+            self.fg = self._init_truecolor(fg, (m1, 0, m3))
+            self.bg = self._init_truecolor(bg, (0, 0, 0))
 
         self.add_color(self)
 
@@ -1475,7 +1470,7 @@ class CColor(object):
     __repr__ = __str__
 
 
-class CImage(object):
+class Image(object):
 
     def __init__(self, pixels, width, height):
         self._pixels = pixels
@@ -1509,7 +1504,7 @@ class CImage(object):
     __str__ = __repr__
 
 
-class CText(object):
+class Text(object):
 
     def __init__(self, text, x, y):
         self.text = text
@@ -1537,10 +1532,10 @@ class CText(object):
             for j, ch in enumerate(chars):
                 x0 = self.x + j
                 y0 = self.y + i
-                color = CColor(ch)
+                color = Color(ch)
                 points.append(Point(x0, y0, color=color))
 
-        return CShape(points=points, primitive_type=constants.TEXT)
+        return Shape(points=points, primitive_type=constants.TEXT)
 
     @classmethod
     def text_width(cls, text, size, font):

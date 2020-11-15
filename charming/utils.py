@@ -66,8 +66,6 @@ def lerp_color(colors, amt=None):
         start, end, t = get_step(amt)
         c1 = colors[start]
         c2 = colors[end]
-        logging.debug([c1, c2, [c1[i] * (1 - t) + t * c2[i]
-                                for i in range(3)], amt])
         return [c1[i] * (1 - t) + t * c2[i] for i in range(3)]
 
     if amt == None:

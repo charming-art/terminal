@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from . import constants
 from .app import renderer
 from .core import Point
-from .core import CShape
+from .core import Shape
 from .common import get_bounding_rect_by_mode
 from .common import add_on_return
 
@@ -19,17 +19,17 @@ _curve_tightness = 0
 
 @add_on_return
 def line(x1, y1, x2, y2):
-    return CShape(points=[Point(x1, y1), Point(x2, y2)])
+    return Shape(points=[Point(x1, y1), Point(x2, y2)])
 
 
 @add_on_return
 def quad(x1, y1, x2, y2, x3, y3, x4, y4):
-    return CShape(points=[Point(x1, y1), Point(x2, y2), Point(x3, y3), Point(x4, y4)])
+    return Shape(points=[Point(x1, y1), Point(x2, y2), Point(x3, y3), Point(x4, y4)])
 
 
 @add_on_return
 def triangle(x1, y1, x2, y2, x3, y3):
-    return CShape(points=[Point(x1, y1), Point(x2, y2), Point(x3, y3)])
+    return Shape(points=[Point(x1, y1), Point(x2, y2), Point(x3, y3)])
 
 
 def rect(a, b, c, d):
@@ -44,7 +44,7 @@ def square(x, y, extend):
 
 @add_on_return
 def point(x, y):
-    return CShape(points=[Point(x, y)], primitive_type=constants.POINTS)
+    return Shape(points=[Point(x, y)], primitive_type=constants.POINTS)
 
 
 @add_on_return
@@ -58,7 +58,7 @@ def arc(a, b, c, d, start, stop, mode=constants.OPEN):
         'stop': stop,
         'mode': mode
     }
-    return CShape(points=points, options=options, primitive_type=constants.ARC)
+    return Shape(points=points, options=options, primitive_type=constants.ARC)
 
 
 def ellipse(a, b, c, d):
@@ -79,7 +79,7 @@ def begin_shape(primitive_type=constants.POLYGON):
     is_contour = False
     is_bezier = False
     is_curve = False
-    _current_shape = CShape(primitive_type=primitive_type)
+    _current_shape = Shape(primitive_type=primitive_type)
 
 
 @add_on_return

@@ -1,5 +1,5 @@
-from .core import CColor
-from .core import CShape
+from .core import Color
+from .core import Shape
 from .core import Point
 from .app import renderer
 from .app import image_loader
@@ -7,6 +7,7 @@ from . import constants
 from .cmath import map
 from .common import get_bounding_rect_by_mode
 from .common import add_on_return
+from .common import check_color
 
 
 #### Loading & Displaying
@@ -42,7 +43,7 @@ def image(img, a, b, c=None, d=None):
         'height': h
     }
 
-    return CShape(points=points, primitive_type=constants.IMAGE, options=options)
+    return Shape(points=points, primitive_type=constants.IMAGE, options=options)
 
 
 def image_mode(mode):
@@ -57,9 +58,10 @@ def no_tint():
     renderer.is_tint_enabled = False
 
 
+@check_color
 def tint(ch=" ", fg=None, bg=None):
     renderer.is_tint_enabled = True
-    c = CColor(ch, fg, bg)
+    c = Color(ch, fg, bg)
     renderer.tint_color = c
 
 # Pixels
@@ -80,4 +82,4 @@ def update_pixels():
         'width': renderer.width,
         'height': renderer.height
     }
-    return CShape(points=_pixels, primitive_type=constants.IMAGE, options=options, is_auto=False)
+    return Shape(points=_pixels, primitive_type=constants.IMAGE, options=options, is_auto=False)

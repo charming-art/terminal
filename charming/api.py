@@ -157,13 +157,10 @@ from .color import stroke
 from .color import fill
 from .color import no_stroke
 from .color import no_fill
-from .color import ch
-from .color import fg
-from .color import bg
 from .color import background
-from .color import color
 from .color import color_mode
 from .color import lerp_color
+from .common import CColor
 
 from .transform import translate
 from .transform import scale

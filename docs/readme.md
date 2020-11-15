@@ -65,21 +65,13 @@
   
 ## Color
 
-### Settings
-
+- [x] CColor
 - [x] background()
 - [x] fill()
 - [x] no_fill()
 - [x] no_stroke()
 - [x] stroke()
 - [x] color_mode()
-
-### Creating && Reading
-
-- [x] color()
-- [x] ch()
-- [x] bg()
-- [x] fg()
   
 ## Events
 
@@ -193,7 +185,7 @@
 
 ## Image
   
-- [x] CImage
+- [x] Image
 
 ### Loading & Displaying
 

@@ -2,7 +2,7 @@ from pyfiglet import FigletFont
 from . import constants
 from .app import renderer
 from .common import add_on_return
-from .core import CText
+from .core import Text
 
 
 def text_font(font_family):
@@ -15,15 +15,15 @@ def get_font_list():
 
 @add_on_return
 def text(text, x, y):
-    return CText(text, x, y)
+    return Text(text, x, y)
 
 
 def text_width(text):
-    return CText.text_width(text, renderer.text_size, renderer.text_font)
+    return Text.text_width(text, renderer.text_size, renderer.text_font)
 
 
 def text_height(text):
-    return CText.text_height(text, renderer.text_size, renderer.text_font)
+    return Text.text_height(text, renderer.text_size, renderer.text_font)
 
 
 def text_align(align_x=None, align_y=None):

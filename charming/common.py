@@ -5,6 +5,24 @@ from .app import context
 from .utils import logger
 
 
+class CColor(object):
+
+    def __init__(self, ch=" ", fg=None, bg=None):
+        self.ch = ch
+        self.fg = fg
+        self.bg = bg
+
+    def __str__(self):
+        attrs = {
+            'ch': self.ch,
+            'bg': self.bg,
+            'fg': self.fg
+        }
+        return attrs.__str__()
+
+    __repr__ = __str__
+
+
 def capture_exception(foo):
     @functools.wraps(foo)
     def wrapped(*args, **kw):
@@ -15,6 +33,16 @@ def capture_exception(foo):
             context.close()
             raise e
 
+    return wrapped
+
+
+def check_color(foo):
+    @functools.wraps(foo)
+    def wrapped(ch=" ", *args, **kw):
+        if isinstance(ch, CColor):
+            return foo(ch.ch, ch.fg, ch.bg)
+        else:
+            return foo(ch, *args, **kw)
     return wrapped
 
 
