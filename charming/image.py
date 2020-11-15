@@ -48,6 +48,7 @@ class CImage(object):
 
     __str__ = __repr__
 
+
 @add_on_return
 def image(img, a, b, c=None, d=None):
     c = img.width if c == None else c

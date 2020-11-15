@@ -97,7 +97,7 @@ class Sketch(object):
 
             self.renderer.render()
             self.context.draw(
-                self.renderer.diff_buffer,
+                self.renderer.update_cells,
                 self.renderer.color_pair
             )
 
@@ -129,10 +129,11 @@ class Renderer(object):
     color_pair = []
 
     def __init__(self):
-        self.shape_queue = []
         self._flag = True
         self._color_by_pos = {}
-        self.diff_buffer = []
+        self._pre_color_by_pos = {}
+        self._shape_queue = []
+        self.update_cells = []
 
         # styles
         self.color_channels = (255,)
@@ -166,10 +167,12 @@ class Renderer(object):
         self.height = height
 
     def render(self):
-        self.diff_buffer.clear()
-        while len(self.shape_queue) > 0:
-            shape = self.shape_queue.pop(0)
+        self.update_cells.clear()
+        self._color_by_pos = {}
+        while len(self._shape_queue) > 0:
+            shape = self._shape_queue.pop(0)
             self._render_shape(shape)
+        self._differ_buffer()
         self.transform_matrix_stack.clear()
 
     def add_element(self, element):
@@ -191,7 +194,7 @@ class Renderer(object):
             element.is_fill_enabled = self.is_fill_enabled
             element.is_stroke_enabled = self.is_stroke_enabled
             element.transform_matrix_stack = self.transform_matrix_stack[:]
-        self.shape_queue.append(element)
+        self._shape_queue.append(element)
 
     def background(self, color):
         self.has_background_called = True
@@ -463,37 +466,37 @@ class Renderer(object):
 
     @logger.record('fragment processing')
     def _fragment_processing(self, fragemnts):
-        color_by_pos = {}
-
         for pixels in fragemnts:
             for p in pixels:
                 key = f'({p.x},{p.y})'
-                color_by_pos[key] = [p, self._flag]
+                self._color_by_pos[key] = [p, self._flag]
 
-        diff_colors = color_by_pos.copy()
+    @logger.record('differ buffer')
+    def _differ_buffer(self):
+        update_colors = self._color_by_pos.copy()
 
         # remove
         remove_keys = []
-        for key, value in diff_colors.items():
-            if key in self._color_by_pos:
-                self._color_by_pos[key][1] = self._flag
-                pvalue = self._color_by_pos[key]
+        for key, value in update_colors.items():
+            if key in self._pre_color_by_pos:
+                self._pre_color_by_pos[key][1] = self._flag
+                pvalue = self._pre_color_by_pos[key]
                 if pvalue[0] == value[0]:
                     remove_keys.append(key)
 
         for key in remove_keys:
-            diff_colors.pop(key)
+            update_colors.pop(key)
 
         # add
         if self.has_background_called:
             keys = [
-                key for key, value in self._color_by_pos.items()
+                key for key, value in self._pre_color_by_pos.items()
                 if value[1] != self._flag
             ]
             for key in keys:
-                pp = self._color_by_pos[key][0]
+                pp = self._pre_color_by_pos[key][0]
                 if pp.color != self.background_color:
-                    diff_colors[key] = [
+                    update_colors[key] = [
                         Point(pp.x, pp.y, self.background_color),
                         pp, self._flag
                     ]
@@ -502,17 +505,17 @@ class Renderer(object):
                 for x in range(self.width):
                     for y in range(self.height):
                         key = f'({x},{y})'
-                        if not key in color_by_pos and not key in diff_colors:
-                            diff_colors[key] = [
+                        if not key in self._color_by_pos and not key in update_colors:
+                            update_colors[key] = [
                                 Point(x, y, self.background_color),
                                 self._flag
                             ]
 
-        self.diff_buffer = [value[0] for value in diff_colors.values()]
-        self._color_by_pos = color_by_pos
+        self.update_cells = [value[0] for value in update_colors.values()]
+        self._pre_color_by_pos = self._color_by_pos
         self._flag = not self._flag
 
-    def get_pixels(self):
+    def get_cells(self):
         pixels = []
         for i in range(self.width):
             for j in range(self.height):

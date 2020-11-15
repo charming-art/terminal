@@ -13,10 +13,11 @@ x = 0
 def draw():
     global x
     
-    if x % 2 == 0:
-        app.background('*')
-    else:
-        app.background('-')
+    # if x % 2 == 0:
+    #     app.background('*')
+    # else:
+    #     app.background('-')
+    app.background(' ')
     # app.text_size(app.BIG)
     # app.text('hello world', 0, 0)
     app.fill('0', app.YELLOW, app.RED)
@@ -24,8 +25,8 @@ def draw():
     app.rect(x, 0, 10, 10)
     x += 1
     # app.no_loop()
-    if x >= 10:
-        app.no_loop()
+    # if x >= 10:
+    #     app.no_loop()
 
 
 app.run()
