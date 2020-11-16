@@ -78,8 +78,6 @@ from .environment import terminal_size
 
 from .event import get_mouse_x
 from .event import get_mouse_y
-from .event import get_pmouse_x
-from .event import get_pmouse_y
 from .event import get_key
 from .event import get_key_code
 from .event import get_mouse_button
@@ -88,8 +86,6 @@ from .event import get_key_pressed
 from .event import mouse_pressed
 from .event import mouse_released
 from .event import mouse_clicked
-from .event import mouse_moved
-from .event import mouse_wheel
 from .event import key_pressed
 from .event import key_released
 from .event import key_typed

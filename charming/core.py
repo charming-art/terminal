@@ -34,9 +34,8 @@ class Sketch(object):
         self.key_code = 0
         self.mouse_x = 0
         self.mouse_y = 0
-        self.pmouse_x = 0
-        self.pmouse_y = 0
-        self.mouse_button = 0
+        self.mouse_button = constants.NONE
+        self.is_mouse_pressed = False
         self.has_setup_hook = False
         self.has_draw_hook = False
         self.hooks_map = {
@@ -69,6 +68,9 @@ class Sketch(object):
             self.context.exit()
             self.context.close()
             logger.log_record()
+
+    def add_hook(self, name, hook):
+        self.hooks_map[name] = hook
 
     @logger.record('setup')
     def _setup(self):
@@ -106,17 +108,22 @@ class Sketch(object):
             self.renderer.has_background_called = False
             self.frame_count += 1
 
-    def add_hook(self, name, hook):
-        self.hooks_map[name] = hook
-
     def _handle_event(self, e):
         if e.type == 'mouse':
-            self.pmouse_x = self.mouse_x
-            self.pmouse_y = self.mouse_y
             self.mouse_x = e.x
             self.mouse_y = e.y
-            mouse_hook = self.hooks_map['mouse_clicked']
-            mouse_hook()
+            self.mouse_button = e.button_type
+            if e.event_type == "released":
+                self.is_mouse_pressed = False
+                mouse_released_hook = self.hooks_map['mouse_released']
+                mouse_released_hook()
+            elif e.event_type == "clicked":
+                mouse_clicked_hook = self.hooks_map['mouse_clicked']
+                mouse_clicked_hook()
+            elif e.event_type == "pressed":
+                self.is_mouse_pressed = True
+                mouse_pressed_hook = self.hooks_map['mouse_pressed']
+                mouse_pressed_hook()
         elif e.type == "window":
             window_hook = self.hooks_map['window_resized']
             window_hook()
@@ -969,15 +976,51 @@ else:
                     event_queue.append(WindowEvent())
                 elif key == curses.KEY_MOUSE:
                     _, x, y, _, bstate = curses.getmouse()
-                    _x = x - (self._pad_x + 1)
-                    _y = y - (self._pad_y + 1)
-                    x_in = _x > 0 and _x < self._pad_width - 1
-                    y_in = _y > 0 and _y < self._pad_width - 1
+                    x_in = x > self._pad_x and x < self._pad_x + self._pad_width
+                    y_in = y > self._pad_y and y < self._pad_y + self._pad_height
+
                     if x_in and y_in:
-                        event_queue.append(MouseEvent(_x, _y, bstate))
+                        x = x - (self._pad_x + 1)
+                        y = y - (self._pad_y + 1)
+                        is_left_pressed = bstate & curses.BUTTON1_PRESSED != 0
+                        is_left_clicked = bstate & curses.BUTTON1_CLICKED != 0
+                        is_left_released = bstate & curses.BUTTON1_RELEASED != 0
+                        is_right_pressed = bstate & curses.BUTTON3_PRESSED != 0
+                        is_right_clicked = bstate & curses.BUTTON3_CLICKED != 0
+                        is_right_released = bstate & curses.BUTTON3_RELEASED != 0
+
+                        if is_left_pressed or is_left_clicked:
+                            event_queue.append(
+                                MouseEvent(x, y, 'pressed', constants.LEFT)
+                            )
+
+                        if is_left_clicked:
+                            event_queue.append(
+                                MouseEvent(x, y, 'clicked', constants.LEFT)
+                            )
+
+                        if is_left_released or is_left_clicked:
+                            event_queue.append(
+                                MouseEvent(x, y, 'released', constants.LEFT)
+                            )
+
+                        if is_right_pressed or is_right_clicked:
+                            event_queue.append(
+                                MouseEvent(x, y, 'pressed', constants.RIGHT)
+                            )
+
+                        if is_right_clicked:
+                            event_queue.append(
+                                MouseEvent(x, y, 'clicked', constants.RIGHT)
+                            )
+
+                        if is_right_released or is_right_clicked:
+                            event_queue.append(
+                                MouseEvent(x, y, 'released', constants.RIGHT)
+                            )
                 else:
-                    # self._screen.move(10, 10)
                     event_queue.append(KeyboardEvent(key))
+
                 key = self._screen.getch()
             return event_queue
 
@@ -1434,11 +1477,12 @@ class WindowEvent(Event):
 class MouseEvent(Event):
     mouse_type = ""
 
-    def __init__(self, x, y, type):
+    def __init__(self, x, y, event_type, button_type):
         super(MouseEvent, self).__init__('mouse')
         self.x = x
         self.y = y
-        self.mouse_type = type
+        self.event_type = event_type
+        self.button_type = button_type
 
 
 class KeyboardEvent(Event):

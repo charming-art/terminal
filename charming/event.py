@@ -9,14 +9,6 @@ def get_mouse_y():
     return sketch.mouse_y
 
 
-def get_pmouse_y():
-    return sketch.pmouse_y
-
-
-def get_pmouse_x():
-    return sketch.pmouse_x
-
-
 def get_key():
     return sketch.key
 
@@ -30,11 +22,11 @@ def get_key_pressed():
 
 
 def get_mouse_pressed():
-    pass
+    return sketch.is_mouse_pressed
 
 
 def get_mouse_button():
-    pass
+    return sketch.mouse_button
 
 
 def key_pressed(hook):
@@ -55,18 +47,6 @@ def mouse_pressed(hook):
 
 def mouse_released(hook):
     sketch.add_hook('mouse_released', hook)
-
-
-def mouse_moved(hook):
-    sketch.add_hook('mouse_moved', hook)
-
-
-def mouse_dragged(hook):
-    sketch.add_hook('mouse_dragged', hook)
-
-
-def mouse_wheel(hook):
-    sketch.add_hook('mouse_wheel', hook)
 
 
 def mouse_clicked(hook):

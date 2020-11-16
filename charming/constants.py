@@ -84,15 +84,15 @@ PIE = 2
 
 # Text
 
-LEFT = 0
+LEFT = 4
 
-RIGHT = 1
+RIGHT = 3
 
-TOP = 3
+TOP = 2
 
-BOTTOM = 4
+BOTTOM = 1
 
-MIDDLE = 5
+MIDDLE = 0
 
 # Text Size
 
@@ -110,8 +110,16 @@ RGB = 1
 
 HSB = 2
 
-# MODE
+# Mode
 
 SINGLE = 0
 
 DOUBLIE = 1
+
+# Buttons
+
+LEFT = 4
+
+RIGHT = 3
+
+NONE = 0

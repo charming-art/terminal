@@ -85,11 +85,11 @@
 ### Mouse
 
 - [x] mouse_clickd()
+- [x] mouse_released()
+- [x] mouse_pressed()
 - [x] get_mouseX()
 - [x] get_mouseY()
-- [x] get_pmouseX()
-- [x] get_pmouseY()
-- [ ] get_mouse_pressed()
+- [x] get_mouse_pressed()
   
 ### Cursor
 
