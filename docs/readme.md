@@ -92,11 +92,11 @@
   
 ### Cursor
 
-- [ ] get_cursorX()
-- [ ] get_cursorY()
-- [ ] get_pcursorX()
-- [ ] get_pcursorY()
-- [ ] cursor_moved()
+- [x] get_cursorX()
+- [x] get_cursorY()
+- [x] get_pcursorX()
+- [x] get_pcursorY()
+- [x] cursor_moved()
 
 ### Window
 
@@ -113,6 +113,7 @@
 - [x] get_frame_count()
 - [x] get_frame_rate()
 - [x] no_cursor()
+- [x] cursor()
 - [x] get_height()
 - [x] size()
 - [x] get_width()

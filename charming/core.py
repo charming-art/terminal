@@ -50,7 +50,10 @@ class Sketch(object):
             'mouse_released': lambda: None,
             'key_pressed': lambda: None,
             'window_resized': lambda: None,
+            'cursor_moved': lambda: None
         }
+
+        self._cursor_moved = False
 
     def run(self):
         try:
@@ -87,8 +90,7 @@ class Sketch(object):
     @logger.record('loop')
     def _loop(self):
         events = self.context.get_events()
-        for e in events:
-            self._handle_event(e)
+        self._handle_events(events)
 
         if self.is_loop:
             if self.has_draw_hook:
@@ -107,32 +109,61 @@ class Sketch(object):
             self.renderer.has_background_called = False
             self.frame_count += 1
 
-    def _handle_event(self, e):
-        if e.type == 'mouse':
-            self.mouse_x = e.x
-            self.mouse_y = e.y
-            self.mouse_button = e.button_type
-            if e.event_type == "released":
-                self.is_mouse_pressed = False
-                mouse_released_hook = self.hooks_map['mouse_released']
-                mouse_released_hook()
-            elif e.event_type == "clicked":
-                mouse_clicked_hook = self.hooks_map['mouse_clicked']
-                mouse_clicked_hook()
-            elif e.event_type == "pressed":
-                self.is_mouse_pressed = True
-                mouse_pressed_hook = self.hooks_map['mouse_pressed']
-                mouse_pressed_hook()
-        elif e.type == "window":
-            window_hook = self.hooks_map['window_resized']
-            window_hook()
-            self.renderer.clear()
-        elif e.type == "keyboard":
-            self.key = e.key
-            self.key_code = e.key_code
-            if e.event_type == "pressed":
-                key_pressed_hook = self.hooks_map['key_pressed']
-                key_pressed_hook()
+    def _handle_events(self, events):
+        pressed = False
+
+        for e in events:
+            if e.type == 'mouse':
+                self.mouse_x = e.x
+                self.mouse_y = e.y
+                self.mouse_button = e.button_type
+                if e.event_type == "released":
+                    self.is_mouse_pressed = False
+                    mouse_released_hook = self.hooks_map['mouse_released']
+                    mouse_released_hook()
+                elif e.event_type == "clicked":
+                    mouse_clicked_hook = self.hooks_map['mouse_clicked']
+                    mouse_clicked_hook()
+                elif e.event_type == "pressed":
+                    self.is_mouse_pressed = True
+                    mouse_pressed_hook = self.hooks_map['mouse_pressed']
+                    mouse_pressed_hook()
+            elif e.type == "window":
+                window_hook = self.hooks_map['window_resized']
+                window_hook()
+                self.renderer.clear()
+            elif e.type == "keyboard":
+                self.key = e.key
+                self.key_code = e.key_code
+                if e.event_type == "pressed":
+                    pressed = True
+                    key_pressed_hook = self.hooks_map['key_pressed']
+                    key_pressed_hook()
+                    if self.key == constants.CODED:
+                        if self.key_code == constants.UP:
+                            self.context.move_up()
+                            self._cursor_moved = True
+                        elif self.key_code == constants.DOWN:
+                            self.context.move_down()
+                            self._cursor_moved = True
+                        elif self.key_code == constants.LEFT:
+                            self.context.move_left()
+                            self._cursor_moved = True
+                        elif self.key_code == constants.RIGHT:
+                            self.context.move_right()
+                            self._cursor_moved = True
+                        else:
+                            self._cursor_moved = False
+                    else:
+                        self._cursor_moved = False
+
+        if self.context.key_pressed and self._cursor_moved:
+            cursor_moved_hook = self.hooks_map['cursor_moved']
+            cursor_moved_hook()
+
+        if self.context.key_pressed and not pressed:
+            key_pressed_hook = self.hooks_map['key_pressed']
+            key_pressed_hook()
 
 
 class Renderer(object):
@@ -807,6 +838,12 @@ class Context(metaclass=ABCMeta):
         self.height = 0
 
         self.key_pressed = False
+
+        self.cursor_x = 0
+        self.cursor_y = 0
+        self.pcursor_x = 0
+        self.pcursor_y = 0
+
         self._pad_x = 0
         self._pad_y = 0
         self._pad_width = 0
@@ -854,6 +891,9 @@ class Context(metaclass=ABCMeta):
             if self._in(x, y):
                 self._addch(x, y, ch, p.color.fg, p.color.bg)
 
+        cx = self._pad_x + 1 + self.cursor_x
+        cy = self._pad_y + 1 + self.cursor_y
+        self._move(cx, cy)
         self._refresh()
 
     def no_cursor(self):
@@ -864,6 +904,37 @@ class Context(metaclass=ABCMeta):
 
     def exit(self):
         self._write('\x1b[?25h')
+
+    def move_up(self):
+        next_y = self.cursor_y - 1
+        next_x = self.cursor_x
+        self._update_cursor(next_x, next_y)
+
+    def move_left(self):
+        next_y = self.cursor_y
+        next_x = self.cursor_x - 1
+        self._update_cursor(next_x, next_y)
+
+    def move_right(self):
+        next_y = self.cursor_y
+        next_x = self.cursor_x + 1
+        self._update_cursor(next_x, next_y)
+
+    def move_down(self):
+        next_y = self.cursor_y + 1
+        next_x = self.cursor_x
+        self._update_cursor(next_x, next_y)
+
+    def _update_cursor(self, x, y):
+        if self._in(x, y):
+            self.pcursor_x = self.cursor_x
+            self.pcursor_y = self.cursor_y
+            self.cursor_x = x
+            self.cursor_y = y
+
+    def _move(self, x, y):
+        if self._in(x, y):
+            self._content += f'\x1b[{y + 1};{x + 1};H'
 
     def _addch(self, x, y, ch, fg=None, bg=None):
         csi_pos = f'\x1b[{y + 1};{x + 1};H'
@@ -955,7 +1026,6 @@ else:
             self._screen.leaveok(False)
             self._key = None
             self._key_pressed_time = None
-            self._key_pressed = False
             self._key_thres = 0.5
 
             # init
@@ -1000,8 +1070,6 @@ else:
                     self.key_pressed = False
                     self._key = None
                     self._key_pressed_time = None
-                else:
-                    event_queue.append(KeyboardEvent(self._key, 'pressed'))
 
             return event_queue
 

@@ -61,8 +61,10 @@ def no_cursor():
     sketch.context.no_cursor()
 
 
-def cursor():
+def cursor(x=0, y=0):
     sketch.context.cursor()
+    sketch.context.cursor_x = x
+    sketch.context.cursor_y = y
 
 
 def window_resized(hook):

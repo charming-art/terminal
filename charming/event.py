@@ -1,5 +1,7 @@
 from .app import sketch
 
+# mouse
+
 
 def get_mouse_x():
     return sketch.mouse_x
@@ -7,6 +9,28 @@ def get_mouse_x():
 
 def get_mouse_y():
     return sketch.mouse_y
+
+
+def get_mouse_pressed():
+    return sketch.is_mouse_pressed
+
+
+def get_mouse_button():
+    return sketch.mouse_button
+
+
+def mouse_pressed(hook):
+    sketch.add_hook('mouse_pressed', hook)
+
+
+def mouse_released(hook):
+    sketch.add_hook('mouse_released', hook)
+
+
+def mouse_clicked(hook):
+    sketch.add_hook('mouse_clicked', hook)
+
+# keyboard
 
 
 def get_key():
@@ -21,33 +45,27 @@ def get_key_pressed():
     return sketch.context.key_pressed
 
 
-def get_mouse_pressed():
-    return sketch.is_mouse_pressed
-
-
-def get_mouse_button():
-    return sketch.mouse_button
-
-
 def key_pressed(hook):
     sketch.add_hook('key_pressed', hook)
 
-
-def key_released(hook):
-    sketch.add_hook('key_released', hook)
+# cursor
 
 
-def key_typed(hook):
-    sketch.add_hook('key_typed', hook)
+def get_cursor_x():
+    return sketch.context.cursor_x
 
 
-def mouse_pressed(hook):
-    sketch.add_hook('mouse_pressed', hook)
+def get_cursor_y():
+    return sketch.context.cursor_y
 
 
-def mouse_released(hook):
-    sketch.add_hook('mouse_released', hook)
+def get_pcursor_x():
+    return sketch.context.pcursor_x
 
 
-def mouse_clicked(hook):
-    sketch.add_hook('mouse_clicked', hook)
+def get_pcursor_y():
+    return sketch.context.pcursor_y
+
+
+def cursor_moved(hook):
+    sketch.add_hook('cursor_moved', hook)
