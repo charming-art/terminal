@@ -1,55 +1,3 @@
-from .constants import PI
-from .constants import HALF_PI
-from .constants import QUARTER_PI
-from .constants import TAU
-from .constants import TWO_PI
-
-from .constants import CLOSE
-
-from .constants import POLYGON
-from .constants import POINTS
-from .constants import LINES
-from .constants import TRIANGLES
-from .constants import TRIANGLE_STRIP
-from .constants import TRIANGLE_FAN
-from .constants import QUADS
-from .constants import QUAD_STRIP
-
-from .constants import CORNERS
-from .constants import CORNER
-from .constants import CENTER
-from .constants import RADIUS
-from .constants import CHORD
-
-from .constants import PIE
-from .constants import OPEN
-
-from .constants import LEFT
-from .constants import RIGHT
-from .constants import MIDDLE
-from .constants import TOP
-from .constants import BOTTOM
-from .constants import NORMAL
-from .constants import BIG
-from .constants import LARGE
-
-
-from .constants import RED
-from .constants import BLACK
-from .constants import CYAN
-from .constants import YELLOW
-from .constants import GREEN
-from .constants import BLUE
-from .constants import WHITE
-from .constants import MAGENTA
-
-from .constants import ANSI
-from .constants import RGB
-from .constants import HSB
-
-from .constants import DOUBLIE
-from .constants import SINGLE
-
 from .structure import setup
 from .structure import draw
 from .structure import run
@@ -58,7 +6,6 @@ from .structure import no_loop
 from .structure import loop
 from .structure import push
 from .structure import pop
-from .structure import preload
 from .structure import open_context
 
 from .environment import frame_rate
@@ -87,8 +34,6 @@ from .event import mouse_pressed
 from .event import mouse_released
 from .event import mouse_clicked
 from .event import key_pressed
-from .event import key_released
-from .event import key_typed
 
 from .cmath import abs
 from .cmath import ceil
@@ -185,3 +130,97 @@ from .image import get_cells
 from .image import update_cells
 
 from .helpers import log
+
+from .constants import PI
+from .constants import HALF_PI
+from .constants import QUARTER_PI
+from .constants import TAU
+from .constants import TWO_PI
+
+from .constants import CLOSE
+
+from .constants import POLYGON
+from .constants import POINTS
+from .constants import LINES
+from .constants import TRIANGLES
+from .constants import TRIANGLE_STRIP
+from .constants import TRIANGLE_FAN
+from .constants import QUADS
+from .constants import QUAD_STRIP
+
+from .constants import CORNERS
+from .constants import CORNER
+from .constants import CENTER
+from .constants import RADIUS
+from .constants import CHORD
+
+from .constants import PIE
+from .constants import OPEN
+
+from .constants import LEFT
+from .constants import RIGHT
+from .constants import MIDDLE
+from .constants import TOP
+from .constants import BOTTOM
+from .constants import NORMAL
+from .constants import BIG
+from .constants import LARGE
+
+
+from .constants import RED
+from .constants import BLACK
+from .constants import CYAN
+from .constants import YELLOW
+from .constants import GREEN
+from .constants import BLUE
+from .constants import WHITE
+from .constants import MAGENTA
+
+from .constants import ANSI
+from .constants import RGB
+from .constants import HSB
+
+from .constants import DOUBLIE
+from .constants import SINGLE
+
+from .constants import CODED
+from .constants import ESCAPE
+from .constants import F1
+from .constants import F2
+from .constants import F3
+from .constants import F4
+from .constants import F5
+from .constants import F6
+from .constants import F7
+from .constants import F8
+from .constants import F9
+from .constants import F10
+from .constants import F11
+from .constants import F12
+from .constants import F13
+from .constants import F14
+from .constants import F15
+from .constants import F16
+from .constants import F17
+from .constants import F18
+from .constants import F19
+from .constants import F20
+from .constants import F21
+from .constants import F22
+from .constants import F23
+from .constants import F24
+from .constants import PRINT_SCREEN
+from .constants import INSERT
+from .constants import DELETE
+from .constants import HOME
+from .constants import END
+from .constants import LEFT
+from .constants import UP
+from .constants import RIGHT
+from .constants import DOWN
+from .constants import PAGE_UP
+from .constants import PAGE_DOWN
+from .constants import BACK
+from .constants import TAB
+from .constants import BACK_TAB
+from .constants import ENTER

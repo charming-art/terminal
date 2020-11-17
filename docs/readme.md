@@ -11,7 +11,6 @@
 - [x] push()
 - [x] pop()
 - [x] open_context()
-- [ ] preload()
 
 ## Shape
 
@@ -78,9 +77,9 @@
 ### Keyboard
 
 - [x] get_key()
-- [ ] get_key_code()
+- [x] get_key_code()
 - [x] key_typed()
-- [ ] get_key_pressed()
+- [x] get_key_pressed()
   
 ### Mouse
 

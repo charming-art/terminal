@@ -18,7 +18,7 @@ def get_key_code():
 
 
 def get_key_pressed():
-    pass
+    return sketch.context.key_pressed
 
 
 def get_mouse_pressed():

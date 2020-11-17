@@ -30,26 +30,25 @@ class Sketch(object):
         self.frame_rate = 30
         self.is_loop = True
         self.frame_count = 0
-        self.key = 0
-        self.key_code = 0
+
+        self.key = None
+        self.key_code = None
+
         self.mouse_x = 0
         self.mouse_y = 0
         self.mouse_button = constants.NONE
         self.is_mouse_pressed = False
+
         self.has_setup_hook = False
         self.has_draw_hook = False
+
         self.hooks_map = {
             'setup': lambda: None,
             'draw': lambda: None,
             'mouse_clicked': lambda: None,
             'mouse_pressed': lambda: None,
             'mouse_released': lambda: None,
-            'mouse_moved': lambda: None,
-            'mouse_dragged': lambda: None,
-            'mouse_wheel': lambda: None,
-            'key_typed': lambda: None,
             'key_pressed': lambda: None,
-            'key_released': lambda: None,
             'window_resized': lambda: None,
         }
 
@@ -130,8 +129,10 @@ class Sketch(object):
             self.renderer.clear()
         elif e.type == "keyboard":
             self.key = e.key
-            keyTyped_hook = self.hooks_map['key_typed']
-            keyTyped_hook()
+            self.key_code = e.key_code
+            if e.event_type == "pressed":
+                key_pressed_hook = self.hooks_map['key_pressed']
+                key_pressed_hook()
 
 
 class Renderer(object):
@@ -805,6 +806,7 @@ class Context(metaclass=ABCMeta):
         self.width = 0
         self.height = 0
 
+        self.key_pressed = False
         self._pad_x = 0
         self._pad_y = 0
         self._pad_width = 0
@@ -951,6 +953,10 @@ else:
             self._screen.keypad(1)
             self._screen.nodelay(1)
             self._screen.leaveok(False)
+            self._key = None
+            self._key_pressed_time = None
+            self._key_pressed = False
+            self._key_thres = 0.5
 
             # init
             curses.noecho()
@@ -970,70 +976,92 @@ else:
         def get_events(self):
             event_queue = []
             key = self._screen.getch()
+            key_pressed = False
+
             while key != -1:
                 if key == curses.KEY_RESIZE:
                     self._resize()
                     event_queue.append(WindowEvent())
                 elif key == curses.KEY_MOUSE:
                     _, x, y, _, bstate = curses.getmouse()
-                    x_in = x > self._pad_x and x < self._pad_x + self._pad_width
-                    y_in = y > self._pad_y and y < self._pad_y + self._pad_height
-
-                    if x_in and y_in:
-                        x = x - (self._pad_x + 1)
-                        y = y - (self._pad_y + 1)
-                        is_left_pressed = bstate & curses.BUTTON1_PRESSED != 0
-                        is_left_clicked = bstate & curses.BUTTON1_CLICKED != 0
-                        is_left_released = bstate & curses.BUTTON1_RELEASED != 0
-                        is_right_pressed = bstate & curses.BUTTON3_PRESSED != 0
-                        is_right_clicked = bstate & curses.BUTTON3_CLICKED != 0
-                        is_right_released = bstate & curses.BUTTON3_RELEASED != 0
-
-                        if is_left_pressed or is_left_clicked:
-                            event_queue.append(
-                                MouseEvent(x, y, 'pressed', constants.LEFT)
-                            )
-
-                        if is_left_clicked:
-                            event_queue.append(
-                                MouseEvent(x, y, 'clicked', constants.LEFT)
-                            )
-
-                        if is_left_released or is_left_clicked:
-                            event_queue.append(
-                                MouseEvent(x, y, 'released', constants.LEFT)
-                            )
-
-                        if is_right_pressed or is_right_clicked:
-                            event_queue.append(
-                                MouseEvent(x, y, 'pressed', constants.RIGHT)
-                            )
-
-                        if is_right_clicked:
-                            event_queue.append(
-                                MouseEvent(x, y, 'clicked', constants.RIGHT)
-                            )
-
-                        if is_right_released or is_right_clicked:
-                            event_queue.append(
-                                MouseEvent(x, y, 'released', constants.RIGHT)
-                            )
+                    event_queue += self._get_mouse_events(bstate, x, y)
                 else:
-                    event_queue.append(KeyboardEvent(key))
-
+                    event_queue.append(KeyboardEvent(key, 'pressed'))
+                    key_pressed = True
+                    self.key_pressed = True
+                    self._key = key
+                    self._key_pressed_time = time.time()
                 key = self._screen.getch()
+
+            if self._key_pressed_time != None and not key_pressed:
+                now = time.time()
+                timeout = now - self._key_pressed_time > self._key_thres
+                if timeout:
+                    self.key_pressed = False
+                    self._key = None
+                    self._key_pressed_time = None
+                else:
+                    event_queue.append(KeyboardEvent(self._key, 'pressed'))
+
             return event_queue
 
         def background(self, color):
             pass
 
         def _write(self, content):
-            print(content, end="", flush=True)
+            sys.stdout.write(content)
+            sys.stdout.flush()
 
         def _update_window_size(self):
             curses.update_lines_cols()
             self.window_width = self._screen.getmaxyx()[1]
             self.window_height = self._screen.getmaxyx()[0]
+
+        def _get_mouse_events(self, bstate, x, y):
+            event_queue = []
+            x_in = x > self._pad_x and x < self._pad_x + self._pad_width
+            y_in = y > self._pad_y and y < self._pad_y + self._pad_height
+
+            if x_in and y_in:
+                x = x - (self._pad_x + 1)
+                y = y - (self._pad_y + 1)
+                is_left_pressed = bstate & curses.BUTTON1_PRESSED != 0
+                is_left_clicked = bstate & curses.BUTTON1_CLICKED != 0
+                is_left_released = bstate & curses.BUTTON1_RELEASED != 0
+                is_right_pressed = bstate & curses.BUTTON3_PRESSED != 0
+                is_right_clicked = bstate & curses.BUTTON3_CLICKED != 0
+                is_right_released = bstate & curses.BUTTON3_RELEASED != 0
+
+                if is_left_pressed or is_left_clicked:
+                    event_queue.append(
+                        MouseEvent(x, y, 'pressed', constants.LEFT)
+                    )
+
+                if is_left_clicked:
+                    event_queue.append(
+                        MouseEvent(x, y, 'clicked', constants.LEFT)
+                    )
+
+                if is_left_released or is_left_clicked:
+                    event_queue.append(
+                        MouseEvent(x, y, 'released', constants.LEFT)
+                    )
+
+                if is_right_pressed or is_right_clicked:
+                    event_queue.append(
+                        MouseEvent(x, y, 'pressed', constants.RIGHT)
+                    )
+
+                if is_right_clicked:
+                    event_queue.append(
+                        MouseEvent(x, y, 'clicked', constants.RIGHT)
+                    )
+
+                if is_right_released or is_right_clicked:
+                    event_queue.append(
+                        MouseEvent(x, y, 'released', constants.RIGHT)
+                    )
+            return event_queue
 
 
 class Timer(metaclass=ABCMeta):
@@ -1487,6 +1515,59 @@ class MouseEvent(Event):
 
 class KeyboardEvent(Event):
 
-    def __init__(self, key):
+    _KEY_MAP = {
+        9: constants.TAB,
+        27: constants.ESCAPE,
+        265: constants.F1,
+        266: constants.F2,
+        267: constants.F3,
+        268: constants.F4,
+        269: constants.F5,
+        270: constants.F6,
+        271: constants.F7,
+        272: constants.F8,
+        273: constants.F9,
+        274: constants.F10,
+        275: constants.F11,
+        276: constants.F12,
+        277: constants.F13,
+        278: constants.F14,
+        279: constants.F15,
+        280: constants.F16,
+        281: constants.F17,
+        282: constants.F18,
+        283: constants.F19,
+        284: constants.F20,
+        285: constants.F21,
+        286: constants.F22,
+        287: constants.F23,
+        288: constants.F24,
+        346: constants.PRINT_SCREEN,
+        331: constants.INSERT,
+        330: constants.DELETE,
+        262: constants.HOME,
+        360: constants.END,
+        260: constants.LEFT,
+        259: constants.UP,
+        261: constants.RIGHT,
+        258: constants.DOWN,
+        339: constants.PAGE_UP,
+        338: constants.PAGE_DOWN,
+        263: constants.BACK,
+        353: constants.BACK_TAB,
+        343: constants.ENTER
+    }
+
+    def __init__(self, key, event_type):
         super(KeyboardEvent, self).__init__('keyboard')
-        self.key = key
+        self.event_type = event_type
+        if key in self._KEY_MAP:
+            self.key_code = self._KEY_MAP[key]
+            self.key = constants.CODED
+        else:
+            self.key_code = None
+            char = chr(key)
+            if char == "":
+                self.key = key
+            else:
+                self.key = char
