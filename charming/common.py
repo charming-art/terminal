@@ -1,5 +1,6 @@
 import functools
 from . import constants
+from .core import Color
 from .app import renderer
 from .app import context
 from .utils import logger
@@ -9,10 +10,11 @@ class CColor(object):
 
     def __init__(self, ch=" ", fg=None, bg=None):
         self.ch = ch
+        fg, bg = Color._preprocess_channels(fg, bg)
         self.fg = fg
         self.bg = bg
 
-    def __str__(self):
+    def __repr__(self):
         attrs = {
             'ch': self.ch,
             'bg': self.bg,
@@ -20,7 +22,20 @@ class CColor(object):
         }
         return attrs.__str__()
 
-    __repr__ = __str__
+    __str__ = __repr__
+
+
+def check_color(foo):
+    @functools.wraps(foo)
+    def wrapped(ch=" ", fg=None, bg=None):
+        if isinstance(ch, CColor):
+            fg = ch.fg
+            bg = ch.bg
+            ch = ch.ch
+        else:
+            fg, bg = Color._preprocess_channels(fg, bg)
+        return foo(ch, fg, bg)
+    return wrapped
 
 
 def capture_exception(foo):
@@ -33,16 +48,6 @@ def capture_exception(foo):
             context.close()
             raise e
 
-    return wrapped
-
-
-def check_color(foo):
-    @functools.wraps(foo)
-    def wrapped(ch=" ", *args, **kw):
-        if isinstance(ch, CColor):
-            return foo(ch.ch, ch.fg, ch.bg)
-        else:
-            return foo(ch, *args, **kw)
     return wrapped
 
 

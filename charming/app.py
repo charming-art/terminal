@@ -9,11 +9,11 @@ def get_components_by_platform(platform):
     if platform == WINDOWS:
         from .core import WindowsContext
         from .core import LocalTimer
-        return WindowsContext(),  LocalTimer()
+        return WindowsContext(),  LocalTimer() # pylint: disable=abstract-class-instantiated
     elif platform == BROWSER:
         from .core import BrowserContext
         from .core import BrowserTimer
-        return BrowserContext(), BrowserTimer()
+        return BrowserContext(), BrowserTimer() # pylint: disable=abstract-class-instantiated
     else:
         from .core import CursesContext
         from .core import LocalTimer

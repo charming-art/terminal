@@ -195,9 +195,9 @@ class Renderer(object):
         self.height = 10
 
     def init(self, mode):
-        self.fill_color = Color.empty()
-        self.background_color = Color.empty()
-        self.pre_background_color = Color.empty()
+        self.fill_color = Color(' ')
+        self.background_color = Color(' ')
+        self.pre_background_color = Color(' ')
         self.stroke_color = Color('*')
         self.tint_color = Color('·')
         self.mode = mode
@@ -1147,17 +1147,8 @@ class Timer(metaclass=ABCMeta):
 
 
 if sys.platform == BROWSER:
-    from js import window  # pylint: disable=imports
-
     class BrowserTimer(Timer):
-        def run(self, ms, callback):
-            self.t = window.setInterval(callback, ms)
-
-        def stop(self):
-            window.clearInterval(self.t)
-
-        def wait(self):
-            pass
+        pass
 else:
     import time
     class LocalTimer(Timer):
@@ -1221,7 +1212,7 @@ class Point(object):
         self.color = color
         self.type = type
         self.rotation = rotation
-        self.color = Color.empty() if color == None else color
+        self.color = Color(' ') if color == None else color
 
     def __str__(self):
         attrs = {
@@ -1252,46 +1243,65 @@ class Color(object):
     color_channels = (255,)
 
     def __init__(self, ch=" ", fg=None, bg=None):
-        self.has_init = False
         self.ch = ch
+        fg, bg = self._preprocess_channels(fg, bg)
+        self.fg = self._to_ansi256(fg)
+        self.bg = self._to_ansi256(bg)
+
+    def _to_ansi256(self, channels):
         if self.color_mode == constants.ANSI:
-            self.fg = self._init_ansi(fg, constants.WHITE)
-            self.bg = self._init_ansi(bg, constants.BLACK)
-        elif self.color_mode == constants.RGB:
-            m1, m2, m3 = self.color_channels  # pylint: disable=unbalanced-tuple-unpacking
-            self.fg = self._init_truecolor(fg, (m1, m2, m3))
-            self.bg = self._init_truecolor(bg, (0, 0, 0))
+            return round(map(channels, 0, self.color_channels[0], 0, 255))
         else:
-            m1, m2, m3 = self.color_channels  # pylint: disable=unbalanced-tuple-unpacking
-            self.fg = self._init_truecolor(fg, (m1, 0, m3))
-            self.bg = self._init_truecolor(bg, (0, 0, 0))
+            c1, c2, c3 = [
+                map(c, 0, self.color_channels[i], 0, 1)
+                for i, c in enumerate(channels)
+            ]
+            if self.color_mode == constants.RGB:
+                return self.rgb_to_ansi256(c1, c2, c3)
+            else:
+                return self.hsv_to_ansi256(c1, c2, c3)
 
-    def _init_ansi(self, index, default):
-        if index == None:
-            index = default
-        return round(map(index, 0, self.color_channels[0], 0, 255))
+    @classmethod
+    def _preprocess_channels(cls, fg, bg):
+        if cls.color_mode == constants.ANSI:
+            fg = cls._preprocess(fg, constants.WHITE)
+            bg = cls._preprocess(bg, constants.BLACK)
+        elif cls.color_mode == constants.RGB:
+            m1, m2, m3 = cls.color_channels  # pylint: disable=unbalanced-tuple-unpacking
+            fg = cls._preprocess(fg, (m1, m2, m3))
+            bg = cls._preprocess(bg, (0, 0, 0))
+        elif cls.color_mode == constants.HSB:
+            m1, m2, m3 = cls.color_channels  # pylint: disable=unbalanced-tuple-unpacking
+            fg = cls._preprocess(fg, (m1, 0, m3))
+            bg = cls._preprocess(bg, (0, 0, 0))
+        return fg, bg
 
-    def _init_truecolor(self, channels, default):
+    @staticmethod
+    def _preprocess(channels, defalut):
         if channels == None:
-            channels = default
-        elif len(channels) == 1:
+            return defalut
+
+        if isinstance(channels, tuple) and len(channels) == 1:
             g = channels[0]
             channels = (g, g, g)
-        c1, c2, c3 = [
-            map(c, 0, self.color_channels[i], 0, 1)
-            for i, c in enumerate(channels)
-        ]
-        if self.color_mode == constants.RGB:
-            return self.rgb_to_ansi256(c1, c2, c3)
+
+        return channels
+
+    def _eq_channels(self, a, b):
+        if isinstance(a, tuple):
+            v0 = a[0] == b[0]
+            v1 = a[1] == b[1]
+            v2 = a[2] == b[2]
+            return v0 and v1 and v2
         else:
-            return self.hsv_to_ansi256(c1, c2, c3)
+            return a == b
 
     def __eq__(self, other):
         if other == None:
             return False
-        ch = self.ch == other.ch
-        fg = self.fg == other.fg
-        bg = self.bg == other.bg
+        ch = self._eq_channels(self.ch, other.ch)
+        fg = self._eq_channels(self.fg, other.fg)
+        bg = self._eq_channels(self.bg, other.bg)
         if ch and self.ch == " ":
             return bg
         else:
@@ -1308,14 +1318,6 @@ class Color(object):
         c = cls(ch, fg, bg)
         cls.restore()
         return c
-
-    @classmethod
-    def empty(cls):
-        # solve unicode problem
-        if cls.color_mode == constants.ANSI:
-            return cls(" ", constants.BLACK)
-        else:
-            return cls(" ", (0, 0, 0))
 
     @classmethod
     def rgb_to_ansi256(cls, r, g, b):
