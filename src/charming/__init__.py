@@ -226,3 +226,6 @@ from .constants import BACK
 from .constants import TAB
 from .constants import BACK_TAB
 from .constants import ENTER
+
+
+__version__ = "v1.0.0-alpha.0"

@@ -1,0 +1,6 @@
+include LICENSE
+graft artwork
+graft docs
+graft examples
+graft tests
+global-exclude *.pyc
