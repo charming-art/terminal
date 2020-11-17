@@ -130,11 +130,8 @@ from .image import image_mode
 from .image import load_image
 from .image import no_tint
 from .image import tint
-from .image import load_cells
-from .image import get_cells
-from .image import update_cells
 
-from .helpers import log
+from .helpers import debug
 
 from .constants import PI
 from .constants import HALF_PI

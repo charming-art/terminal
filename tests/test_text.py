@@ -22,7 +22,6 @@ x = 0
 @app.draw
 def draw():
     app.background(' ')
-    # app.log(text_width)
     # app.scale(2)
     # app.stroke(" ", app.RED, app.YELLOW)
     # app.text_size(3)
@@ -49,7 +48,6 @@ def draw():
     # app.text("|     __     |", 10, 2)
     # app.scale(2)
     # app.text('hello world', 2, 2)
-    # app.log([w, h])
     # app.fill('*')
     # app.rect(0, 0, 1, 1)
     app.no_loop()

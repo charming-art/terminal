@@ -3,5 +3,5 @@ from .app import sketch
 from .utils import logger
 
 
-def log(*args, **kw):
-    logger.debug(*args, **kw)
+def debug(msg, *args, **kw):
+    logger.debug(msg, *args, **kw)

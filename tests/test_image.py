@@ -9,7 +9,6 @@ def setup():
     app.full_screen()
     app.image_mode(app.CENTER)
     img = app.load_image('./images/test.png')
-    app.log(img)
 
 
 @app.draw

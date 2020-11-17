@@ -174,10 +174,6 @@ class Logger(metaclass=ABCMeta):
         ]
 
     @abstractclassmethod
-    def log(self, *kw, **args):
-        pass
-
-    @abstractclassmethod
     def debug(self, *kw, **args):
         pass
 
@@ -216,23 +212,7 @@ class Logger(metaclass=ABCMeta):
 
 if sys.platform == BROWSER:
     class BrowserLogger(Logger):
-
-        def __init__(self, should_record):
-            super(BrowserLogger, self).__init__(should_record)
-
-        def log(self, *args, **kw):
-            print(*args, **kw)
-
-        def debug(self, *args, **kw):
-            print(*args, **kw)
-
-        def time(self):
-            pass
-
-        def plot(self, records):
-            pass
-
-    logger = BrowserLogger(DEBUG_MODE)
+        pass
 else:
     import logging
     import time
@@ -247,9 +227,6 @@ else:
 
         def debug(self, *args, **kw):
             logging.debug(*args, **kw)
-
-        def log(self, *args, **kw):
-            logging.log(*args, **kw)
 
         def time(self):
             return time.time()

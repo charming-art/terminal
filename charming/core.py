@@ -2,6 +2,7 @@ import sys
 import math
 import colorsys
 import string
+import copy
 from abc import ABCMeta, abstractclassmethod
 from pyfiglet import Figlet
 from . import constants
@@ -557,17 +558,6 @@ class Renderer(object):
         self.update_cells = [value[0] for value in update_colors.values()]
         self._pre_color_by_pos = self._color_by_pos
         self._flag = not self._flag
-
-    def get_cells(self):
-        pixels = []
-        for i in range(self.width):
-            for j in range(self.height):
-                key = f'({i},{j})'
-                if key in self._color_by_pos:
-                    pixels.append(self._color_by_pos[key][0])
-                else:
-                    pixels.append(self.background_color)
-        return pixels
 
     @logger.record('polygon filling')
     def _scan_line_filling(self, polygon, fill_color):

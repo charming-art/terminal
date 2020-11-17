@@ -191,9 +191,3 @@
 - [x] load_image()
 - [x] no_tint()
 - [x] tint()
-  
-## Cells
-
-- [ ] load_cells()
-- [ ] get_cells()
-- [ ] update_cells()

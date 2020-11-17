@@ -13,7 +13,6 @@ x = 0
 def draw():
     global x
     x += 1
-    # app.log('hello world')
     app.background(' ')
     app.fill(('❤️', 2), 2)
     app.square(x, 0, 3)

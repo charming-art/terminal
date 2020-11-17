@@ -1,4 +1,5 @@
 import sys
+import copy
 from .core import Color
 from .core import Image
 from .app import renderer
@@ -26,11 +27,7 @@ class CImage(object):
         self._pixels = [p for p in self.pixels]
 
     def copy(self):
-        return self.__class__(
-            self._pixels,
-            self.width,
-            self.height,
-        )
+        return copy.deepcopy(self)
 
     def __getitem__(self, index):
         return self._pixels[index]
@@ -81,7 +78,6 @@ else:
         image = PImage.open(src)
         w, h = image.size
         data = image.getdata()
-        logger.debug('load image')
         return CImage(data, w, h)
 
 
@@ -94,18 +90,3 @@ def tint(ch=" ", fg=None, bg=None):
     renderer.is_tint_enabled = True
     c = Color(ch, fg, bg)
     renderer.tint_color = c
-
-# Pixels
-
-
-def load_cells():
-    pass
-
-
-def get_cells():
-    pass
-
-
-@add_on_return
-def update_cells():
-    pass
