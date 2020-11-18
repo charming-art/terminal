@@ -8,3 +8,4 @@ venv
 *.log
 index.html
 lib/
+docs/_build

@@ -7,12 +7,10 @@ from .utils import Matrix
 
 
 def _push_on_return(foo):
-
     @functools.wraps(foo)
     def wrapped(*args, **kw):
         matrix = foo(*args, **kw)
         renderer.transform_matrix_stack.append(matrix)
-
     return wrapped
 
 

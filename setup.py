@@ -5,7 +5,7 @@ with open("src/charming/__init__.py", encoding="utf8") as f:
     version = re.search(r'__version__ = "(.*?)"', f.read()).group(1)
 
 setup(
-    name="Charming",
+    name="charming",
     version=version,
     install_requires=[
         'pyfiglet >= 0.7.2',

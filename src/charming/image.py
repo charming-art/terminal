@@ -68,6 +68,17 @@ def image_mode(mode):
     renderer.image_mode = mode
 
 
+def no_tint():
+    renderer.is_tint_enabled = False
+
+
+@check_color
+def tint(ch=" ", fg=None, bg=None):
+    renderer.is_tint_enabled = True
+    c = Color(ch, fg, bg)
+    renderer.tint_color = c
+
+
 if sys.platform == BROWSER:
     def load_image(src):
         pass
@@ -79,14 +90,3 @@ else:
         w, h = image.size
         data = image.getdata()
         return CImage(data, w, h)
-
-
-def no_tint():
-    renderer.is_tint_enabled = False
-
-
-@check_color
-def tint(ch=" ", fg=None, bg=None):
-    renderer.is_tint_enabled = True
-    c = Color(ch, fg, bg)
-    renderer.tint_color = c

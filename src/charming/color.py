@@ -44,6 +44,23 @@ def lerp_color(start, stop, amt):
     return c
 
 
+def color_mode(mode=constants.ANSI, max1=None, max2=None, max3=None):
+    Color.color_mode = mode
+    if mode == constants.ANSI:
+        if max1 != None:
+            Color.color_channels = (max1,)
+    else:
+        if max1 != None and (max2 == None and max3 == None):
+            Color.color_channels = (max1, max1, max1)
+        elif max1 != None and max2 != None and max3 != None:
+            Color.color_channels = (max1, max2, max3)
+        else:
+            if mode == constants.RGB:
+                Color.color_channels = (255, 255, 255)
+            else:
+                Color.color_channels = (360, 100, 100)
+
+
 def _lerp_color_channels(start, stop, amt):
     if isinstance(start, str):
         start = ord(start)
@@ -89,20 +106,3 @@ def _lerp_color_channels(start, stop, amt):
                 for i, v in enumerate([v1, v2, v3])
             ]
             return (v1, v2, v3)
-
-
-def color_mode(mode=constants.ANSI, max1=None, max2=None, max3=None):
-    Color.color_mode = mode
-    if mode == constants.ANSI:
-        if max1 != None:
-            Color.color_channels = (max1,)
-    else:
-        if max1 != None and (max2 == None and max3 == None):
-            Color.color_channels = (max1, max1, max1)
-        elif max1 != None and max2 != None and max3 != None:
-            Color.color_channels = (max1, max2, max3)
-        else:
-            if mode == constants.RGB:
-                Color.color_channels = (255, 255, 255)
-            else:
-                Color.color_channels = (360, 100, 100)

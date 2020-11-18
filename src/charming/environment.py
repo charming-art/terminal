@@ -13,20 +13,6 @@ def size(width, height, mode=constants.SINGLE):
     sketch.renderer.init(mode)
 
 
-def terminal_size(width, height, options=None):
-    sketch.context.terminal_width = width
-    sketch.context.terminal_height = height
-    sketch.context.options = options
-
-
-def full_terminal(options=None):
-    terminal_size(
-        sketch.context.inner_width,
-        sketch.context.inner_height,
-        options
-    )
-
-
 def full_screen(mode=constants.SINGLE):
     sketch.context.open(is_full_screen=True)
     sketch.renderer.init(mode)
