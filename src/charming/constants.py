@@ -114,7 +114,7 @@ HSB = 2
 
 SINGLE = 0
 
-DOUBLIE = 1
+DOUBLE = 1
 
 # Buttons
 

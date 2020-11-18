@@ -182,7 +182,7 @@ from .constants import ANSI
 from .constants import RGB
 from .constants import HSB
 
-from .constants import DOUBLIE
+from .constants import DOUBLE
 from .constants import SINGLE
 
 from .constants import CODED

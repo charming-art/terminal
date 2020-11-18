@@ -58,12 +58,19 @@ class Sketch(object):
 
     def run(self):
         try:
-            self._setup()
-            self._loop()
-            if self.has_draw_hook and self.has_setup_hook:
-                self.timer.run(1000 / self.frame_rate, self._loop)
+            if self.has_setup_hook:
+                setup_hook = self.hooks_map['setup']
+                setup_hook()
+
+            if not self.context.has_open:
+                print('Call size to open context.')
             else:
-                self.timer.wait()
+                self._setup()
+                self._loop()
+                if self.has_draw_hook and self.has_setup_hook:
+                    self.timer.run(1000 / self.frame_rate, self._loop)
+                else:
+                    self.timer.wait()
         except Exception as e:
             logger.debug(e)
             raise e
@@ -77,14 +84,6 @@ class Sketch(object):
 
     @logger.record('setup')
     def _setup(self):
-        if self.has_setup_hook:
-            setup_hook = self.hooks_map['setup']
-            setup_hook()
-
-        if not self.context.has_open:
-            print('Call size to open context.')
-            return
-
         self.context.init()
         self.renderer.setup(self.context.width, self.context.height)
 
@@ -498,7 +497,7 @@ class Renderer(object):
     @logger.record('clipping')
     def _clipping(self, fragments):
         fragments_clipped = []
-        scale = 2 if self.mode == constants.DOUBLIE else 1
+        scale = 2 if self.mode == constants.DOUBLE else 1
         for pixels in fragments:
             pixels_clipped = []
             for p in pixels:
@@ -666,44 +665,95 @@ class Renderer(object):
         edges = self._vertices_to_edges(vertices)
         return self._scan_line_filling(edges, color)
 
-    def _discretize_ellipse(self, x0, y0, color, rotation):
-        pass
+    def _discretize_ellipse(self, x0, y0, a, b, color, rotation):
+        p1 = []
+        p2 = []
+        p3 = []
+        p4 = []
+
+        def is_in(x, y):
+            return (b * x) ** 2 + (a * y) ** 2 - (a * b) ** 2 < 0
+
+        def add_points(x, y, rx, ry):
+            p1.append(Point(x, y, color))
+            p2.append(Point(x, y + ry * 2, color))
+            p3.append(Point(x - rx * 2, y + ry * 2, color))
+            p4.append(Point(x - rx * 2, y, color))
+
+        if a >= b:
+            y = y0 - b
+            for x in range(x0, x0 + a + 1):
+                rx = x - x0
+                ry = y0 - y
+                add_points(x, y, rx, ry)
+                if not is_in(rx + 1, ry - 0.5):
+                    y += 1
+            if y <= y0:
+                add_points(x, y0, a, 0)
+            p2 = list(reversed(p2))
+            p4 = list(reversed(p4))
+        else:
+            x = x0 + a
+            for y in range(y0, y0 + b + 1):
+                rx = x - x0
+                ry = y - y0
+                add_points(x, y - ry * 2, rx, ry)
+                if not is_in(rx - 0.5, ry + 1):
+                    x -= 1
+            if x >= x0:
+                add_points(x0, y, 0, b)
+            p1 = list(reversed(p1))
+            p3 = list(reversed(p3))
+
+        return p2 + p3 + p4 + p1
 
     def _discretize_arc(self, x0, y0, a, b, start, stop, color, rotation=0, mode=constants.CHORD):
         if a == 0 or b == 0:
             return [Point(x0, y0, color)]
 
-        points = []
-        pre_x = a
-        pre_y = 0
-        pre_angle = 0
-        angle = start
-        cs = (2 * math.pi * b + 4 * (a - b)) * (stop - start) / (math.pi * 2)
-        cnt = max(10, int(cs / 20) * 10)
-        step = (stop - start) / cnt
+        if abs(stop - start) >= constants.TAU:
+            points = self._discretize_ellipse(x0, y0, a, b, color, rotation)
+        else:
+            points = []
+            pre_x = a
+            pre_y = 0
+            pre_angle = 0
+            angle = start
+            cs = (2 * math.pi * b + 4 * (a - b)) * \
+                (stop - start) / (math.pi * 2)
+            cnt = max(10, int(cs / 20) * 10)
+            step = (stop - start) / cnt
 
-        while angle < stop or math.isclose(angle, stop, abs_tol=1e-9):
-            theta = angle - pre_angle
-            pre_angle = angle
-            angle += step
+            while angle < stop or math.isclose(angle, stop, abs_tol=1e-9):
+                theta = angle - pre_angle
+                pre_angle = angle
+                angle += step
 
-            cos = math.cos(theta)
-            sin = math.sin(theta)
+                cos = math.cos(theta)
+                sin = math.sin(theta)
 
-            x = pre_x * cos + pre_y * sin * (-a / b)
-            y = pre_x * sin * (b / a) + pre_y * cos
-            if x != pre_x or y != pre_y:
-                pre_x = x
-                pre_y = y
-                rotated_x = math.cos(rotation) * x - math.sin(rotation) * y
-                rotated_y = math.sin(rotation) * x + math.cos(rotation) * y
-                points.append(
-                    Point(
-                        round(rotated_x + x0),
-                        round(rotated_y + y0),
-                        color=color
+                x = pre_x * cos + pre_y * sin * (-a / b)
+                y = pre_x * sin * (b / a) + pre_y * cos
+                if x != pre_x or y != pre_y:
+                    pre_x = x
+                    pre_y = y
+                    points.append(
+                        Point(
+                            x + x0,
+                            y + y0,
+                            color=color
+                        )
                     )
-                )
+
+        # rotation
+        for p in points:
+            x = p.x - x0
+            y = p.y - y0
+            rotated_x = math.cos(rotation) * x - math.sin(rotation) * y
+            rotated_y = math.sin(rotation) * x + math.cos(rotation) * y
+            p.x = int(rotated_x + x0)
+            p.y = int(rotated_y + y0)
+
         if mode == constants.PIE:
             points.insert(0, Point(x0, y0, color=color))
             points.append(points[0])
@@ -875,7 +925,7 @@ class Context(metaclass=ABCMeta):
             else:
                 ch_w = get_char_width(ch)
 
-            if mode == constants.DOUBLIE and ch_w == 1:
+            if mode == constants.DOUBLE and ch_w == 1:
                 ch += ch
 
             if self._in(x, y):
@@ -1141,6 +1191,7 @@ if sys.platform == BROWSER:
         pass
 else:
     import time
+
     class LocalTimer(Timer):
 
         def run(self, ms, callback):

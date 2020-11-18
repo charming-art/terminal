@@ -3,7 +3,7 @@ import charming as app
 
 @app.setup
 def setup():
-    app.size(30, 30, app.DOUBLIE)
+    app.size(30, 30, app.DOUBLE)
     # app.rect_mode(app.CENTER)
     # app.ellipse_mode(app.CORNER)
     app.frame_rate(5)
