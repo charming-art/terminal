@@ -105,14 +105,14 @@ class Sketch(object):
                 draw_hook = self.hooks_map['draw']
                 draw_hook()
 
-                self.renderer.render()
-                self.context.draw(
-                    self.renderer.update_cells,
-                    self.renderer.mode
-                )
+            self.renderer.render()
+            self.context.draw(
+                self.renderer.update_cells,
+                self.renderer.mode
+            )
 
-                self.renderer.has_background_called = False
-                self.frame_count += 1
+            self.renderer.has_background_called = False
+            self.frame_count += 1
 
     def _handle_events(self, events):
         pressed = False

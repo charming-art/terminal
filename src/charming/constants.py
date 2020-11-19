@@ -78,9 +78,9 @@ RADIUS = 3
 
 # Arc
 
-CHORD = 1
+CHORD = 2
 
-PIE = 2
+PIE = 3
 
 # Text
 
