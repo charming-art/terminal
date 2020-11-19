@@ -130,9 +130,13 @@ class Sketch(object):
                     mouse_pressed_hook = self.hooks_map['mouse_pressed']
                     mouse_pressed_hook()
             elif e.type == "window":
+                self.renderer.clear()
+                self.context.restore(
+                    self.renderer.frame_buffer,
+                    self.renderer.mode
+                )
                 window_hook = self.hooks_map['window_resized']
                 window_hook()
-                self.renderer.clear()
             elif e.type == "keyboard":
                 self.key = e.key
                 self.key_code = e.key_code
@@ -206,6 +210,9 @@ class Renderer(object):
     def setup(self, width, height):
         self.width = width
         self.height = height
+        self.frame_buffer = [
+            self.background_color for i in range(width * height)
+        ]
 
     def render(self):
         self.update_cells.clear()
@@ -244,6 +251,9 @@ class Renderer(object):
         self.has_background_called = True
         self.pre_background_color = self.background_color
         self.background_color = color
+        self.frame_buffer = [
+            color for i in range(self.width * self.height)
+        ]
 
     @logger.record('render shape')
     def _render_shape(self, shape):
@@ -513,7 +523,9 @@ class Renderer(object):
         for pixels in fragemnts:
             for p in pixels:
                 key = f'({p.x},{p.y})'
+                index = p.y * self.width + p.x
                 self._color_by_pos[key] = [p, self._flag]
+                self.frame_buffer[index] = p.color
 
     @logger.record('differ buffer')
     def _differ_buffer(self):
@@ -860,20 +872,34 @@ class Context(metaclass=ABCMeta):
         self._pad_y = (self.window_height - self._pad_height) // 2
 
     @logger.record('flush screen')
-    def draw(self, buffer, mode):
+    def draw(self, points, mode):
         self._draw_border()
         self._content = ''
 
-        for p in buffer:
+        for p in points:
             x = p.x + self._pad_x + 1
             y = p.y + self._pad_y + 1
-            ch = self._ch(p.color.ch, mode)
             if self._in(x, y):
+                ch = self._ch(p.color.ch, mode)
                 self._addch(x, y, ch, p.color.fg, p.color.bg)
 
-        cx = self._pad_x + 1 + self.cursor_x
-        cy = self._pad_y + 1 + self.cursor_y
-        self._move(cx, cy)
+        self._draw_cursor()
+        self._refresh()
+
+    def restore(self, frame_buffer, mode):
+        self._draw_border()
+        self._content = ''
+
+        for i, color in enumerate(frame_buffer):
+            x0 = i % self.width
+            y0 = i // self.width
+            x = self._pad_x + x0 + 1
+            y = self._pad_y + y0 + 1
+            if self._in(x, y):
+                ch = self._ch(color.ch, mode)
+                self._addch(x, y, ch, color.fg, color.bg)
+
+        self._draw_cursor()
         self._refresh()
 
     def no_cursor(self):
@@ -904,6 +930,11 @@ class Context(metaclass=ABCMeta):
         next_y = self.cursor_y + 1
         next_x = self.cursor_x
         self._update_cursor(next_x, next_y)
+
+    def _draw_cursor(self):
+        cx = self._pad_x + 1 + self.cursor_x
+        cy = self._pad_y + 1 + self.cursor_y
+        self._move(cx, cy)
 
     def _ch(self, ch, mode):
         if isinstance(ch, tuple):
@@ -1018,6 +1049,9 @@ else:
             self._key = None
             self._key_pressed_time = None
             self._key_thres = 0.5
+            self._window_resized_time = None
+            self._window_thres = 2
+            self._window_resized = False
 
             # init
             curses.noecho()
@@ -1042,7 +1076,8 @@ else:
             while key != -1:
                 if key == curses.KEY_RESIZE:
                     self._resize()
-                    event_queue.append(WindowEvent())
+                    self._window_resized = True
+                    self._window_resized_time = time.time()
                 elif key == curses.KEY_MOUSE:
                     _, x, y, _, bstate = curses.getmouse()
                     event_queue += self._get_mouse_events(bstate, x, y)
@@ -1054,8 +1089,14 @@ else:
                     self._key_pressed_time = time.time()
                 key = self._screen.getch()
 
+            now = time.time()
+            if self._window_resized:
+                timeout = now - self._window_resized_time > self._window_thres
+                if timeout:
+                    event_queue.append(WindowEvent())
+                    self._window_resized = False
+
             if self._key_pressed_time != None and not key_pressed:
-                now = time.time()
                 timeout = now - self._key_pressed_time > self._key_thres
                 if timeout:
                     self.key_pressed = False
