@@ -48,6 +48,14 @@ def get_key_pressed():
 def key_pressed(hook):
     sketch.add_hook('key_pressed', hook)
 
+
+def key_typed(hook):
+    sketch.add_hook('key_typed', hook)
+
+
+def key_released(hook):
+    sketch.add_hook('key_released', hook)
+
 # cursor
 
 

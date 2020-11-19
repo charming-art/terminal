@@ -28,8 +28,7 @@ def loop():
 
 
 def redraw():
-    draw_hook = sketch.hooks_map['draw']
-    draw_hook()
+    sketch.is_draw = True
 
 
 def push():

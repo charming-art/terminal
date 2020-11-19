@@ -32,6 +32,8 @@ from .event import mouse_pressed
 from .event import mouse_released
 from .event import mouse_clicked
 from .event import key_pressed
+from .event import key_released
+from .event import key_typed
 from .event import get_pcursor_x
 from .event import get_pcursor_y
 from .event import get_cursor_x

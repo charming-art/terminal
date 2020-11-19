@@ -30,6 +30,7 @@ class Sketch(object):
 
         self.frame_rate = 30
         self.is_loop = True
+        self.is_draw = False
         self.frame_count = 0
 
         self.key = None
@@ -50,6 +51,8 @@ class Sketch(object):
             'mouse_pressed': lambda: None,
             'mouse_released': lambda: None,
             'key_pressed': lambda: None,
+            'key_typed': lambda: None,
+            'key_released': lambda: None,
             'window_resized': lambda: None,
             'cursor_moved': lambda: None
         }
@@ -96,19 +99,20 @@ class Sketch(object):
         events = self.context.get_events()
         self._handle_events(events)
 
-        if self.is_loop:
+        if self.is_loop or self.is_draw:
+            self.is_draw = False
             if self.has_draw_hook:
                 draw_hook = self.hooks_map['draw']
                 draw_hook()
 
-            self.renderer.render()
-            self.context.draw(
-                self.renderer.update_cells,
-                self.renderer.mode
-            )
+                self.renderer.render()
+                self.context.draw(
+                    self.renderer.update_cells,
+                    self.renderer.mode
+                )
 
-            self.renderer.has_background_called = False
-            self.frame_count += 1
+                self.renderer.has_background_called = False
+                self.frame_count += 1
 
     def _handle_events(self, events):
         pressed = False
@@ -161,6 +165,12 @@ class Sketch(object):
                             self._cursor_moved = False
                     else:
                         self._cursor_moved = False
+                elif e.event_type == "typed":
+                    key_typed_hook = self.hooks_map['key_typed']
+                    key_typed_hook()
+                elif e.event_type == "released":
+                    key_released_hook = self.hooks_map['key_released']
+                    key_released_hook()
 
         if self.context.key_pressed and self._cursor_moved:
             cursor_moved_hook = self.hooks_map['cursor_moved']
@@ -1083,6 +1093,7 @@ else:
                     event_queue += self._get_mouse_events(bstate, x, y)
                 else:
                     event_queue.append(KeyboardEvent(key, 'pressed'))
+                    event_queue.append(KeyboardEvent(key, 'typed'))
                     key_pressed = True
                     self.key_pressed = True
                     self._key = key
@@ -1099,6 +1110,7 @@ else:
             if self._key_pressed_time != None and not key_pressed:
                 timeout = now - self._key_pressed_time > self._key_thres
                 if timeout:
+                    event_queue.append(KeyboardEvent(self._key, 'released'))
                     self.key_pressed = False
                     self._key = None
                     self._key_pressed_time = None
