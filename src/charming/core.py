@@ -86,6 +86,10 @@ class Sketch(object):
     def _setup(self):
         self.context.init()
         self.renderer.setup(self.context.width, self.context.height)
+        self.context.background(
+            self.renderer.background_color,
+            self.renderer.mode
+        )
 
     @logger.record('loop')
     def _loop(self):
@@ -96,9 +100,6 @@ class Sketch(object):
             if self.has_draw_hook:
                 draw_hook = self.hooks_map['draw']
                 draw_hook()
-
-            if self.renderer.has_background_called:
-                self.context.background(self.renderer.background_color)
 
             self.renderer.render()
             self.context.draw(
@@ -801,7 +802,7 @@ class Context(metaclass=ABCMeta):
         """ init the terminal """
 
     @abstractclassmethod
-    def background(self, color):
+    def background(self, color, mode):
         ''' set the backgroun color of the terminal '''
 
     @abstractclassmethod
@@ -866,16 +867,7 @@ class Context(metaclass=ABCMeta):
         for p in buffer:
             x = p.x + self._pad_x + 1
             y = p.y + self._pad_y + 1
-            ch = p.color.ch
-            if isinstance(ch, tuple):
-                ch_w = ch[1]
-                ch = ch[0] + ' '
-            else:
-                ch_w = get_char_width(ch)
-
-            if mode == constants.DOUBLE and ch_w == 1:
-                ch += ch
-
+            ch = self._ch(p.color.ch, mode)
             if self._in(x, y):
                 self._addch(x, y, ch, p.color.fg, p.color.bg)
 
@@ -912,6 +904,17 @@ class Context(metaclass=ABCMeta):
         next_y = self.cursor_y + 1
         next_x = self.cursor_x
         self._update_cursor(next_x, next_y)
+
+    def _ch(self, ch, mode):
+        if isinstance(ch, tuple):
+            ch_w = ch[1]
+            ch = ch[0] + ' '
+        else:
+            ch_w = get_char_width(ch)
+
+        if mode == constants.DOUBLE and ch_w == 1:
+            ch += ch
+        return ch
 
     def _update_cursor(self, x, y):
         if self._in(x, y):
@@ -1061,8 +1064,13 @@ else:
 
             return event_queue
 
-        def background(self, color):
-            pass
+        def background(self, color, mode):
+            ch = self._ch(color.ch, mode)
+            self._content = ""
+            for i in range(self.width):
+                for j in range(self.height):
+                    self._addch(i, j, ch, color.fg, color.bg)
+            self._refresh()
 
         def _write(self, content):
             sys.stdout.write(content)

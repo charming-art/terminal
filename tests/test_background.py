@@ -18,14 +18,14 @@ def draw():
     #     app.background('*')
     # else:
     #     app.background('-')
-    app.background(' ')
+    app.background(' ', bg=app.WHITE)
     # app.text_size(app.BIG)
     # app.text('hello world', 0, 0)
     app.fill('0', app.YELLOW, app.RED)
     app.stroke('1', app.GREEN, app.BLUE)
     app.rect(x, 0, 10, 10)
     x += 1
-    app.no_loop()
+    # app.no_loop()
     if x >= 10:
         app.no_loop()
 
