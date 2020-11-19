@@ -12,5 +12,5 @@ import charming as app
 
 app.full_screen()
 v = app.CVector()
-v.dist()
+# v.dist()
 app.run()

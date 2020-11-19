@@ -80,6 +80,7 @@ from .shape import point
 from .shape import arc
 from .shape import circle
 from .shape import ellipse
+from .shape import triangle
 from .shape import begin_shape
 from .shape import end_shape
 from .shape import open_shape
@@ -128,6 +129,14 @@ from .image import image_mode
 from .image import load_image
 from .image import no_tint
 from .image import tint
+
+from .time import day
+from .time import hour
+from .time import millis
+from .time import minute
+from .time import month
+from .time import second
+from .time import year
 
 from .helpers import debug
 
