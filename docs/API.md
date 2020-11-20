@@ -237,6 +237,7 @@
 - [x] RIGHT
 - [x] MIDDLE
 - [x] TOP
+- [x] CENTER
 - [x] BOTTOM
 - [x] NORMAL
 - [x] BIG

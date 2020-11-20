@@ -592,7 +592,6 @@ class Renderer(object):
 
     @logger.record('polygon filling')
     def _scan_line_filling(self, polygon, fill_color):
-        logger.debug(polygon)
         pixels = []
         ymin = float('inf')
         ymax = float('-inf')
