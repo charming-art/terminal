@@ -8,14 +8,19 @@ text = "hello"
 ntw = app.text_width(text)
 app.text(text, 5, 5)
 
+with app.open_context():
+    app.translate(15, 5)
+    app.scale(2)
+    app.text(text, 0, 0)
+
 # big text
 app.text_size(app.BIG)
 btw = app.text_width(text)
-app.text(text, ntw + 15, 5)
+app.text(text, ntw + 25, 5)
 
 # large text
 app.text_size(app.LARGE)
-app.text(text, ntw + btw + 25, 5)
+app.text(text, ntw + btw + 35, 5)
 
 with app.open_context():
     app.text_size(app.BIG)

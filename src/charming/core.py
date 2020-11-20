@@ -329,8 +329,13 @@ class Renderer(object):
 
             # screen map && color
             if primitive_type == constants.IMAGE:
-                ch = p.color.ch if not is_tint_enabled else tint_color.ch
-                p.color = Color.create(ch, p.color.fg, p.color.bg)
+                if is_tint_enabled:
+                    ch = tint_color.ch
+                    fg = tint_color.fg
+                else:
+                    ch = p.color.ch
+                    fg = p.color.fg
+                p.color = Color.create(ch, fg, p.color.bg)
             elif primitive_type == constants.TEXT:
                 p.color = Color.create(
                     p.color.ch,

@@ -81,7 +81,8 @@ def tint(ch=" ", fg=None, bg=None):
 
 if sys.platform == BROWSER:
     def load_image(src):
-        pass
+        return CImage([], 0, 0)
+
 else:
     from PIL import Image as PImage
 
