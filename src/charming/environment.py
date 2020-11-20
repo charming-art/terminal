@@ -47,8 +47,11 @@ def no_cursor():
     sketch.context.no_cursor()
 
 
-def cursor(x=0, y=0):
+def cursor():
     sketch.context.cursor()
+
+
+def set_cursor(x=0, y=0):
     sketch.context.cursor_x = x
     sketch.context.cursor_y = y
 

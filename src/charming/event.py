@@ -77,3 +77,7 @@ def get_pcursor_y():
 
 def cursor_moved(hook):
     sketch.add_hook('cursor_moved', hook)
+
+
+def get_cursor_moved():
+    return sketch.cursor_moved

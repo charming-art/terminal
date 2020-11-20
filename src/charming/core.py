@@ -57,13 +57,12 @@ class Sketch(object):
             'cursor_moved': lambda: None
         }
 
-        self._cursor_moved = False
+        self.cursor_moved = False
 
     def run(self):
         try:
             if self.has_setup_hook:
-                setup_hook = self.hooks_map['setup']
-                setup_hook()
+                self._run_hook('setup')
 
             if not self.context.has_open:
                 raise Exception(
@@ -104,8 +103,7 @@ class Sketch(object):
         if self.is_loop or self.is_draw:
             self.is_draw = False
             if self.has_draw_hook:
-                draw_hook = self.hooks_map['draw']
-                draw_hook()
+                self._run_hook('draw')
 
             self.renderer.render()
             self.context.draw(
@@ -115,6 +113,11 @@ class Sketch(object):
 
             self.renderer.has_background_called = False
             self.frame_count += 1
+
+    def _run_hook(self, key):
+        hook = self.hooks_map[key]
+        hook()
+        self.renderer.clear_matrix_stack()
 
     def _handle_events(self, events):
         pressed = False
@@ -126,61 +129,53 @@ class Sketch(object):
                 self.mouse_button = e.button_type
                 if e.event_type == "released":
                     self.is_mouse_pressed = False
-                    mouse_released_hook = self.hooks_map['mouse_released']
-                    mouse_released_hook()
+                    self._run_hook('mouse_released')
                 elif e.event_type == "clicked":
-                    mouse_clicked_hook = self.hooks_map['mouse_clicked']
-                    mouse_clicked_hook()
+                    self._run_hook('mouse_clicked')
                 elif e.event_type == "pressed":
                     self.is_mouse_pressed = True
-                    mouse_pressed_hook = self.hooks_map['mouse_pressed']
-                    mouse_pressed_hook()
+                    self._run_hook('mouse_pressed')
             elif e.type == "window":
                 self.renderer.clear()
                 self.context.restore(
                     self.renderer.frame_buffer,
                     self.renderer.mode
                 )
-                window_hook = self.hooks_map['window_resized']
-                window_hook()
+                self._run_hook('window_resized')
             elif e.type == "keyboard":
                 self.key = e.key
                 self.key_code = e.key_code
                 if e.event_type == "pressed":
                     pressed = True
-                    key_pressed_hook = self.hooks_map['key_pressed']
-                    key_pressed_hook()
+                    self._run_hook('key_pressed')
                     if self.key == constants.CODED:
                         if self.key_code == constants.UP:
                             self.context.move_up()
-                            self._cursor_moved = True
+                            self.cursor_moved = True
                         elif self.key_code == constants.DOWN:
                             self.context.move_down()
-                            self._cursor_moved = True
+                            self.cursor_moved = True
                         elif self.key_code == constants.LEFT:
                             self.context.move_left()
-                            self._cursor_moved = True
+                            self.cursor_moved = True
                         elif self.key_code == constants.RIGHT:
                             self.context.move_right()
-                            self._cursor_moved = True
+                            self.cursor_moved = True
                         else:
-                            self._cursor_moved = False
+                            self.cursor_moved = False
                     else:
-                        self._cursor_moved = False
+                        self.cursor_moved = False
                 elif e.event_type == "typed":
-                    key_typed_hook = self.hooks_map['key_typed']
-                    key_typed_hook()
+                    self._run_hook('key_typed')
                 elif e.event_type == "released":
-                    key_released_hook = self.hooks_map['key_released']
-                    key_released_hook()
+                    self._run_hook('key_released')
+                    self.cursor_moved = False
 
-        if self.context.key_pressed and self._cursor_moved:
-            cursor_moved_hook = self.hooks_map['cursor_moved']
-            cursor_moved_hook()
+        if self.context.key_pressed and self.cursor_moved:
+            self._run_hook('cursor_moved')
 
         if self.context.key_pressed and not pressed:
-            key_pressed_hook = self.hooks_map['key_pressed']
-            key_pressed_hook()
+            self._run_hook('key_pressed')
 
 
 class Renderer(object):
@@ -233,6 +228,9 @@ class Renderer(object):
             shape = self._shape_queue.pop(0)
             self._render_shape(shape)
         self._differ_buffer()
+        self.clear_matrix_stack()
+
+    def clear_matrix_stack(self):
         self.transform_matrix_stack.clear()
 
     def clear(self):

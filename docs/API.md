@@ -101,6 +101,7 @@
 - [x] get_pcursorX()
 - [x] get_pcursorY()
 - [x] cursor_moved()
+- [x] get_cursor_moved()
 
 ## Environment
 
@@ -116,6 +117,7 @@
 - [x] get_width()
 - [x] size()
 - [x] window_resized()
+- [x] set_cursor()
 
 ## Math
 

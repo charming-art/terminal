@@ -20,6 +20,7 @@ from .environment import get_frame_rate
 from .environment import no_cursor
 from .environment import cursor
 from .environment import window_resized
+from .environment import set_cursor
 
 from .event import get_mouse_x
 from .event import get_mouse_y
@@ -39,6 +40,7 @@ from .event import get_pcursor_y
 from .event import get_cursor_x
 from .event import get_cursor_y
 from .event import cursor_moved
+from .event import get_cursor_moved
 
 from .cmath import abs
 from .cmath import ceil
