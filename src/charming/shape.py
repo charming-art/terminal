@@ -19,7 +19,7 @@ _curve_tightness = 0
 
 @add_on_return
 def line(x1, y1, x2, y2):
-    return Shape(points=[Point(x1, y1), Point(x2, y2)])
+    return Shape(points=[Point(x1, y1), Point(x2, y2)], close_mode=constants.OPEN)
 
 
 @add_on_return

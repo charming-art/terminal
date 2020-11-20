@@ -11,7 +11,7 @@ app.fill('+', app.GREEN, app.BLUE)
 # transforms
 size = 12
 app.translate(size, size / 2)
-
+# app.no_stroke()
 # first line
 app.point(0, 0)
 

@@ -66,7 +66,9 @@ class Sketch(object):
                 setup_hook()
 
             if not self.context.has_open:
-                print('Call size to open context.')
+                raise Exception(
+                    'Call size() or full_screen() to open context.'
+                )
             else:
                 self._setup()
                 self._loop()
@@ -237,25 +239,29 @@ class Renderer(object):
         self._pre_color_by_pos = {}
 
     def add_element(self, element):
-        if isinstance(element, Image):
-            element = element.to_shape()
-        elif isinstance(element, Text):
-            element = element.to_shape(
-                self.text_size,
-                self.text_font,
-                self.text_align_x,
-                self.text_align_y
-            )
-        if element.is_auto:
-            element.fill_color = self.fill_color
-            element.stroke_color = self.stroke_color
-            element.tint_color = self.tint_color
-            element.stroke_weight = self.stroke_weight
-            element.is_tint_enabled = self.is_tint_enabled
-            element.is_fill_enabled = self.is_fill_enabled
-            element.is_stroke_enabled = self.is_stroke_enabled
-            element.transform_matrix_stack = self.transform_matrix_stack[:]
-        self._shape_queue.append(element)
+        try:
+            if isinstance(element, Image):
+                element = element.to_shape()
+            elif isinstance(element, Text):
+                element = element.to_shape(
+                    self.text_size,
+                    self.text_font,
+                    self.text_align_x,
+                    self.text_align_y
+                )
+            if element.is_auto:
+                element.fill_color = self.fill_color
+                element.stroke_color = self.stroke_color
+                element.tint_color = self.tint_color
+                element.stroke_weight = self.stroke_weight
+                element.is_tint_enabled = self.is_tint_enabled
+                element.is_fill_enabled = self.is_fill_enabled
+                element.is_stroke_enabled = self.is_stroke_enabled
+                element.transform_matrix_stack = self.transform_matrix_stack[:]
+            self._shape_queue.append(element)
+        except Exception as e:
+            print('Call size() or full_screen() to open context.')
+            raise e
 
     def background(self, color):
         self.has_background_called = True
@@ -395,7 +401,7 @@ class Renderer(object):
                  vertices[i + 3],
                  vertices[i + 2],
                  vertices[i]]
-                for i in range(len(vertices) - 3, 2)
+                for i in range(0, len(vertices) - 3, 2)
             ]
         elif primitive_type == constants.ARC:
             start = options['start']
@@ -487,10 +493,12 @@ class Renderer(object):
             if len(edges) == 0:
                 fragments.append([])
             elif len(edges) == 1:
-                stroke_pixels += self._rasterize_line(
-                    edges[0][0], edges[0][-1]
-                )
-                fragments.append(stroke_pixels)
+                if is_stroke_enabled:
+                    stroke_pixels += self._rasterize_line(
+                        edges[0][0],
+                        edges[0][-1]
+                    )
+                    fragments.append(stroke_pixels)
             else:
                 # fill polygon
                 if is_fill_enabled:
@@ -500,7 +508,8 @@ class Renderer(object):
                         fill_color = fill_edges[0][0].color
 
                     fill_pixels += self._scan_line_filling(
-                        fill_edges, fill_color
+                        fill_edges,
+                        fill_color
                     )
 
                 # stroke the polygon
@@ -583,19 +592,19 @@ class Renderer(object):
 
     @logger.record('polygon filling')
     def _scan_line_filling(self, polygon, fill_color):
-        '''
-        https://www.cs.uic.edu/~jbell/CourseNotes/ComputerGraphics/PolygonFilling.html
-        '''
+        logger.debug(polygon)
         pixels = []
         ymin = float('inf')
         ymax = float('-inf')
         for e in polygon:
-            v1, v2 = e
+            v1 = e[0]
+            v2 = e[1]
             ymin = min(v1.y, v2.y, ymin)
             ymax = max(v1.y, v2.y, ymax)
 
         def has_intersect(e, y):
-            v1, v2 = e
+            v1 = e[0]
+            v2 = e[1]
             if v1.y > v2.y:
                 return y < v1.y and y >= v2.y
             elif v1.y == v2.y:
@@ -608,15 +617,13 @@ class Renderer(object):
             intersections = []
             for i, e in enumerate(polygon):
                 if has_intersect(e, y):
-                    v1, v2 = e
+                    v1, v2, v3 = e
                     if v1.y == v2.y:
                         x = v2.x
                     else:
                         x = round(map(y, v1.y, v2.y, v1.x, v2.x))
 
                     # pay more attention if is a joint point
-                    ne = polygon[i + 1] if i < len(polygon) - 1 else polygon[0]
-                    v3 = ne[1]
                     y_diff = (v1.y - y) * (v3.y - y)
                     is_left = to_left(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y)
                     is_joint = x == v2.x and y == v2.y
@@ -782,31 +789,53 @@ class Renderer(object):
             t += 1 / cnt
         return points
 
-    def _vertices_to_edges(self, vertices):
+    def _vertices_to_edges(self, vertices, clockwise=True):
         if len(vertices) == 0:
             return []
         elif len(vertices) == 1:
             v = vertices[0]
             return [(v,)]
+        elif len(vertices) == 2:
+            v1 = vertices[0]
+            v2 = vertices[-1]
+            return [(v1, v2)]
         else:
+            if clockwise != self._is_clockwise(vertices):
+                vertices = list(reversed(vertices))
             edges = []
-            for i in range(1, len(vertices)):
-                v1 = vertices[i - 1]
-                v2 = vertices[i]
-                edges.append((v1, v2))
+            vl = len(vertices)
+            v0 = vertices[0]
+            for i in range(vl - 1):
+                v1 = vertices[i]
+                v2 = vertices[(i + 1) % vl]
+                v3 = vertices[(i + 2) % vl]
+                if v3.x == v0.x and v3.y == v0.y:
+                    v3 = vertices[(i + 3) % vl]
+                edges.append((v1, v2, v3))
+
             return edges
 
-    def _close_polygon(self, edges):
+    def _close_polygon(self, edges, type="normal"):
         fill_edges = edges.copy()
         normal_edges = [
             e for e in fill_edges
-            if e[0].type == "normal"
+            if e[0].type == type
         ]
-        first_point = normal_edges[0][0]
-        last_point = normal_edges[-1][1]
-        if last_point.x != first_point.x or last_point.y != first_point.y:
-            fill_edges.append((last_point, first_point))
+        p1 = normal_edges[0][0]
+        p2 = normal_edges[0][1]
+        pe = normal_edges[-1][1]
+        if pe.x != p1.x or pe.y != p1.y:
+            fill_edges.append((pe, p1, p2))
         return fill_edges
+
+    def _is_clockwise(self, vertices):
+        signed_area = 0
+        vl = len(vertices)
+        for i in range(vl):
+            v0 = vertices[i]
+            v1 = vertices[(i + 1) % vl]
+            signed_area += v0.x * v1.y - v1.x * v0.y
+        return signed_area > 0
 
 
 class Context(metaclass=ABCMeta):
@@ -1268,7 +1297,7 @@ class Point(object):
         attrs = {
             "x": self.x,
             "y": self.y,
-            "color": self.color
+            # "color": self.color
         }
         return attrs.__str__()
 

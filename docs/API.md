@@ -80,7 +80,9 @@
 - [x] get_key()
 - [x] get_key_code()
 - [x] get_key_pressed()
-- [x] key_pressed
+- [x] key_pressed()
+- [x] key_typed()
+- [x] key_relesed()
   
 ### Mouse
 
