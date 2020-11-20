@@ -183,13 +183,13 @@
 
 ## Time
 
-- [x] day
-- [x] hour
-- [x] millis
-- [x] minute
-- [x] month
-- [x] second
-- [x] year
+- [x] day()
+- [x] hour()
+- [x] millis()
+- [x] minute()
+- [x] month()
+- [x] second()
+- [x] year()
 
 ## Helpers
 

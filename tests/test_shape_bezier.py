@@ -8,6 +8,7 @@ with app.open_shape():
     app.vertex(30, 10)
     app.bezier_vertex(80, 0, 80, 35, 30, 35)
     app.bezier_vertex(50, 30, 60, 25, 30, 10)
+
 # app.bezier(40, 5, 10, 10, 50, 20, 10, 30)
 
 # t = 0

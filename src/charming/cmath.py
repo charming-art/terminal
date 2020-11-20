@@ -666,6 +666,8 @@ PERLIN = None
 def noise(x, y=0, z=0):
     """
     Returns the Perlin noise value at specified coordinates.
+
+    https://github.com/p5py/p5/blob/master/p5/pmath/rand.py
     """
 
     global PERLIN
