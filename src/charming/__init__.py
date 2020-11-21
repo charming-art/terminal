@@ -198,45 +198,14 @@ from .constants import SINGLE
 
 from .constants import CODED
 from .constants import ESCAPE
-from .constants import F1
-from .constants import F2
-from .constants import F3
-from .constants import F4
-from .constants import F5
-from .constants import F6
-from .constants import F7
-from .constants import F8
-from .constants import F9
-from .constants import F10
-from .constants import F11
-from .constants import F12
-from .constants import F13
-from .constants import F14
-from .constants import F15
-from .constants import F16
-from .constants import F17
-from .constants import F18
-from .constants import F19
-from .constants import F20
-from .constants import F21
-from .constants import F22
-from .constants import F23
-from .constants import F24
-from .constants import PRINT_SCREEN
-from .constants import INSERT
-from .constants import DELETE
-from .constants import HOME
-from .constants import END
 from .constants import LEFT
 from .constants import UP
 from .constants import RIGHT
 from .constants import DOWN
-from .constants import PAGE_UP
-from .constants import PAGE_DOWN
-from .constants import BACK
+from .constants import BACKSPACE
 from .constants import TAB
-from .constants import BACK_TAB
 from .constants import ENTER
+from .constants import SPACE
 
 
 __version__ = "v1.0.0-alpha.0"

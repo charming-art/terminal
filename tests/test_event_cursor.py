@@ -10,12 +10,16 @@ def setup():
 @app.draw
 def draw():
     app.background(' ')
+    # check if cursor is moving, otherwise draw hint message
     if not app.get_cursor_moved():
         app.translate(app.get_width() / 2, app.get_height() / 2)
         app.text_align(app.CENTER)
         app.stroke(' ', app.WHITE, app.BLACK)
         app.text('Pressed up/right/down/left arrow.', 0, 0)
 
+
+# You can use cursor_moved hooks instead of
+# mouse_moved or mouse_dragged to do some effects.
 
 @app.cursor_moved
 def cursor_moved():

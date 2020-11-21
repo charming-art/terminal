@@ -52,8 +52,8 @@ def cursor():
 
 
 def set_cursor(x=0, y=0):
-    sketch.context.cursor_x = x
-    sketch.context.cursor_y = y
+    sketch.context.cursor_x = int(x)
+    sketch.context.cursor_y = int(y)
 
 
 def window_resized(hook):

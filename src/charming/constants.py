@@ -130,80 +130,18 @@ CODED = 0
 
 ESCAPE = 1
 
-F1 = 2
+LEFT = 2
 
-F2 = 3
+UP = 3
 
-F3 = 4
+RIGHT = 4
 
-F4 = 5
+DOWN = 5
 
-F5 = 6
+BACKSPACE = 6
 
-F6 = 7
+TAB = 7
 
-F7 = 8
+ENTER = 8
 
-F8 = 9
-
-F9 = 10
-
-F10 = 11
-
-F11 = 12
-
-F12 = 13
-
-F13 = 14
-
-F14 = 15
-
-F15 = 16
-
-F16 = 17
-
-F17 = 18
-
-F18 = 19
-
-F19 = 20
-
-F20 = 21
-
-F21 = 22
-
-F22 = 23
-
-F23 = 24
-
-F24 = 24
-
-PRINT_SCREEN = 25
-
-INSERT = 26
-
-DELETE = 27
-
-HOME = 28
-
-END = 29
-
-LEFT = 30
-
-UP = 31
-
-RIGHT = 32
-
-DOWN = 33
-
-PAGE_UP = 34
-
-PAGE_DOWN = 35
-
-BACK = 36
-
-TAB = 37
-
-BACK_TAB = 38
-
-ENTER = 39
+SPACE = 9
