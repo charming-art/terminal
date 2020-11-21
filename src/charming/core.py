@@ -136,12 +136,14 @@ class Sketch(object):
                     self.is_mouse_pressed = True
                     self._run_hook('mouse_pressed')
             elif e.type == "window":
-                self.renderer.clear()
-                self.context.restore(
-                    self.renderer.frame_buffer,
-                    self.renderer.mode
-                )
-                self._run_hook('window_resized')
+                if e.event_type == "start":
+                    self._run_hook('window_resized')
+                elif e.event_type == "end":
+                    self.renderer.clear()
+                    self.context.restore(
+                        self.renderer.frame_buffer,
+                        self.renderer.mode
+                    )
             elif e.type == "keyboard":
                 self.key = e.key
                 self.key_code = e.key_code
@@ -859,6 +861,11 @@ class Context(metaclass=ABCMeta):
         ''' set the backgroun color of the terminal '''
 
     @abstractclassmethod
+    def get_window_size(self):
+        ''' get the terminal window size '''
+        pass
+
+    @abstractclassmethod
     def _write(self, content):
         """ write content to screen """
 
@@ -1081,6 +1088,7 @@ else:
             self.window_width = self._screen.getmaxyx()[1]
             self.window_height = self._screen.getmaxyx()[0]
             curses.endwin()
+            self._screen = None
 
         def init(self):
             self._screen = curses.initscr()
@@ -1103,6 +1111,17 @@ else:
             curses.mousemask(curses.ALL_MOUSE_EVENTS |
                              curses.REPORT_MOUSE_POSITION)
 
+        def get_window_size(self):
+            if self._screen:
+                return self.window_width, self.window_height
+            else:
+                self._screen = curses.initscr()
+                self.window_width = self._screen.getmaxyx()[1]
+                self.window_height = self._screen.getmaxyx()[0]
+                curses.endwin()
+                self._screen = None
+                return self.window_width, self.window_height
+
         def close(self):
             self._screen.keypad(0)
             curses.nocbreak()
@@ -1119,6 +1138,7 @@ else:
                     self._resize()
                     self._window_resized = True
                     self._window_resized_time = time.time()
+                    event_queue.append(WindowEvent('start'))
                 elif key == curses.KEY_MOUSE:
                     _, x, y, _, bstate = curses.getmouse()
                     event_queue += self._get_mouse_events(bstate, x, y)
@@ -1135,7 +1155,7 @@ else:
             if self._window_resized:
                 timeout = now - self._window_resized_time > self._window_thres
                 if timeout:
-                    event_queue.append(WindowEvent())
+                    event_queue.append(WindowEvent('end'))
                     self._window_resized = False
 
             if self._key_pressed_time != None and not key_pressed:
@@ -1369,13 +1389,15 @@ class Color(object):
         return channels
 
     def _eq_channels(self, a, b):
-        if isinstance(a, tuple):
+        if isinstance(a, tuple) and len(a) == 3:
             v0 = a[0] == b[0]
             v1 = a[1] == b[1]
             v2 = a[2] == b[2]
             return v0 and v1 and v2
-        else:
-            return a == b
+
+        v1 = a if not isinstance(a, tuple) else a[0]
+        v2 = b if not isinstance(b, tuple) else b[0]
+        return v1 == v2
 
     def __eq__(self, other):
         if other == None:
@@ -1649,8 +1671,9 @@ class Event(object):
 
 
 class WindowEvent(Event):
-    def __init__(self):
+    def __init__(self, event_type):
         super(WindowEvent, self).__init__('window')
+        self.event_type = event_type
 
 
 class MouseEvent(Event):

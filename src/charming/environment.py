@@ -18,12 +18,8 @@ def full_screen(mode=constants.SINGLE):
     sketch.renderer.init(mode)
 
 
-def get_window_width():
-    return sketch.context.window_width
-
-
-def get_window_height():
-    return sketch.context.window_height
+def get_window_size():
+    return sketch.context.get_window_size()
 
 
 def get_width():

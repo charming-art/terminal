@@ -106,8 +106,6 @@
 ## Environment
 
 - [x] cursor()
-- [x] get_window_width()
-- [x] get_window_height()
 - [x] frame_rate()
 - [x] full_screen()
 - [x] get_frame_count()
@@ -118,6 +116,7 @@
 - [x] size()
 - [x] window_resized()
 - [x] set_cursor()
+- [x] get_window_size()
 
 ## Math
 

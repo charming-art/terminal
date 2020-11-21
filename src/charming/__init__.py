@@ -13,8 +13,7 @@ from .environment import size
 from .environment import get_width
 from .environment import get_height
 from .environment import full_screen
-from .environment import get_window_width
-from .environment import get_window_height
+from .environment import get_window_size
 from .environment import get_frame_count
 from .environment import get_frame_rate
 from .environment import no_cursor
