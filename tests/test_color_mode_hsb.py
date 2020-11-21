@@ -1,17 +1,22 @@
 import charming as app
 
 app.full_screen()
-app.color_mode(app.HSB, 255, 100, 100)
-# app.color_mode(app.RGB)
-row = 34
-start_x = int((app.get_width() - row) / 2)
-start_y = int((app.get_height() - app.ceil(255 / 50)) / 2)
-for i in range(255):
-    x = i % row
-    y = i / row
-    # app.stroke(' ', i, i)
-    # app.stroke(' ', bg=(0, 0, i))
-    app.stroke(' ', bg=(i, 100, 100))
-    app.point(start_x + x, start_y + y)
+app.color_mode(app.HSB)
+
+
+# rainbows
+w = 30
+h = 360 / w
+with app.open_context():
+    x = (app.get_width() - w) / 2
+    y = (app.get_height() - h) / 2
+    app.translate(x, y)
+    app.stroke_weight(1)
+
+    for hue in range(360):
+        i = hue % w
+        j = hue // w
+        app.stroke(" ", (hue, 100, 100), (hue, 100, 100))
+        app.point(i, j)
 
 app.run()

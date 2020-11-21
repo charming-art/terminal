@@ -4,59 +4,46 @@ import charming as app
 @app.setup
 def setup():
     app.full_screen()
+    app.frame_rate(2)
+    app.no_cursor()
+
+
+x = 0
 
 
 @app.draw
 def draw():
-    c = app.CColor('@', 200)
-    app.stroke('*')
-    app.fill(c)
+    global x
+    x += 1
+    t = app.get_frame_count() % 2
 
+    if t == 0:
+        app.background('@')
+    else:
+        app.background('+')
+
+    app.fill('0', app.YELLOW, app.RED)
+    app.stroke('1', app.GREEN, app.BLUE)
     app.rect(0, 0, 5, 5)
-    # app.point(1, 1)
 
-    if app.get_frame_count() > 2:
-        app.no_loop()
+    app.push()
+    app.no_fill()
+    app.translate(10, 0)
+    app.rect(0, 0, 5, 5)
+    app.pop()
+
+    app.push()
+    app.no_stroke()
+    app.translate(x, 8)
+    app.rect(0, 0, 5, 5)
+    app.pop()
+
+    app.push()
+    app.no_stroke()
+    app.no_fill()
+    app.translate(30, 0)
+    app.rect(0, 0, 5, 5)
+    app.pop()
 
 
 app.run()
-
-
-# import charming as app
-
-
-# @app.setup
-# def setup():
-#     app.size(110, 20)
-#     # app.full_screen()
-#     # app.no_cursor()
-#     # app.begin_log_frame_buffer()
-
-
-# x = 0
-# @app.draw
-# def draw():
-#     global x
-    
-#     # if x % 2 == 0:
-#     #     app.background('*')
-#     # else:
-#     #     app.background('-')
-#     app.background(' ')
-#     # app.text_size(app.BIG)
-#     # app.text('hello world', 0, 0)
-#     app.fill('0', app.YELLOW, app.RED)
-#     app.stroke('1', app.GREEN, app.BLUE)
-#     app.rect(x, 0, 10, 10)
-#     x += 1
-#     # app.no_loop()
-#     # if x >= 10:
-#     #     app.no_loop()
-
-# @app.window_resized
-# def window_resized():
-#     pass
-#     # app.no_loop()
-
-# app.run()
-
