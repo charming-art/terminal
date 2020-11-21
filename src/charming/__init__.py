@@ -141,7 +141,7 @@ from .time import month
 from .time import second
 from .time import year
 
-from .helpers import debug
+from .helpers import print
 
 from .constants import PI
 from .constants import HALF_PI

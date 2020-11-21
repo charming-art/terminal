@@ -194,7 +194,7 @@
 
 ## Helpers
 
-- [x] debug
+- [x] print
   
 ## Constants
 
