@@ -1,6 +1,6 @@
 import charming as app
 
-# app.no_check()
+app.no_check()
 app.full_screen()
 # app.arc(0, 0, 0, 0, 'a', 'b')
 # app.circle(0, 0, 'c')

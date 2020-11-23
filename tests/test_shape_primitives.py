@@ -12,7 +12,8 @@ app.fill('+', app.GREEN, app.BLUE)
 size = 12
 app.translate(size, size / 2)
 # app.no_stroke()
-# first line
+
+# first row
 app.point(0, 0)
 
 app.line(size, 0, size * 2, 0)
@@ -33,7 +34,7 @@ app.quad(
     size * 9, size - 5  # point4
 )
 
-# second line
+# second row
 
 app.ellipse(0, size * 2, size, size / 2)
 app.circle(size * 2, size * 2, size)
