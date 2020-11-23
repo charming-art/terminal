@@ -63,7 +63,8 @@ def triangle(x1, y1, x2, y2, x3, y3):
 )
 def rect(a, b, c, d):
     x1, y1, x2, y2, x3, y3, x4, y4 = get_bounding_rect_by_mode(
-        a, b, c, d, renderer.rect_mode)
+        a, b, c, d, renderer.rect_mode
+    )
     quad(x1, y1, x2, y2, x3, y3, x4, y4)
 
 
@@ -97,7 +98,8 @@ def point(x, y):
 )
 def arc(a, b, c, d, start, stop, mode=constants.OPEN):
     x1, y1, x2, y2, x3, y3, x4, y4 = get_bounding_rect_by_mode(
-        a, b, c, d, renderer.ellipse_mode)
+        a, b, c, d, renderer.ellipse_mode
+    )
 
     points = [Point(x1, y1), Point(x2, y2), Point(x3, y3), Point(x4, y4)]
     options = {

@@ -312,11 +312,24 @@ class Renderer(object):
             shape.primitive_type
         )
 
-        fragments_clipped = self._clipping(fragments)
+        fragments_clipped = self._clipping(
+            fragments,
+            shape.primitive_type
+        )
+
         self._fragment_processing(fragments_clipped)
 
     @logger.record('vertex processing')
-    def _vertex_processing(self, points, stroke_color, tint_color, is_tint_enabled, stroke_weight, transform_matrix_stack, primitive_type):
+    def _vertex_processing(
+        self,
+        points,
+        stroke_color,
+        tint_color,
+        is_tint_enabled,
+        stroke_weight,
+        transform_matrix_stack,
+        primitive_type
+    ):
         tm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         sm = Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         rotation = 0
@@ -361,7 +374,13 @@ class Renderer(object):
         return points
 
     @logger.record('primitive assembly')
-    def _primitive_assembly(self, vertices, primitive_type, close_mode, options):
+    def _primitive_assembly(
+        self,
+        vertices,
+        primitive_type,
+        close_mode,
+        options
+    ):
         # vertices
         if primitive_type == constants.POLYGON:
             if close_mode == constants.CLOSE:
@@ -501,7 +520,15 @@ class Renderer(object):
         return edges_list
 
     @logger.record('rasterizatioin')
-    def _rasterization(self, primitives, fill_color, tint_color, is_stroke_enabled, is_fill_enabled, primitive_type):
+    def _rasterization(
+        self,
+        primitives,
+        fill_color,
+        tint_color,
+        is_stroke_enabled,
+        is_fill_enabled,
+        primitive_type
+    ):
         fragments = []
 
         for edges in primitives:
@@ -543,16 +570,23 @@ class Renderer(object):
         return fragments
 
     @logger.record('clipping')
-    def _clipping(self, fragments):
+    def _clipping(self, fragments, primitive_type):
         fragments_clipped = []
         scale = 2 if self.mode == constants.DOUBLE else 1
+        need_wrap = primitive_type == constants.TEXT and self.mode == constants.DOUBLE
+
         for pixels in fragments:
             pixels_clipped = []
             for p in pixels:
                 p.x *= scale
                 if p.x >= 0 and p.x < self.width and p.y >= 0 and p.y < self.height:
+                    if need_wrap:
+                        ch_w = get_char_width(p.color.ch)
+                        if ch_w == 1:
+                            p.color.ch = p.color.ch + " "
                     pixels_clipped.append(p)
             fragments_clipped.append(pixels_clipped)
+
         return fragments_clipped
 
     @logger.record('fragment processing')
@@ -696,7 +730,15 @@ class Renderer(object):
 
         return pixels
 
-    def _rasterize_point(self, x, y, color, stroke_weight_x=0, stroke_weight_y=0, rotation=0):
+    def _rasterize_point(
+        self,
+        x,
+        y,
+        color,
+        stroke_weight_x=0,
+        stroke_weight_y=0,
+        rotation=0
+    ):
         if stroke_weight_x == 0 or stroke_weight_y == 0:
             return [Point(x, y, color)]
 
@@ -712,7 +754,18 @@ class Renderer(object):
         edges = self._vertices_to_edges(vertices)
         return self._scan_line_filling(edges, color)
 
-    def _discretize_arc(self, x0, y0, a, b, start, stop, color, rotation=0, mode=constants.CHORD):
+    def _discretize_arc(
+        self,
+        x0,
+        y0,
+        a,
+        b,
+        start,
+        stop,
+        color,
+        rotation=0,
+        mode=constants.CHORD
+    ):
         if a == 0 or b == 0:
             return [Point(x0, y0, color)]
 
@@ -1289,7 +1342,14 @@ else:
 
 class Shape(object):
 
-    def __init__(self, points=None, is_auto=True, primitive_type=constants.POLYGON, close_mode=constants.CLOSE, options=None):
+    def __init__(
+        self,
+        points=None,
+        is_auto=True,
+        primitive_type=constants.POLYGON,
+        close_mode=constants.CLOSE,
+        options=None
+    ):
         self.points = [] if points == None else points
         self.options = {} if options == None else options
         self.is_auto = is_auto
@@ -1322,7 +1382,16 @@ class Shape(object):
 
 class Point(object):
 
-    def __init__(self, x, y, color=None, weight_x=0, weight_y=0, rotation=0, type="normal"):
+    def __init__(
+        self,
+        x,
+        y,
+        color=None,
+        weight_x=0,
+        weight_y=0,
+        rotation=0,
+        type="normal"
+    ):
         self.x = x
         self.y = y
         self.weight_x = weight_x

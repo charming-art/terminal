@@ -1,11 +1,11 @@
 # Documation
 
+This is the current documation for Charming.After reading this, if you have problems with APIs, feel free to open issues or just wait for the outcoming full documation.
+
 ## Overview
 
 Charming implements most of Processing's APIs related to 2D, all of the supported API are list below.
 Currently the API reference of Charming is not detailed, you can take [Processing Documatation](https://processing.org/reference/) as a reference. And there are some basic [test samples](../tests/) you can take a look.
-
-After reading this, if you have problems with APIs, feel free to open issues or just wait for the outcoming full documation.
 
 ## Difference
 
@@ -399,7 +399,7 @@ Examples: [single mode](../tests/test_environment_single.py), [double mode](../t
 
 Examples: [mouse](../tests/test_event_mouse.py)
 
-####**** Key Code
+#### Key Code
 
 - TAB
 - ENTER
