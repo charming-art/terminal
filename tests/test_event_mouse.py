@@ -3,15 +3,17 @@ import charming as app
 
 @app.setup
 def setup():
-    app.size(10, 10)
+    app.size(30, 20)
+    app.no_cursor()
 
 
 @app.draw
 def draw():
-    pass
-    # app.background(' ')
+    app.background(' ')
     # if app.get_mouse_pressed():
-    #     app.point(0, 0)
+    #     app.background(bg=app.GREEN)
+    # else:
+    #     app.background(bg=app.YELLOW)
 
 
 @app.mouse_pressed

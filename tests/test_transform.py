@@ -29,7 +29,7 @@ with app.open_context():
     app.square(0, 0, 8)
 
 with app.open_context():
-    app.translate(70, 20)
+    app.translate(70, 22)
     app.shear_x(app.QUARTER_PI)
     app.shear_y(app.QUARTER_PI)
     app.square(0, 0, 8)

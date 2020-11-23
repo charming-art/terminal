@@ -1,21 +1,22 @@
 from . import constants
 from .core import Color
 from .app import renderer
-from .common import check_color
+from .common import color_check
 from .common import CColor
+from .common import params_check
 from .utils import lerp_color as utils_lerp_color
 from .utils import logger
 from .utils import map
 
 
-@check_color
-def stroke(ch=" ", fg=None, bg=None):
+@color_check
+def stroke(ch="*", fg=None, bg=None):
     renderer.is_stroke_enabled = True
     c = Color(ch, fg, bg)
     renderer.stroke_color = c
 
 
-@check_color
+@color_check
 def fill(ch=" ", fg=None, bg=None):
     renderer.is_fill_enabled = True
     c = Color(ch, fg, bg)
@@ -30,12 +31,17 @@ def no_fill():
     renderer.is_fill_enabled = False
 
 
-@check_color
+@color_check
 def background(ch=" ", fg=None, bg=None):
     c = Color(ch, fg, bg)
     renderer.background(c)
 
 
+@params_check(
+    CColor,
+    CColor,
+    (int, float)
+)
 def lerp_color(start, stop, amt):
     ch = _lerp_color_channels(start.ch, stop.ch, amt)
     fg = _lerp_color_channels(start.fg, stop.fg, amt)
@@ -44,6 +50,12 @@ def lerp_color(start, stop, amt):
     return c
 
 
+@params_check(
+    mode=int,
+    max1=(int, float),
+    max2=(int, float),
+    max3=(int, float),
+)
 def color_mode(mode=constants.ANSI, max1=None, max2=None, max3=None):
     Color.color_mode = mode
     if mode == constants.ANSI:

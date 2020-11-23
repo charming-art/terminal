@@ -31,6 +31,7 @@ class Sketch(object):
         self.frame_rate = 30
         self.is_loop = True
         self.is_draw = False
+        self.should_exit = False
         self.frame_count = 0
 
         self.key = None
@@ -43,6 +44,8 @@ class Sketch(object):
 
         self.has_setup_hook = False
         self.has_draw_hook = False
+
+        self._check_params = True
 
         self.hooks_map = {
             'setup': lambda: None,
@@ -97,14 +100,19 @@ class Sketch(object):
 
     @logger.record('loop')
     def _loop(self):
-        events = self.context.get_events()
-        self._handle_events(events)
-
+        # draw hook
         if self.is_loop or self.is_draw:
-            self.is_draw = False
+
             if self.has_draw_hook:
                 self._run_hook('draw')
 
+        # handle events
+        events = self.context.get_events()
+        self._handle_events(events)
+
+        # render
+        if self.is_loop or self.is_draw:
+            self.is_draw = False
             self.renderer.render()
             self.context.draw(
                 self.renderer.update_cells,
@@ -113,6 +121,8 @@ class Sketch(object):
 
             self.renderer.has_background_called = False
             self.frame_count += 1
+
+        return self.should_exit
 
     def _run_hook(self, key):
         hook = self.hooks_map[key]
@@ -1123,7 +1133,8 @@ else:
                 return self.window_width, self.window_height
 
         def close(self):
-            self._screen.keypad(0)
+            if self._screen:
+                self._screen.keypad(0)
             curses.nocbreak()
             curses.echo()
             curses.endwin()
@@ -1257,11 +1268,14 @@ else:
         def run(self, ms, callback):
             while True:
                 t1 = time.time()
-                callback()
-                t2 = time.time()
-                d = ms / 1000 - (t2 - t1)
-                if d > 0:
-                    time.sleep(d)
+                stop = callback()
+                if not stop:
+                    t2 = time.time()
+                    d = ms / 1000 - (t2 - t1)
+                    if d > 0:
+                        time.sleep(d)
+                else:
+                    break
 
         def stop(self):
             pass

@@ -1,15 +1,20 @@
+import types
+from contextlib import contextmanager
 from .app import sketch
 from .app import renderer
-from contextlib import contextmanager
+from .common import params_check
+
 
 state_stack = []
 
 
+@params_check(types.FunctionType)
 def setup(hook):
     sketch.has_setup_hook = True
     sketch.add_hook('setup', hook)
 
 
+@params_check(types.FunctionType)
 def draw(hook):
     sketch.has_draw_hook = True
     sketch.add_hook('draw', hook)
@@ -29,6 +34,10 @@ def loop():
 
 def redraw():
     sketch.is_draw = True
+
+
+def exit():
+    sketch.should_exit = True
 
 
 def push():

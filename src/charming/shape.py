@@ -5,6 +5,7 @@ from .core import Point
 from .core import Shape
 from .common import get_bounding_rect_by_mode
 from .common import add_on_return
+from .common import params_check
 
 
 _current_shape = None
@@ -15,39 +16,85 @@ _curve_tightness = 0
 
 
 #### primitives #####
-
-
 @add_on_return
+@params_check(
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+)
 def line(x1, y1, x2, y2):
     return Shape(points=[Point(x1, y1), Point(x2, y2)], close_mode=constants.OPEN)
 
 
 @add_on_return
+@params_check(
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+)
 def quad(x1, y1, x2, y2, x3, y3, x4, y4):
     return Shape(points=[Point(x1, y1), Point(x2, y2), Point(x3, y3), Point(x4, y4)])
 
 
 @add_on_return
+@params_check(
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float)
+)
 def triangle(x1, y1, x2, y2, x3, y3):
     return Shape(points=[Point(x1, y1), Point(x2, y2), Point(x3, y3)])
 
 
+@params_check(
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+)
 def rect(a, b, c, d):
     x1, y1, x2, y2, x3, y3, x4, y4 = get_bounding_rect_by_mode(
         a, b, c, d, renderer.rect_mode)
     quad(x1, y1, x2, y2, x3, y3, x4, y4)
 
 
+@params_check(
+    (int, float),
+    (int, float),
+    (int, float),
+)
 def square(x, y, extend):
     rect(x, y, extend, extend)
 
 
 @add_on_return
+@params_check(
+    (int, float),
+    (int, float),
+)
 def point(x, y):
     return Shape(points=[Point(x, y)], primitive_type=constants.POINTS)
 
 
 @add_on_return
+@params_check(
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    mode=int
+)
 def arc(a, b, c, d, start, stop, mode=constants.OPEN):
     x1, y1, x2, y2, x3, y3, x4, y4 = get_bounding_rect_by_mode(
         a, b, c, d, renderer.ellipse_mode)
@@ -61,16 +108,28 @@ def arc(a, b, c, d, start, stop, mode=constants.OPEN):
     return Shape(points=points, options=options, primitive_type=constants.ARC)
 
 
+@params_check(
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+)
 def ellipse(a, b, c, d):
     arc(a, b, c, d, 0, constants.TAU, constants.CHORD)
 
 
+@params_check(
+    (int, float),
+    (int, float),
+    (int, float),
+)
 def circle(x, y, extend):
     ellipse(x, y, extend, extend)
 
 #### vertex ####
 
 
+@params_check(primitive_type=int)
 def begin_shape(primitive_type=constants.POLYGON):
     global _current_shape
     global is_bezier
@@ -83,6 +142,7 @@ def begin_shape(primitive_type=constants.POLYGON):
 
 
 @add_on_return
+@params_check(close_mode=int)
 def end_shape(close_mode=constants.OPEN):
     global _current_shape
     _current_shape.close_mode = close_mode
@@ -95,6 +155,10 @@ def end_shape(close_mode=constants.OPEN):
 
 
 @contextmanager
+@params_check(
+    int,
+    int
+)
 def open_shape(primitive_type=constants.POLYGON, close_mode=constants.OPEN):
     begin_shape(primitive_type)
     yield
@@ -127,6 +191,10 @@ def open_contour():
     end_contour()
 
 
+@params_check(
+    (int, float),
+    (int, float)
+)
 def vertex(x, y):
     global _current_shape
     if is_contour:
@@ -136,6 +204,10 @@ def vertex(x, y):
     _current_shape.points.append(p)
 
 
+@params_check(
+    (int, float),
+    (int, float)
+)
 def curve_vertex(x, y):
     global _current_shape
     global is_curve
@@ -143,11 +215,22 @@ def curve_vertex(x, y):
     _current_shape.points.append(Point(x, y, type="curve"))
 
 
+@params_check(
+    (int, float)
+)
 def curve_tightness(v):
     global _curve_tightness
     _curve_tightness = v
 
 
+@params_check(
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+)
 def bezier_vertex(x2, y2, x3, y3, x4, y4):
     global is_bezier
     is_bezier = True
@@ -159,7 +242,16 @@ def bezier_vertex(x2, y2, x3, y3, x4, y4):
 
 #### curves #####
 
-
+@params_check(
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+)
 def curve(x1, y1, x2, y2, x3, y3, x4, y4):
     begin_shape()
     curve_vertex(x1, y1)
@@ -169,6 +261,13 @@ def curve(x1, y1, x2, y2, x3, y3, x4, y4):
     end_shape()
 
 
+@params_check(
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+)
 def curve_point(n1, n2, n3, n4, t):
     s = 1 - _curve_tightness
     t3 = t ** 3
@@ -182,6 +281,13 @@ def curve_point(n1, n2, n3, n4, t):
     return a * n1 + b * n2 + c * n3 + d * n4
 
 
+@params_check(
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+)
 def curve_tangent(n1, n2, n3, n4, t):
     s = 1 - _curve_tightness
     t3 = 3 * t ** 2
@@ -195,6 +301,16 @@ def curve_tangent(n1, n2, n3, n4, t):
     return a * n1 + b * n2 + c * n3 + d * n4
 
 
+@params_check(
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+)
 def bezier(x1, y1, x2, y2, x3, y3, x4, y4):
     begin_shape()
     vertex(x1, y1)
@@ -202,6 +318,13 @@ def bezier(x1, y1, x2, y2, x3, y3, x4, y4):
     end_shape()
 
 
+@params_check(
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+)
 def bezier_point(n1, n2, n3, n4, t):
     a = (1 - t) ** 3
     b = 3 * t * (1 - t) ** 2
@@ -210,6 +333,13 @@ def bezier_point(n1, n2, n3, n4, t):
     return a * n1 + b * n2 + c * n3 + d * n4
 
 
+@params_check(
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+    (int, float),
+)
 def bezier_tangent(n1, n2, n3, n4, t):
     a = -3 * (1 - t) ** 2
     b = 3 * (1 - t) ** 2 - 6 * t * (1 - t)
@@ -220,14 +350,18 @@ def bezier_tangent(n1, n2, n3, n4, t):
 
 #### attributes ####
 
-
+@params_check(int)
 def rect_mode(mode=constants.CORNER):
     renderer.rect_mode = mode
 
 
+@params_check(int)
 def ellipse_mode(mode=constants.CENTER):
     renderer.ellipse_mode = mode
 
 
+@params_check(
+    weight=(int, float)
+)
 def stroke_weight(weight=0):
-    renderer.stroke_weight = weight
+    renderer.stroke_weight = int(weight)

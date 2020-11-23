@@ -1,11 +1,12 @@
 import sys
 import copy
+from .app import renderer
 from .core import Color
 from .core import Image
-from .app import renderer
 from .common import get_bounding_rect_by_mode
 from .common import add_on_return
-from .common import check_color
+from .common import color_check
+from .common import params_check
 from .utils import logger
 from .globals import BROWSER
 
@@ -46,6 +47,13 @@ class CImage(object):
     __str__ = __repr__
 
 
+@params_check(
+    CImage,
+    (int, float),
+    (int, float),
+    c=(int, float),
+    d=(int, float)
+)
 @add_on_return
 def image(img, a, b, c=None, d=None):
     c = img.width if c == None else c
@@ -64,6 +72,7 @@ def image(img, a, b, c=None, d=None):
     return Image(img, x1, y1, w, h)
 
 
+@params_check(int)
 def image_mode(mode):
     renderer.image_mode = mode
 
@@ -72,7 +81,7 @@ def no_tint():
     renderer.is_tint_enabled = False
 
 
-@check_color
+@color_check
 def tint(ch=" ", fg=None, bg=None):
     renderer.is_tint_enabled = True
     c = Color(ch, fg, bg)
@@ -86,6 +95,7 @@ if sys.platform == BROWSER:
 else:
     from PIL import Image as PImage
 
+    @params_check(str)
     def load_image(src):
         image = PImage.open(src)
         w, h = image.size

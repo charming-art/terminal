@@ -57,10 +57,14 @@ def mouse_pressed():
 def key_typed():
     ''' Executes the code within draw() one time '''
     global loop
-    if loop:
-        app.no_loop()
-        loop = False
-    app.redraw()
+
+    if app.get_key() == "q":
+        app.exit()
+    else:
+        if loop:
+            app.no_loop()
+            loop = False
+        app.redraw()
 
 
 app.run()

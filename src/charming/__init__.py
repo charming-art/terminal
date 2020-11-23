@@ -7,6 +7,7 @@ from .structure import loop
 from .structure import push
 from .structure import pop
 from .structure import open_context
+from .structure import exit
 
 from .environment import frame_rate
 from .environment import size
@@ -142,6 +143,7 @@ from .time import second
 from .time import year
 
 from .helpers import print
+from .helpers import no_check
 
 from .constants import PI
 from .constants import HALF_PI

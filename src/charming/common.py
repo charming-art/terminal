@@ -1,14 +1,21 @@
 import functools
+from inspect import signature
 from . import constants
 from .core import Color
 from .app import renderer
 from .app import context
+from .app import sketch
 from .utils import logger
 
 
 class CColor(object):
 
     def __init__(self, ch=" ", fg=None, bg=None):
+        # check params
+        _check_ch(ch)
+        _check_color(fg, 'fg')
+        _check_color(bg, 'bg')
+
         self.ch = ch
         fg, bg = Color._preprocess_channels(fg, bg)
         self.fg = fg
@@ -25,9 +32,56 @@ class CColor(object):
     __str__ = __repr__
 
 
-def check_color(foo):
+def params_check(*check_args, **check_kw):
+
+    def decorator(foo):
+        if sketch._check_params:
+            sig = signature(foo)
+            bound_checks = sig.bind_partial(*check_args, **check_kw).arguments
+
+        @functools.wraps(foo)
+        def wrapped(*args, **kw):
+            if not sketch._check_params:
+                return foo(*args, **kw)
+
+            bound_values = sig.bind(*args, **kw)
+            for name, value in bound_values.arguments.items():
+                if name in bound_checks:
+                    check = bound_checks[name]
+                    is_more = True
+
+                    # check params
+                    if not isinstance(check, tuple):
+                        check = (check,)
+                        is_more = False
+
+                    result = False
+                    for c in check:
+                        if isinstance(value, c):
+                            result = True
+                            break
+
+                    # raise exception
+                    if not result:
+                        if is_more:
+                            msg = f'be one of {check}.'
+                        else:
+                            msg = f'be {check[0]}.'
+                        raise TypeError(f'Argument {name} must {msg}')
+
+            return foo(*args, **kw)
+
+        return wrapped
+
+    return decorator
+
+
+def color_check(foo):
     @functools.wraps(foo)
     def wrapped(ch=" ", fg=None, bg=None):
+        _check_ch(ch)
+        _check_color(fg, 'fg')
+        _check_color(bg, 'bg')
         if isinstance(ch, CColor):
             fg = ch.fg
             bg = ch.bg
@@ -38,17 +92,40 @@ def check_color(foo):
     return wrapped
 
 
-def capture_exception(foo):
-    @functools.wraps(foo)
-    def wrapped(*args, **kw):
-        try:
-            return foo(*args, **kw)
-        except Exception as e:
-            logger.debug(e)
-            context.close()
-            raise e
+def _check_ch(ch):
+    if not sketch._check_params:
+        return
 
-    return wrapped
+    if isinstance(ch, tuple):
+        if len(ch) != 2:
+            raise TypeError(
+                'Argument ch must be <class "tuple"> with length equals to 2'
+            )
+    elif not isinstance(ch, str) and not isinstance(ch, CColor):
+        raise TypeError(
+            'Argument ch must be one of (<class "str">, <class "CColor">).'
+        )
+
+
+def _check_color(color, name):
+    if not sketch._check_params:
+        return
+
+    if color == None:
+        return
+
+    if Color.color_mode == constants.ANSI:
+        if not isinstance(color, int) and not isinstance(color, float):
+            raise TypeError(
+                f'Argument {name} must be one of (<class "int">, <class "float">).')
+    else:
+        if not isinstance(color, tuple):
+            raise TypeError(f'Argument {name} must be <class "tuple">.')
+        else:
+            if len(color) != 1 and len(color) != 3:
+                raise TypeError(
+                    f'Argument {name} must be <class "tuple"> with length equals to 1 or 3.'
+                )
 
 
 def add_on_return(foo):

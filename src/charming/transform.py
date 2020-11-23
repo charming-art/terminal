@@ -1,8 +1,9 @@
 import functools
-from .app import renderer
 from math import sin
 from math import cos
 from math import tan
+from .app import renderer
+from .common import params_check
 from .utils import Matrix
 
 
@@ -15,6 +16,10 @@ def _push_on_return(foo):
 
 
 @_push_on_return
+@params_check(
+    (float, int),
+    (float, int)
+)
 def translate(tx, ty):
     '''
     x'    1 0 tx   x
@@ -30,6 +35,10 @@ def translate(tx, ty):
 
 
 @_push_on_return
+@params_check(
+    (float, int),
+    sy=(float, int)
+)
 def scale(sx, sy=None):
     '''
     x'   sx 0  0   x
@@ -46,6 +55,7 @@ def scale(sx, sy=None):
 
 
 @_push_on_return
+@params_check((float, int))
 def rotate(x):
     '''
     x'   cosx -sinx 0   x
@@ -61,6 +71,7 @@ def rotate(x):
 
 
 @_push_on_return
+@params_check((float, int))
 def shear_x(x):
     '''
     x'   1 cotx 0   x
@@ -76,6 +87,7 @@ def shear_x(x):
 
 
 @_push_on_return
+@params_check((float, int))
 def shear_y(x):
     '''
     x'   1    0 0   x

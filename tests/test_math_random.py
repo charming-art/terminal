@@ -45,7 +45,6 @@ def draw():
         app.stroke('*', bg=app.RED)
         x = app.random_gaussian() * 8
         y = app.random_gaussian() * 3
-        app.debug([x, y])
         app.point(x, y)
 
     # noise position

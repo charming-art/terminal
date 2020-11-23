@@ -30,7 +30,7 @@ def draw():
     if app.get_key_pressed():
         app.text(msg, 0, 0)
     else:
-        hint = 'Pressed any keys.' if len(msg) == 0 else f'Keys:{msg}'
+        hint = 'Input and press Enter.' if len(msg) == 0 else f'Keys:{msg}'
         app.text(hint, 0, 0)
 
 

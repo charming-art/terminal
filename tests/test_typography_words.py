@@ -1,6 +1,7 @@
 import charming as app
 
 app.full_screen()
+app.no_cursor()
 app.stroke(fg=app.YELLOW, bg=app.RED)
 text = "hello"
 
