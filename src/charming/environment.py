@@ -5,6 +5,7 @@ from .app import renderer
 from .common import params_check
 
 
+@params_check(int)
 def frame_rate(frame_rate):
     sketch.frame_rate = frame_rate
 

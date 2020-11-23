@@ -46,7 +46,6 @@ class Sketch(object):
         self.has_draw_hook = False
 
         self._check_params = True
-
         self.hooks_map = {
             'setup': lambda: None,
             'draw': lambda: None,
@@ -100,9 +99,11 @@ class Sketch(object):
 
     @logger.record('loop')
     def _loop(self):
-        # draw hook
-        if self.is_loop or self.is_draw:
+        _is_draw = self.is_draw
+        _is_loop = self.is_loop
 
+        # draw hook
+        if _is_loop or _is_draw:
             if self.has_draw_hook:
                 self._run_hook('draw')
 
@@ -111,16 +112,18 @@ class Sketch(object):
         self._handle_events(events)
 
         # render
-        if self.is_loop or self.is_draw:
-            self.is_draw = False
+        if _is_loop or _is_draw:
             self.renderer.render()
             self.context.draw(
                 self.renderer.update_cells,
-                self.renderer.mode
+                self.renderer.mode,
             )
 
             self.renderer.has_background_called = False
             self.frame_count += 1
+
+        if _is_draw:
+            self.is_draw = False
 
         return self.should_exit
 
@@ -137,14 +140,14 @@ class Sketch(object):
                 self.mouse_x = e.x
                 self.mouse_y = e.y
                 self.mouse_button = e.button_type
-                if e.event_type == "released":
-                    self.is_mouse_pressed = False
-                    self._run_hook('mouse_released')
-                elif e.event_type == "clicked":
-                    self._run_hook('mouse_clicked')
-                elif e.event_type == "pressed":
+                if e.event_type == "pressed":
                     self.is_mouse_pressed = True
                     self._run_hook('mouse_pressed')
+                elif e.event_type == "clicked":
+                    self._run_hook('mouse_clicked')
+                elif e.event_type == "released":
+                    self.is_mouse_pressed = False
+                    self._run_hook('mouse_released')
             elif e.type == "window":
                 if e.event_type == "start":
                     self._run_hook('window_resized')
