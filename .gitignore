@@ -9,3 +9,5 @@ venv
 index.html
 lib/
 docs/_build
+example.py
+avatar.png
