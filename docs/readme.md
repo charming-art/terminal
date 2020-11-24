@@ -1,6 +1,6 @@
 # Documentation
 
-This is a rough documentation for Charming. If you still have problems with APIs after reading this documentation, feel free to open any issues or just wait for the outcoming detailed documentation.
+This is a rough documentation for Charming. If you still have problems with APIs after reading this documentation, feel free to [open any issues](https://github.com/charming-art/charming/issues) or just wait for the outcoming detailed documentation.
 
 ## Overview
 
@@ -13,11 +13,11 @@ Before you start reading API reference, it will be very helpful if you get to kn
 
 ### Register Hooks
 
-In Processing, you don't have to import all the APIs and it will automatically run hooks such as `setup`, `draw`, `mouseClicked`, etc. But In Charming, you have import all the APIs at first and use decorators to register hooks.
+In Processing, you don't have to import all the APIs and it will automatically run hooks such as `setup`, `draw`, `mouseClicked`, etc. But In Charming, you have to import all the APIs at first and use **decorators** to register hooks.
 
 ```py
-# Import all the APIs and bind to a namespce.
-# You can name it whaterver you like, here name it as app.
+# Import all the APIs and bind them to a namespce.
+# You can name it whaterver you like, here name it as 'app'.
 import charming as app
 
 # Register setup hook which will excute only once.
@@ -36,21 +36,19 @@ def draw():
     app.rect(x, 0, 10, 15)
     x += speed
 
-# Register mouse_clicked hook
-# which will excute when a mouse click event be triggered.
+# Register mouse_clicked hook which will excute when a mouse click event be triggered.
 @app.mouse_clicked
 def mouse_clicked():
     global speed
     speed += 1
 
-# It is very import to excute run,
-# otherwise nothing magic wll happen.
+# It is very import to excute run, otherwise nothing magic wll happen.
 app.run()
 ```
 
 ### Different Color System
 
-In Processing, you can use three or four number `(r, g, b)` or `(r, g, b, a)` to represent a color or take them as parameters to color-related APIs, such as `fill(100, 34, 0, 100)` or `stroke(0, 0, 0). But in Charming, you need three channels to represet a color or give them to color-related APIs:
+In Processing, you can use three or four number `(r, g, b)` or `(r, g, b, a)` to represent a color or take them as parameters to color-related APIs, such as `fill(100, 34, 0, 100)` or `stroke(0, 0, 0)`. But in Charming, you need three different channels to represet a color or give them to color-related APIs:
 
 - `ch`: character, ascii code or unicode (including cjk characters or emoji).
 - `fg`: foreground color, a number(0 ~ 255 by default) if the color mode is ANSI, a tuple with length equaling to 1or 3 if the color mode is HSB or RGB.
@@ -74,7 +72,7 @@ app.background(c)
 
 ### APIs Names
 
-All the APIs in Processing are like `aaaBBB`, but in Charming they are like `aaa_bbb`. For example, `ellipse_mode` in Charming is equals to `ellipseMode` in Processing and `begin_shape` is equals to `beginShape`.
+All the APIs in Processing are like `aaaBbb`, but in Charming they are like `aaa_bbb`. For example, `ellipse_mode` in Charming equals to `ellipseMode` in Processing and `begin_shape` equals to `beginShape`.
 
 ### Global Variables
 
@@ -180,13 +178,13 @@ You can also use `open_context` instead of `push` and `pop` and `open_contour` i
 
 ### Color
 
+- CColor()
 - background()
 - fill()
 - no_fill()
 - no_stroke()
 - stroke()
 - color_mode()
-- CColor
 - lerp_color()
 
 *Examples*: [color](../tests/test_color.py), [ansi mode](../tests/test_color_mode_ansi.py), [rgb mode](../tests/test_color_mode_rgb.py), [hsb mode](../tests/test_color_mode_hsb.py)
@@ -246,7 +244,7 @@ You can also use `open_context` instead of `push` and `pop` and `open_contour` i
 
 ### Math
 
-- CVector
+- CVector()
 
 #### Calculation
 
@@ -289,7 +287,7 @@ You can also use `open_context` instead of `push` and `pop` and `open_contour` i
 - random_gaussian()
 - random_seed()
 
-*Examples*: [random](../tests/test_math.random.py)
+*Examples*: [random](../tests/test_math_random.py)
 
 #### Typography
 
