@@ -1,5 +1,7 @@
 # Charming: Character Terminal Art Programing
 
+[toc]
+
 ## Overview
 
 Charming is a creative coding language designed for **interactive character terminal art**.
@@ -39,13 +41,13 @@ With the appearence of [Unicode](https://en.wikipedia.org/wiki/Unicode) (includi
 
 Charming is born for Character Terminal Art, so only a small part of APIs are related to ASCII Art. Its power focus on drawing some basic shapes such as line, rectangle, circle, bezier curve, etc. or make some transformations including rotate, translate, scale and shear.
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/primitives.png" height="192px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/transforms.png" height="192px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/vertex.png" height="192px">
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/primitives.png" height="185px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/transforms.png" height="185px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/vertex.png" height="185px">
 
 On the other hand, being powerful usually means complex usage and steep leanrning curve because of its flexibility.
 
 But thanks to Processing and P5js, they have already introduced a intutive way of coding to the public. Charming makes full use of that and provide similar APIs with them, so you can code in Charming just like code in Processnig or P5js if you are familiar with them.
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/code1.png" height="220px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/code2.png" height="220px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/code3.png" height="200px">
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/code1.png" height="250px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/code2.png" height="250px" >
 
 ### Have fun and to be present
 
@@ -190,7 +192,7 @@ rect(0, 0, 100, 100);
 
 #### Basic Use
 
-But things are very different in Charming. In Charming, a color consists of three channels: `(ch, fg, bg)`.
+Colors are very different in Charming. In Charming, a color consists of three channels: `(ch, fg, bg)`.
 
 - `ch`: character, ascii code or unicode (including cjk characters or emoji).
 - `fg`: foreground color, a number(0 ~ 255 by default) if the color mode is ANSI, a tuple with length equaling to 1or 3 if the color mode is HSB or RGB.
