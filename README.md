@@ -21,9 +21,7 @@ With [Open Frameworks](https://github.com/openframeworks/openFrameworks), [Proce
 
 It seems like we gradully forget an old and pure form of art which was born with the computer and programer -- [ASCII Art](https://en.wikipedia.org/wiki/ASCII_art), pictures pieced together from the 95 printable (from a total of 128) characters defined by the ASCII Standard. There are some examples from [textfancy](https://textfancy.com/gallery/).
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/baby.png" height="192px">
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/spiderman.png" height="192px">
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/batman.png" height="192px">
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/baby.png" height="192px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/spiderman.png" height="192px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/batman.png" height="192px">
 
 Back in 1970s and early 1980s, computers were not as accessible as now, neverthless to create sophisticated visual effects. But at that time, ASCII Art had showed up and somehow meant to belong to the programmers of that genertion who mostly programmed in a text-based terminal day and night, so ASCII Art may be the best way to show the original charm and romance of computers and of programmers.
 
@@ -99,7 +97,7 @@ In Processing, you needn't import APIs or call an extra method to run the sketch
 ```processing
 /* processing code: static mode */
 
-size(300, 200);
+size(900, 300);
 rect(0, 0, 100, 150);
 ```
 
@@ -111,7 +109,7 @@ rect(0, 0, 100, 150);
 # import APIs
 import charming as app
 
-app.size(30, 20)
+app.full_screen()
 app.rect(0, 0, 10, 10)
 
 # run sketch
@@ -126,7 +124,7 @@ Processing will automatically run the `setup` and `draw` functions you defined, 
 /* processing code: active mode */
 
 void setup() {
-    size(300, 200);
+    size(900, 300);
 }
 
 int x = 0;
@@ -138,7 +136,7 @@ void draw() {
 }
 ```
 
-![processnig activestructure](https://raw.githubusercontent.com/charming-art/public-files/master/processing_structure_active.gif)
+![processnig active structure](https://raw.githubusercontent.com/charming-art/public-files/master/processing_structure_active.gif)
 
 ```py
 ''' charming code: active mode '''
@@ -172,7 +170,7 @@ In Processing, a color normally has three of four channels: `(r, g, b)` or `(r,g
 ```processing
 /* processing color*/
 
-size(300, 200);
+size(900, 300);
 stroke(255, 0, 0);
 fill(255, 255, 0);
 rect(0, 0, 100, 100);
