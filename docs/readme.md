@@ -221,6 +221,7 @@ You can also use `open_context` instead of `push` and `pop` and `open_contour` i
 - get_pcursorX()
 - get_pcursorY()
 - cursor_moved()
+- cursor_pressed()
 - get_cursor_moved()
 
 *Examples*: [cursor](../tests/test_event_cursor.py)

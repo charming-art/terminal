@@ -36,6 +36,8 @@ def angle_between(x1, y1, x2, y2):
     '''angle from (x1, y1) to (x2, y2)'''
     dot = x1 * x2 + y1 * y2
     dist = math.sqrt(x1 ** 2 + y1 ** 2) * math.sqrt(x2 ** 2 + y2 ** 2)
+    if dist == 0:
+        return 0
     theta = math.acos(dot / dist)
 
     if to_left(0, 0, x1, y1, x2, y2):

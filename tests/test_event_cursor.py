@@ -18,11 +18,11 @@ def draw():
         app.text('Pressed up/right/down/left arrow.', 0, 0)
 
 
-# You can use cursor_moved hooks instead of
+# You can use cursor_pressed hooks instead of
 # mouse_moved or mouse_dragged to do some effects.
 
-@app.cursor_moved
-def cursor_moved():
+@app.cursor_pressed
+def cursor_pressed():
     x = app.get_cursor_x()
     y = app.get_cursor_y()
     px = app.get_pcursor_x()

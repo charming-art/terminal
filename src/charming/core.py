@@ -56,7 +56,8 @@ class Sketch(object):
             'key_typed': lambda: None,
             'key_released': lambda: None,
             'window_resized': lambda: None,
-            'cursor_moved': lambda: None
+            'cursor_moved': lambda: None,
+            'cursor_pressed': lambda: None,
         }
 
         self.cursor_moved = False
@@ -166,15 +167,19 @@ class Sketch(object):
                     if self.key == constants.CODED:
                         if self.key_code == constants.UP:
                             self.context.move_up()
+                            self._run_hook('cursor_moved')
                             self.cursor_moved = True
                         elif self.key_code == constants.DOWN:
                             self.context.move_down()
+                            self._run_hook('cursor_moved')
                             self.cursor_moved = True
                         elif self.key_code == constants.LEFT:
                             self.context.move_left()
+                            self._run_hook('cursor_moved')
                             self.cursor_moved = True
                         elif self.key_code == constants.RIGHT:
                             self.context.move_right()
+                            self._run_hook('cursor_moved')
                             self.cursor_moved = True
                         else:
                             self.cursor_moved = False
@@ -187,7 +192,7 @@ class Sketch(object):
                     self.cursor_moved = False
 
         if self.context.key_pressed and self.cursor_moved:
-            self._run_hook('cursor_moved')
+            self._run_hook('cursor_pressed')
 
         if self.context.key_pressed and not pressed:
             self._run_hook('key_pressed')

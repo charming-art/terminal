@@ -64,7 +64,8 @@ With the appearence of [Unicode](https://en.wikipedia.org/wiki/Unicode) (includi
 
 Charming is born for Character Terminal Art, so only a small part of APIs are related to ASCII Art. Its power focus on drawing some basic shapes such as line, rectangle, circle, bezier curve, etc. or make some transformations including rotate, translate, scale and shear.
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/primitives.png" height="165px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/transforms.png" height="165px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/vertex.png" height="165px">
+<div style="display: flex; justify-content: space-between">
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/primitives.png" height="165px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/transforms.png" height="165px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/vertex.png" height="165px"></div>
 
 On the other hand, being powerful usually means complex usage and steep leanrning curve because of its flexibility.
 

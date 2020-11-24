@@ -41,6 +41,7 @@ from .event import get_cursor_x
 from .event import get_cursor_y
 from .event import cursor_moved
 from .event import get_cursor_moved
+from .event import cursor_pressed
 
 from .cmath import abs
 from .cmath import ceil
