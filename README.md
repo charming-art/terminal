@@ -1,6 +1,29 @@
 # Charming: Character Terminal Art Programing
 
-[toc]
+- [Charming: Character Terminal Art Programing](#charming-character-terminal-art-programing)
+  - [Overview](#overview)
+  - [Why is it](#why-is-it)
+    - [Renaissance of ASCII Art](#renaissance-of-ascii-art)
+    - [Powerful and intuitive](#powerful-and-intuitive)
+    - [Have fun and to be present](#have-fun-and-to-be-present)
+  - [Get started](#get-started)
+  - [Features](#features)
+    - [Structure](#structure)
+      - [Static Mode](#static-mode)
+      - [Active Mode](#active-mode)
+    - [Color](#color)
+      - [Basic Use](#basic-use)
+      - [RGB Color Mode](#rgb-color-mode)
+      - [HSB Color Mode](#hsb-color-mode)
+      - [Double mode](#double-mode)
+    - [Typography](#typography)
+      - [Normal Size](#normal-size)
+      - [Big Size](#big-size)
+      - [Large Size](#large-size)
+    - [Image](#image)
+    - [Events](#events)
+    - [Helpers](#helpers)
+  - [Future Works](#future-works)
 
 ## Overview
 
@@ -41,7 +64,7 @@ With the appearence of [Unicode](https://en.wikipedia.org/wiki/Unicode) (includi
 
 Charming is born for Character Terminal Art, so only a small part of APIs are related to ASCII Art. Its power focus on drawing some basic shapes such as line, rectangle, circle, bezier curve, etc. or make some transformations including rotate, translate, scale and shear.
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/primitives.png" height="185px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/transforms.png" height="185px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/vertex.png" height="185px">
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/primitives.png" height="165px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/transforms.png" height="165px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/vertex.png" height="165px">
 
 On the other hand, being powerful usually means complex usage and steep leanrning curve because of its flexibility.
 
