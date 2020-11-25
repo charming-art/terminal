@@ -218,7 +218,9 @@ if sys.platform == BROWSER:
 else:
     import logging
     import time
-    import matplotlib.pyplot as plt
+
+    if DEBUG_MODE:
+        import matplotlib.pyplot as plt
 
     logging.basicConfig(filename='charming.log', level=logging.DEBUG)
 

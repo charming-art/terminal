@@ -105,7 +105,7 @@ It is very easy to get started with Charming as long as you install [Python3.6+]
 First of all, open an terminal and excute the command as below.
 
 ```bash
-pip3 install charming
+pip3 install charming --user
 ```
 
 Then, create a file named `sketch.py` and copy the code to it and save.
