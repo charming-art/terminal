@@ -48,7 +48,7 @@ It seems like we gradully forget an old and pure form of art which was born with
 
 <img src="https://raw.githubusercontent.com/charming-art/public-files/master/baby.png" height="192px" >&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/spiderman.png" height="192px" >&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/batman.png" height="192px">
 
-Back in 1970s and early 1980s, computers were not as accessible as now, neverthless to create sophisticated visual effects. But at that time, ASCII Art had showed up and somehow meant to belong to the programmers of that genertion who mostly programmed in a text-based terminal day and night, so ASCII Art may be the best way to show the original charm and romance of computers and of programmers.
+Back in 1970s and early 1980s, computers were not as accessible as now, neverthless to create sophisticated visual effects. But at that time, ASCII Art had showed up and somehow meant to belong to the programmers of that genertion who mostly programmed in a text-based terminal day and night, so **ASCII Art may be the best way to show the original charm and romance of computers and of programmers.**
 
 For example, it will be very romatic if you using snake-eating to write a poem. Here is a example created by Charming that you move the snake, eat the food and finally you can get the poem: [This Is Just To Say](https://www.poetryfoundation.org/poems/56159/this-is-just-to-say)
 
@@ -63,6 +63,14 @@ Charming is not the first tool which can make ANSCII Art and will certainly not 
 On the one hand, we are not in 1970s or early 1980s after all, it will be very awkward if we limit ASCII Art to ASCII code and images.
 
 With the appearence of [Unicode](https://en.wikipedia.org/wiki/Unicode) (including [CJK characters](https://en.wikipedia.org/wiki/CJK_characters) and [Emoji](https://en.wikipedia.org/wiki/Emoji)) and the concept of [Generative Art](http://taggedwiki.zubiaga.org/new_content/0a0de87b1c9b14a3530beac00afcbea2), it is time for us to expand the boundaries of ASCII Art to **Character Terminal Art**, which means using characters(not just ASCII characters) and algorithms to create awsome artworks in the terminal.
+
+**One of the biggest benefit for characters is that we can encoding more information for our artworks besides color, which means we can easily express more than traditional styles.**
+
+For instance, the main task for data visulization is to convey information, and colors do a great job on it. But if we extend the concept of color to include character, the character definitely can give extra information which will make the visulization more expressive and impressive.
+
+There is a bar chart for mock data about covid-19 virus created by Charming. Instead of only using green for the curve, red for the confirm, gray for the dead, it also use 🌈 to express happiness and hopeness, use 🦠 to strengthen the warning, and use ☠️ to express sadness and fear. They are indeed make this chart vivid and unforgettable.
+
+![charm](https://raw.githubusercontent.com/charming-art/public-files/master/barchart.png)
 
 Charming is born for Character Terminal Art, so only a small part of APIs are related to ASCII Art. Its power focus on drawing some basic shapes such as line, rectangle, circle, bezier curve, etc. or make some transformations including rotate, translate, scale and shear.
 
