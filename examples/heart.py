@@ -7,21 +7,20 @@ def setup():
     app.rect_mode(app.RADIUS)
     app.ellipse_mode(app.RADIUS)
     app.no_cursor()
+    app.frame_rate(10)
 
 
 @app.draw
 def draw():
     size = 8
-    x = app.millis() / 100
+    x = app.get_frame_count() / 2
     n1 = easing(x, size)
     n2 = easing(x + app.PI, size)
-    s = beat()
 
     app.background(" ")
     app.no_stroke()
     app.translate(app.get_width() / 2, app.get_height() / 2)
     app.rotate(app.QUARTER_PI)
-    app.scale(s)
 
     app.fill('💘')
     app.square(0, 0, size)
@@ -40,13 +39,6 @@ def easing(x, scale=1):
         return app.cos(x + app.PI) * scale
     else:
         return scale
-
-
-def beat():
-    period = 6000
-    intensity = 5
-    t = app.atan(app.sin((app.millis() % period) / period * 2 * app.PI) * intensity) / app.PI + 0.5
-    return app.sin(app.PI * t) + 0.5
 
 
 app.run()

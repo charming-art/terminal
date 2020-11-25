@@ -33,6 +33,8 @@ It currently written in Python and provides Processing-like APIs, which aims to 
 
 [Documentation](./docs/readme.md) | [Examples](./examples) | [Tests Samples](./tests)
 
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_heart.gif" height="192px" >&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_barchart.png" height="192px" >&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_snake.gif" height="192px">
+
 ## Why is it
 
 ### Renaissance of ASCII Art
@@ -88,7 +90,9 @@ With the help of artificial intelligence, computer science and software engineer
 
 Just like most of us do not play basketball for career purpose, we should consider programming or programming in Python as a new kind of hobby. Because life can be without machine learning, web crawler or automated operations, but it can not be without creating and sharing things to have fun and to be present.
 
-I hope not only does Charming make you love programming for fun or show a magic world to you, but also make this journey relaxing and memorable.
+**With the help of Charming, you print something really awsome to the terminal when you are learning Python instead of just print something boring and stupid log information.**
+
+In that case, I hope not only does Charming make you love programming for fun or show a magic world to you, but also make this journey relaxing and memorable.
 
 ![charm](https://raw.githubusercontent.com/charming-art/public-files/master/charm.png)
 
