@@ -58,7 +58,7 @@ def draw():
 app.run()
 ```
 
-And you will get this in your lock terminal.
+And you will get this in your local terminal.
 
 ![welcome](https://raw.githubusercontent.com/charming-art/public-files/master/welcome.gif)
 
