@@ -33,7 +33,7 @@ It currently written in Python and provides Processing-like APIs, which aims to 
 
 [Documentation](./docs/readme.md) | [Examples](./examples) | [Tests Samples](./tests)
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_heart.gif" height="192px" >&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_barchart.png" height="192px" >&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_snake.gif" height="192px">
+<a href="./examples/heart.py"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_heart.gif" height="192px" ></a>&emsp;<a href="./examples/barchart.py"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_barchart.png" height="192px" ></a>&emsp;<a href="./examples/snake.py"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_snake.gif" height="192px"></a>
 
 ## Why is it
 
