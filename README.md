@@ -54,7 +54,7 @@ Back in 1970s and early 1980s, computers were not as accessible as now, neverthl
 
 For example, it will be very romatic if you using snake-eating to write a poem. Here is a example created by Charming that you move the snake, eat the food and finally you can get the poem: [This Is Just To Say](https://www.poetryfoundation.org/poems/56159/this-is-just-to-say)
 
-![charm](https://raw.githubusercontent.com/charming-art/public-files/master/snake.gif)
+<a href="./examples/snake.py">![charm](https://raw.githubusercontent.com/charming-art/public-files/master/snake.gif)</a>
 
 So we have to make the ASCII Art prosperous again.
 
@@ -72,11 +72,11 @@ For instance, the main task for data visulization is to convey information, and 
 
 There is a bar chart for mock data about covid-19 virus created by Charming. Instead of only using green for the curve, red for the confirm, gray for the dead, it also use 🌈 to express happiness and hopeness, use 🦠 to strengthen the warning, and use ☠️ to express sadness and fear. They are indeed make this chart vivid and unforgettable.
 
-![charm](https://raw.githubusercontent.com/charming-art/public-files/master/barchart.png)
+<a href="./examples/barchart.py">![charm](https://raw.githubusercontent.com/charming-art/public-files/master/barchart.png)</a>
 
 Charming is born for Character Terminal Art, so only a small part of APIs are related to ASCII Art. Its power focus on drawing some basic shapes such as line, rectangle, circle, bezier curve, etc. or make some transformations including rotate, translate, scale and shear.
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/primitives.png" height="165px" >&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/transforms.png" height="165px" >&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/vertex.png" height="165px">
+<a href="./tests/test_shape_primitives.py"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/primitives.png" height="165px" ></a>&emsp;<a href="./tests/test_transform.py"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/transforms.png" height="165px" ></a>&emsp;<a href="./tests/test_shape_vertex.py"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/vertex.png" height="165px"></a>
 
 On the other hand, being powerful usually means complex usage and steep leanrning curve because of its flexibility.
 
