@@ -31,6 +31,37 @@ Charming is a creative coding language designed for **interactive character term
 
 It currently written in Python and provides Processing-like APIs, which aims to help artists, designers, educators, beginners, and anyone else to easily create **ascii art animation**,  **character-style generative art**, **terminal game application** and **expressive data visualization**.
 
+Generally speaking, Charming allows you write simple code like this.
+
+```py
+import charming as app
+
+x = 0
+
+
+@app.setup
+def setup():
+    app.full_screen()
+    app.no_cursor()
+    app.stroke('@', app.YELLOW, app.RED)
+    app.fill('+', app.GREEN, app.BLUE)
+
+
+@app.draw
+def draw():
+    global x
+    app.background(' ')
+    app.rect(x, 0, 10, 10)
+    x += 1
+
+
+app.run()
+```
+
+And you will get this in your lock terminal.
+
+![welcome](https://raw.githubusercontent.com/charming-art/public-files/master/welcome.gif)
+
 [Documentation](./docs/readme.md) | [Examples](./examples) | [Tests Samples](./tests)
 
 <a href="./examples/heart.py"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_heart.gif" height="192px" ></a>&emsp;<a href="./examples/barchart.py"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_barchart.png" height="192px" ></a>&emsp;<a href="./examples/snake.py"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_snake.gif" height="192px"></a>
@@ -542,6 +573,7 @@ DEBUG:root:123, ['h', 2], {'name': 'charming', 'awesome': True}, {'key': (0, 1)}
 
 ## Future Works
 
+- **More accessible**: As soon as Charming can run in modern browsers, there will be a online playground to try it online and may be a platform to create, sharing Charming sketches with others like [OpenProcessing](https://www.openprocessing.org/).
 - **Tests and Bug Fix**: There may be some bugs because Charming have just been simply tested, so one of future works is to test and fix bugs.
 - **Improve Performance**: Now both of the frontend and the backend of Charming are implemented in Python, there's a plan to rewrite backend in Rust or C++ and refactor some rendering algorithms such as polygon filling to achieve a better performance.
 - **API Enhancement**: Add more cool APIs according to the feature of terminal and character.
