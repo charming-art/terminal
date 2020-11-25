@@ -46,13 +46,15 @@ With [Open Frameworks](https://github.com/openframeworks/openFrameworks), [Proce
 
 It seems like we gradully forget an old and pure form of art which was born with the computer and programer -- [ASCII Art](https://en.wikipedia.org/wiki/ASCII_art), pictures pieced together from the 95 printable (from a total of 128) characters defined by the ASCII Standard. There are some examples from [textfancy](https://textfancy.com/gallery/).
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/baby.png" height="192px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/spiderman.png" height="192px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/batman.png" height="192px">
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/baby.png" height="192px" >&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/spiderman.png" height="192px" >&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/batman.png" height="192px">
 
 Back in 1970s and early 1980s, computers were not as accessible as now, neverthless to create sophisticated visual effects. But at that time, ASCII Art had showed up and somehow meant to belong to the programmers of that genertion who mostly programmed in a text-based terminal day and night, so ASCII Art may be the best way to show the original charm and romance of computers and of programmers.
 
-![charm](https://raw.githubusercontent.com/charming-art/public-files/master/charm.png)
+For example, it will be very romatic if you using snake-eating to write a poem. Here is a example created by Charming that you move the snake, eat the food and finally you can get the poem: [This Is Just To Say](https://www.poetryfoundation.org/poems/56159/this-is-just-to-say)
 
-So it is tme for us to revive the ASCII Art.
+![charm](https://raw.githubusercontent.com/charming-art/public-files/master/snake.gif)
+
+So we have to make the ASCII Art prosperous again.
 
 ### Powerful and intuitive
 
@@ -64,14 +66,13 @@ With the appearence of [Unicode](https://en.wikipedia.org/wiki/Unicode) (includi
 
 Charming is born for Character Terminal Art, so only a small part of APIs are related to ASCII Art. Its power focus on drawing some basic shapes such as line, rectangle, circle, bezier curve, etc. or make some transformations including rotate, translate, scale and shear.
 
-<div style="display: flex; justify-content: space-between">
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/primitives.png" height="165px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/transforms.png" height="165px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/vertex.png" height="165px"></div>
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/primitives.png" height="165px" >&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/transforms.png" height="165px" >&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/vertex.png" height="165px">
 
 On the other hand, being powerful usually means complex usage and steep leanrning curve because of its flexibility.
 
 But thanks to Processing and P5js, they have already introduced a intutive way of coding to the public. Charming makes full use of that and provide similar APIs with them, so you can code in Charming just like code in Processnig or P5js if you are familiar with them.
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/code1.png" height="250px" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/code2.png" height="250px" >
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/code1.png" height="250px" >&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/code2.png" height="250px" >
 
 ### Have fun and to be present
 
@@ -80,6 +81,8 @@ With the help of artificial intelligence, computer science and software engineer
 Just like most of us do not play basketball for career purpose, we should consider programming or programming in Python as a new kind of hobby. Because life can be without machine learning, web crawler or automated operations, but it can not be without creating and sharing things to have fun and to be present.
 
 I hope not only does Charming make you love programming for fun or show a magic world to you, but also make this journey relaxing and memorable.
+
+![charm](https://raw.githubusercontent.com/charming-art/public-files/master/charm.png)
 
 ## Get started
 
