@@ -1,6 +1,6 @@
 # Documentation
 
-This is a rough documentation for Charming. If you still have problems with APIs after reading this documentation, feel free to [open any issues](https://github.com/charming-art/charming/issues) or just wait for the outcoming detailed documentation.
+This is a rough documentation for Charming. If you still have problems with APIs after reading this documentation, feel free to [open any issues](https://github.com/charming-art/charming/issues) or just wait for the upcoming detailed documentation.
 
 ## Overview
 
@@ -16,11 +16,11 @@ Before you start reading API reference, it will be very helpful if you get to kn
 In Processing, you don't have to import all the APIs and it will automatically run hooks such as `setup`, `draw`, `mouseClicked`, etc. But In Charming, you have to import all the APIs at first and use **decorators** to register hooks.
 
 ```py
-# Import all the APIs and bind them to a namespce.
-# You can name it whaterver you like, here name it as 'app'.
+# Import all the APIs and bind them to a namespace.
+# You can name it whatever you like, here name it as 'app'.
 import charming as app
 
-# Register setup hook which will excute only once.
+# Register setup hook which will execute only once.
 @app.setup
 def setup():
     app.full_screen()
@@ -36,13 +36,13 @@ def draw():
     app.rect(x, 0, 10, 15)
     x += speed
 
-# Register mouse_clicked hook which will excute when a mouse click event be triggered.
+# Register mouse_clicked hook which will execute when a mouse click event be triggered.
 @app.mouse_clicked
 def mouse_clicked():
     global speed
     speed += 1
 
-# It is very import to excute run, otherwise nothing magic wll happen.
+# It is very import to execute run, otherwise nothing magic wll happen.
 app.run()
 ```
 
