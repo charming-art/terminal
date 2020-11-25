@@ -210,4 +210,4 @@ from .constants import ENTER
 from .constants import SPACE
 
 
-__version__ = "v1.0.0-alpha.0"
+__version__ = "v1.0.0-alpha.1"
