@@ -73,6 +73,7 @@ app.background(c)
 ### APIs Names
 
 All the APIs in Processing are like `aaaBbb`, but in Charming they are like `aaa_bbb`. For example, `ellipse_mode` in Charming equals to `ellipseMode` in Processing and `begin_shape` equals to `beginShape`.
+And you can use `CVector` instead of `PVector`.
 
 ### Global Variables
 

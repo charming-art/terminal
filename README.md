@@ -29,7 +29,7 @@
 
 Charming is a creative coding language designed for **interactive character terminal art**.
 
-It currently written in Python and provides Processing-like APIs, which aims to help artists, designers, educators, beginners, and anyone else to easily make **ascii art animation**,  **character-style generative art**, **terminal game application** and **expressive data visulization**.
+It currently written in Python and provides Processing-like APIs, which aims to help artists, designers, educators, beginners, and anyone else to easily create **ascii art animation**,  **character-style generative art**, **terminal game application** and **expressive data visulization**.
 
 [Documentation](./docs/readme.md) | [Examples](./examples) | [Tests Samples](./tests)
 
@@ -39,7 +39,7 @@ It currently written in Python and provides Processing-like APIs, which aims to 
 
 ### Renaissance of ASCII Art
 
-With [Open Frameworks](https://github.com/openframeworks/openFrameworks), [Processing](https://github.com/processing/processing), [P5js](https://github.com/processing/p5.js) getting more and more popular, people pay more attention on using computer and coding to make exquisite and complex artworks or infomation graphics nowadays. Here are some exmaples created by me.
+With [Open Frameworks](https://github.com/openframeworks/openFrameworks), [Processing](https://github.com/processing/processing), [P5js](https://github.com/processing/p5.js) getting more and more popular, people pay more attention on using computer and coding to make exquisite and complex artworks or infomation graphics nowadays. Here are some examples created by me.
 
 <a href="https://www.openprocessing.org/sketch/748916"><img src="https://openprocessing-usercontent.s3.amazonaws.com/thumbnails/visualThumbnail748916@2x.jpg" height="192px"></a>
 <a href="https://www.openprocessing.org/sketch/757223"><img src="https://openprocessing-usercontent.s3.amazonaws.com/thumbnails/visualThumbnail757223@2x.jpg" height="192px"></a>
@@ -52,7 +52,7 @@ It seems like we gradully forget an old and pure form of art which was born with
 
 Back in 1970s and early 1980s, computers were not as accessible as now, neverthless to create sophisticated visual effects. But at that time, ASCII Art had showed up and somehow meant to belong to the programmers of that genertion who mostly programmed in a text-based terminal day and night, so **ASCII Art may be the best way to show the original charm and romance of computers and of programmers.**
 
-For example, it will be very romatic if you using snake-eating to write a poem. Here is a example created by Charming that you move the snake, eat the food and finally you can get the poem: [This Is Just To Say](https://www.poetryfoundation.org/poems/56159/this-is-just-to-say)
+For example, it will be very romantic if you using snake-eating to write a poem. Here is a example created by Charming that you move the snake, eat the food and finally you get the poem: [This Is Just To Say](https://www.poetryfoundation.org/poems/56159/this-is-just-to-say).
 
 <a href="./examples/snake.py">![charm](https://raw.githubusercontent.com/charming-art/public-files/master/snake.gif)</a>
 
@@ -66,15 +66,15 @@ On the one hand, we are not in 1970s or early 1980s after all, it will be very a
 
 With the appearence of [Unicode](https://en.wikipedia.org/wiki/Unicode) (including [CJK characters](https://en.wikipedia.org/wiki/CJK_characters) and [Emoji](https://en.wikipedia.org/wiki/Emoji)) and the concept of [Generative Art](http://taggedwiki.zubiaga.org/new_content/0a0de87b1c9b14a3530beac00afcbea2), it is time for us to expand the boundaries of ASCII Art to **Character Terminal Art**, which means using characters(not just ASCII characters) and algorithms to create awsome artworks in the terminal.
 
-**One of the biggest benefit for characters is that we can encoding more information for our artworks besides color, which means we can easily express more than traditional styles.**
+**One of the biggest benefit of characters is that we can encoding more information for our artworks besides color, which means we can easily express more than traditional styles.**
 
 For instance, the main task for data visulization is to convey information, and colors do a great job on it. But if we extend the concept of color to include character, the character definitely can give extra information which will make the visulization more expressive and impressive.
 
-There is a bar chart for mock data about covid-19 virus created by Charming. Instead of only using green for the curve, red for the confirm, gray for the dead, it also use 🌈 to express happiness and hopeness, use 🦠 to strengthen the warning, and use ☠️ to express sadness and fear. They are indeed make this chart vivid and unforgettable.
+There is a bar chart for mock data about covid-19 virus created by Charming. Instead of only using green for the curve, red for the confirm, gray for the dead, it also use 🌈 to express happiness and hopeness, use 🦠 to strengthen the warning, and use ☠️ to show sadness and fear. They are indeed make this chart more vivid and unforgettable.
 
 <a href="./examples/barchart.py">![charm](https://raw.githubusercontent.com/charming-art/public-files/master/barchart.png)</a>
 
-Charming is born for Character Terminal Art, so only a small part of APIs are related to ASCII Art. Its power focus on drawing some basic shapes such as line, rectangle, circle, bezier curve, etc. or make some transformations including rotate, translate, scale and shear.
+Charming is born for Character Terminal Art, so only a small part of APIs are related to ASCII Art. Its power focus more on drawing some basic shapes such as *line*, *rectangle*, *circle*, *bezier curve*, *custom shape*, etc. or apply some transformations including *rotate*, *translate*, *scale* and *shear*.
 
 <a href="./tests/test_shape_primitives.py"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/primitives.png" height="165px" ></a>&emsp;<a href="./tests/test_transform.py"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/transforms.png" height="165px" ></a>&emsp;<a href="./tests/test_shape_vertex.py"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/vertex.png" height="165px"></a>
 
@@ -90,9 +90,9 @@ With the help of artificial intelligence, computer science and software engineer
 
 Just like most of us do not play basketball for career purpose, we should consider programming or programming in Python as a new kind of hobby. Because life can be without machine learning, web crawler or automated operations, but it can not be without creating and sharing things to have fun and to be present.
 
-**With the help of Charming, you print something really awsome to the terminal when you are learning Python instead of just print something boring and stupid log information.**
+**With the help of Charming, you are able to print something really awsome to the terminal when you are learning Python instead of just print something boring and stupid log information.**
 
-In that case, I hope not only does Charming make you love programming for fun or show a magic world to you, but also make this journey relaxing and memorable.
+In that case, I hope not only does Charming make you love programming for fun or show a magic world to you, but also make this journey relaxing and interesting.
 
 ![charm](https://raw.githubusercontent.com/charming-art/public-files/master/charm.png)
 
@@ -141,7 +141,7 @@ Like there are static mode for static effects and active mode for dynamic effect
 
 #### Static Mode
 
-In Processing, you needn't import APIs or call an extra method to run the sketch, but you need import APIs at first and call a extar method `run` to run the sketch in Charming.
+In Processing, you needn't import APIs or call an extra method to run the sketch, but you need import APIs at first and call an extra method `run` to run the sketch in Charming.
 
 ```processing
 /* processing code: static mode */
@@ -216,7 +216,7 @@ app.run()
 
 The biggest difference between Charming or Processing is the definition of color, which make Charming so unique to some extend.
 
-In Processing, a color normally has three of four channels: `(r, g, b)` or `(r,g, b, a)` in RGB color mode and `(h, s, b)` or `(h, s, b, a)` in HSB mode, each channel is represented by a number.
+In Processing, a color normally has three or four channels: `(r, g, b)` or `(r,g, b, a)` in RGB color mode and `(h, s, b)` or `(h, s, b, a)` in HSB mode, each channel is represented by a number.
 
 ```processing
 /* processing color*/
@@ -317,10 +317,10 @@ app.run()
 
 You may already found something not workd as expexted.
 
-- square and ellipse drawn on the terminal are deformation.
-- color with unicode character cause some confusing result.
+- Squares and ellipses drawn on the terminal are deformative.
+- Color with unicode character cause some confusing result.
 
-The first one is that each cell of the terminal are not square whose width doesn't equal its height. And the second one is that normally ascii codes need one cell to display and unicodes need two cell to display.
+The first one is that each cell of the terminal are not square which means that its width doesn't equal to its height. And the second one is that normally ascii codes need one cell to display and unicodes need two cell to display.
 
 In order to solve both of them, you can change the renderer of Chamring to `DOUBLE` mode when you call `size()` or `full_screen()`. In that mode, Charming will use two cells to display both of ascii codes and unicodes.
 
@@ -341,7 +341,7 @@ app.run()
 
 ![double mode](https://raw.githubusercontent.com/charming-art/public-files/master/double_mode.png)
 
-There is something important you should pay attention to. **Charming can't always get the right width of unicodes, so if you find something wrong when use unicodes, you call declare the width of that unicode directly.
+There is something important you should pay attention to. **Charming can't always get the right width of unicodes, so if you find something wrong when use unicodes, you call declare the width of that unicode directly.**
 
 ```py
 ''' charming: double mode'''
@@ -360,9 +360,9 @@ app.run()
 
 It is as easy as Processing to display text in Charming, but only with three level of text size.
 
-- **NORMAL**: draw some basic words or ANSII art to the terminal.
-- **BIG**: easily convert some normal words to ANSII art words.
-- **LARGE**: convert some ANSII art words to a bigger ANSII art words.
+- **NORMAL**: Draw some basic words or ANSII Art to the terminal.
+- **BIG**: Easily convert some normal words to ANSII Art words.
+- **LARGE**: Convert some ANSII Art words to a bigger ANSII Art words.
 
 #### Normal Size
 
@@ -471,11 +471,11 @@ app.run()
 
 ### Events
 
-Events means you can bring life to your artwork, because you can interact with it and it will give you feedback.
+Events means you can bring life to your artworks, because you can interact with it and it will give you feedback.
 
 Simliar to `setup` and `draw` function, you must regerster event listeners (`mouse_pressed`, `key_pressed`, etc.) by decorators.
 
-Besides mouse events and keyboard events, Charming provide a unique type of events which deeply embeded in terminal: **cursor events**, which will be triggered if you type the `UP/Right/DOWN/LEFT` arrow keys to move the cursor of the terminal.
+Besides mouse events and keyboard events, Charming provide a unique type of events which deeply embeded in terminal: **cursor events**, which will be triggered if you type or press the `UP/Right/DOWN/LEFT` arrow keys to move the cursor of the terminal.
 
 ```py
 ''' charming: event'''
@@ -504,8 +504,8 @@ def draw():
         app.stroke('@', (c, 0, 0), (c, c, 0))
         app.point(p.x, p.y)
 
-@app.cursor_moved
-def cursor_moved():
+@app.cursor_pressed
+def cursor_pressed():
     # add a point if cursor moved
     x = app.get_cursor_x()
     y = app.get_cursor_y()
@@ -518,7 +518,7 @@ app.run()
 
 ### Helpers
 
-Because Charming use the terminal as the canvas to paint, so it is impossible for you to print some information to the console. Instead you can use the `print` function to print some information to file named `charming.log`.
+Because Charming use the terminal as the canvas to paint, so it is impossible for you to print some information to the console. Instead you can use the `print` function from Charming to print some information to file named `charming.log`.
 
 ```py
 import charming as app
@@ -543,12 +543,11 @@ DEBUG:root:123, ['h', 2], {'name': 'charming', 'awsome': True}, {'key': (0, 1)}
 ## Future Works
 
 - **Tests and Bug Fix**: There may be some bugs because Charming have just been simply tested, so one of future works is to test and fix bugs.
-- **Improve Performance**: Now both of the frontend and the backgend of Charming are implemented in Python, there's plan to rewrite backend in Rush or C++ and refactor some render algorithms such as polygon filling to achieve a better performance.
+- **Improve Performance**: Now both of the frontend and the backgend of Charming are implemented in Python, there's plan to rewrite backend in Rust or C++ and refactor some render algorithms such as polygon filling to achieve a better performance.
 - **API Enhancement**: Add more cool APIs accroding to the feature of terminal and character.
-- **More Examples**: Write more interesting examples:
+- **More Examples**: Write more interesting examples.
   - ascii art animation
-  - character-style
-  - generative art
+  - character-style generative art
   - terminal game
   - expressive data visulization
-- **Better Documatation**: Write usages, parameters, returens, examples for each API.
+- **Better Documentation**: Write usages, parameters, returns, examples for each API.
