@@ -97,9 +97,11 @@ On the one hand, we are not in 1970s or early 1980s after all, it will be very a
 
 With the appearance of [Unicode](https://en.wikipedia.org/wiki/Unicode) (including [CJK characters](https://en.wikipedia.org/wiki/CJK_characters) and [Emoji](https://en.wikipedia.org/wiki/Emoji)) and the concept of [Generative Art](http://taggedwiki.zubiaga.org/new_content/0a0de87b1c9b14a3530beac00afcbea2), it is time for us to expand the boundaries of ASCII Art to **Character Terminal Art**, which means using characters(not just ASCII characters) and algorithms to create awesome artworks in the terminal.
 
-**The biggest benefit of characters is that we can encoding more information for our artworks besides color, which means we can easily express more than traditional styles.**
+**The biggest benefit of using characters is that we can encoding more information for our artworks besides color, which means we can easily express more than traditional styles.**
 
-For instance, the main task for data visualization is to convey information, and colors do a great job on it. But if we extend the concept of color to include character, the character definitely can give extra information which will make the visualization more expressive and impressive.
+Take data visualization as a example. A common belief for data visualization is that visual representations should maximize the data-ink ratio and avoid unnecessary decoration as much as possible, and colors do a great job on it.
+
+But if we extend the concept of color to include character, the character definitely can give extra information which will give the data visualization **memorability**, **aesthetics**, and **engagement** Recently, researchers have started exploring them, and these metrics focus on communication and presentation rather than data exploration and analysis.
 
 There is a bar chart for mock data about covid-19 virus created by Charming. Instead of only using green for the curve, red for the confirm, gray for the dead, it also use 🌈 to express happiness and hopefulness, use 🦠 to strengthen the warning, and use ☠️ to show sadness and fear. They are indeed make this chart more vivid and unforgettable.
 
@@ -117,11 +119,11 @@ But thanks to Processing and P5js, they have already introduced a intuitive way 
 
 ### Have fun and to be present
 
-With the help of artificial intelligence, computer science and software engineering gain more and more attention and so does Python. A large number of people choose to learn Python to make a living, but programming and Python are far more than that.
+With the help of artificial intelligence, computer science and software engineering gaining more and more attention and so does Python, a large number of people choose to learn Python to make a living, but programming and Python are far more than that.
 
 Just like most of us do not play basketball for career purpose, we should consider programming or programming in Python as a new kind of hobby. Because life can be without machine learning, web crawler or automated operations, but it can not be without creating and sharing things to have fun and to be present.
 
-**With the help of Charming, you are able to print something really awesome to the terminal when you are learning Python instead of just print some boring and stupid log information.**
+**With the help of Charming, you are able to print something really awesome at the terminal when you are learning Python instead of just print some boring and stupid log information.**
 
 In that case, I hope not only does Charming make you love programming for fun or show a magic world to you, but also make this journey relaxing and interesting.
 
@@ -372,7 +374,7 @@ app.run()
 
 ![double mode](https://raw.githubusercontent.com/charming-art/public-files/master/double_mode.png)
 
-There is something important you should pay attention to. **Charming can't always get the right width of unicodes, so if you find something wrong when use unicodes, you call declare the width of that unicode directly.**
+There is something important you should pay attention to. **Charming can't always get the right width of unicodes, so if you find something wrong when using unicodes, you can declare the width of that unicode directly.**
 
 ```py
 ''' charming: double mode'''
@@ -380,6 +382,7 @@ There is something important you should pay attention to. **Charming can't alway
 app.full_screen(app.DOUBLE)
 
 app.stroke('@', fg=app.GREEN)
+
 # use a tuple to declare the width of that unicode
 app.fill(('⏰', 2), bg=app.BLUE)
 app.square(0, 0, 10)
