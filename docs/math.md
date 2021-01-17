@@ -1,0 +1,4 @@
+---
+id: math
+title: Math
+---
