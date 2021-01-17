@@ -1,9 +1,9 @@
-<h1 align="center">
-<p >Charming</p>
+<center>
+<h1>Charming</h1>
 <p style="font-size:16px;font-weight:bold"><a href="https://charming-art.github.io/">Home |</a><a href="https://charming-art.github.io/docs"> Documentation |</a><a href="https://charming-art.github.io/gallery"> Gallery</a></p>
-<a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/home_code.png" alt="Charming" height="250"></a>&ensp;
-<a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/welcome.gif" alt="Charming" height="250"></a>
-</h1>
+<a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/home_code.png" alt="Charming" height="300"></a>&ensp;
+<a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/welcome.gif" alt="Charming" height="300"></a>
+</center>
 
 ## Overview
 
