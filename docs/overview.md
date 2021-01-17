@@ -1,8 +1,11 @@
 ---
 id: overview
-title: Overview
+hide_title: True
+sidebar_label: Overview
 slug: /
 ---
+
+# Overview
 
 Charming is a creative coding language designed for **interactive character terminal art**.
 

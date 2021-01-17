@@ -1,4 +1,7 @@
 ---
 id: transform
-title: Transform
+sidebar_title: Transform
+hide_title: True
 ---
+
+# Transform

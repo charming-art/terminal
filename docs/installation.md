@@ -1,7 +1,10 @@
 ---
 id: installation
-title: Installation
+hide_title: true
+sidebar_label: Installation
 ---
+
+# Installation
 
 It is very easy to get started with Charming as long as you install python3 already.
 

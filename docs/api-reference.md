@@ -1,7 +1,10 @@
 ---
 id: api-reference
-title: API Reference
+sidebar_label: API Reference
+hide_title: True
 ---
+
+# API Reference
 
 Charming implements most of Processing's APIs related to 2D, all of the supported APIs are list below. You can take [Processing Documentation](https://processing.org/reference/) as a reference, and take a look at some basic [test samples](https://github.com/charming-art/charming/blob/master/tests/) to be familiar with the supported APIs
 

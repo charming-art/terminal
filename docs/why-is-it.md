@@ -1,7 +1,9 @@
 ---
 id: why-is-it
-title: Why is it
+hide_title: true
+sidebar_label: Why is it
 ---
+# Why is it
 
 With [Open Frameworks](https://github.com/openframeworks/openFrameworks), [Processing](https://github.com/processing/processing), [P5js](https://github.com/processing/p5.js) getting more and more popular, people pay more attention on using computer and coding to make exquisite and complex artworks or information graphics nowadays. Here are some examples created by me.
 

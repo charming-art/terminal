@@ -1,7 +1,11 @@
 ---
 id: events
-title: Event
+sidebar_label: Events
+hide_title: True
 ---
+
+# Events
+
 Events means you can bring life to your artworks, because you can interact with it and it will give you feedback.
 
 Similar to `setup` and `draw` function, you must register event listeners (`mouse_pressed`, `key_pressed`, etc.) by decorators.

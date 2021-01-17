@@ -1,7 +1,11 @@
 ---
 id: helpers
-title: Helpers
+hide_title: True
+sidebar_label: Helpers
 ---
+
+# Helpers
+
 There some useful helper functions.
 
 ## Print

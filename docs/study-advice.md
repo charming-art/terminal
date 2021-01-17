@@ -1,4 +1,7 @@
 ---
 id: study-advice
-title: Study Advice
+sidebar_label: Study Advice
+hide_title: True
 ---
+
+# Study Advice

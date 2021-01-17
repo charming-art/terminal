@@ -1,4 +1,7 @@
 ---
 id: curve
-title: Curve
+sidebar_label: Curve
+hide_title: True
 ---
+
+# Curve

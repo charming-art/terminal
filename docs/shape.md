@@ -1,4 +1,7 @@
 ---
 id: shape
-title: Shape
+hide_title: True
+sidebar_label: Shape
 ---
+
+# Shape

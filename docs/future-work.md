@@ -1,7 +1,10 @@
 ---
 id: future-work
-title: Future Work
+sidebar_label: Future Work
+hide_title: True
 ---
+
+# Future Work
 
 1. **More accessible**: As soon as Charming can run in modern browsers, there will be a online playground to try it online and may be a platform to create, sharing Charming sketches with others like [OpenProcessing](https://www.openprocessing.org/).
 2. **Tests and Bug Fix**: There may be some bugs because Charming have just been simply tested, so one of future works is to test and fix bugs.

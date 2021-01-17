@@ -1,7 +1,10 @@
 ---
 id: color
-title: Color
+sidebar_label: Color
+hide_title: True
 ---
+
+# Color
 
 The biggest difference between Charming or Processing is the definition of color, which make Charming so unique to some extend.
 

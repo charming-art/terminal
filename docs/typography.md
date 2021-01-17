@@ -1,7 +1,11 @@
 ---
 id: typography
-title: Typography
+sidebar_label: Typography
+hide_title: True
 ---
+
+# Typography
+
 It is as easy as Processing to display text in Charming, but only with three level of text size.
 
 - **NORMAL**: Draw some basic words or ANSII Art to the terminal.

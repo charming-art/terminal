@@ -1,4 +1,7 @@
 ---
 id: math
-title: Math
+sidebar_label: Math
+hide_title: true
 ---
+
+# Math
