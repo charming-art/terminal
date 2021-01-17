@@ -1,10 +1,13 @@
-# Charming
-
-[**Home**](https://charming-art.github.io/) | [**Documentation**](https://charming-art.github.io/docs/) | [**Gallery**](https://charming-art.github.io/gallery)
+<h1 align="center">
+<p >Charming</p>
+<p style="font-size:16px;font-weight:bold"><a href="https://charming-art.github.io/">Home |</a><a href="https://charming-art.github.io/docs"> Documentation |</a><a href="https://charming-art.github.io/gallery"> Gallery</a></p>
+<a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/home_code.png" alt="Charming" height="250"></a>&ensp;
+<a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/welcome.gif" alt="Charming" height="250"></a>
+</h1>
 
 ## Overview
 
-Charming is a creative coding language designed for **Character Terminal Art Programing**.
+Charming is a creative coding language designed for **Character Terminal Art Programming**.
 
 It currently written in Python and provides Processing-like APIs, which aims to help artists, designers, educators, beginners, and anyone else to easily create:
 
@@ -13,17 +16,14 @@ It currently written in Python and provides Processing-like APIs, which aims to 
 - Terminal Game Application
 - Expressive Data Visualization
 
-<a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/home_code.png" alt="Charming" height="200"></a>&emsp;
-<a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/welcome.gif" alt="Charming" height="200"></a>
-
 ## Installation
+
+- **Supported OS**: Charming currently only supports **MacOS**, though it should also work for any other platform that provides a working [curses](https://docs.python.org/3/howto/curses.html) implementation. It soon will support **Windows** and run in **Modern Browsers**.
+- **Python**: 3.6/3.7/3.8
 
 ```bash
 pip3 install charming --user
 ```
-
-- **Supported OS**: Charming currently only supports **MacOS**, though it should also work for any other platform that provides a working [curses](https://docs.python.org/3/howto/curses.html) implementation. It soon will support **Windows** and run in **modern browsers**.
-- **Python**: 3.6/3.7/3.8
 
 ## Quick example
 
