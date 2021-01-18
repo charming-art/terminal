@@ -1,66 +1,62 @@
 import charming as app
+from _utils import scale_linear, scale_band, scale_ordinal
+from _data import covid_mock as data
 
-data = [{
-    'name': 'curve',
-    'value': 10,
-    'color': app.CColor('🌈', bg=app.GREEN)
-},
-    {
-    'name': 'confirm',
-    'value': 20,
-    'color': app.CColor('🦠', bg=app.RED)
-},
-    {
-    'name': 'dead',
-    'value': 5,
-    'color': app.CColor(('☠️', 2), bg=app.WHITE)
-}]
+# open canvas
+app.full_screen(app.DOUBLE)
+app.no_cursor()
 
+# chart options
 margin = {
     'top': 5,
     'right': 5,
     'bottom': 5,
     'left': 5
 }
-
-# init state
-app.full_screen(app.DOUBLE)
-app.no_cursor()
-
-# attrs
 width = app.get_width() - margin['left'] - margin['right']
 height = app.get_height() - margin['top'] - margin['bottom']
 
-# transform
+# scales
+max_data = app.max(data, key=lambda d: d['value'])
+names = [d['name'] for d in data]
+colors = [
+    ('🌈', app.GREEN),
+    ('🦠', app.RED),
+    (('⚠️', 2), app.YELLOW),
+    (('☠️', 2), app.WHITE)
+]
+x_scale = scale_band(names, [0, width], padding=2)
+y_scale = scale_linear([0, max_data['value']], [height, 0])
+color_scale = scale_ordinal(names, colors)
+
+# draw
 app.translate(margin['left'], margin['top'])
 
+# bars
+for d in data:
+    name, value = d['name'], d['value']
+    x = x_scale(name)
+    y = y_scale(value)
+    bw = x_scale.band_width()
+    ch, bg = color_scale(name)
 
-# draw data
-for i, d in enumerate(data):
-    w = int(width / (len(data)))
-    bw = w - 3
-    bh = app.map(d['value'], 0, 20, 0, height)
-    x = i * w + 2
-    y = height - bh
-
-    # bar
+    # bars
     app.no_stroke()
-    app.fill(d['color'])
-    app.rect(x, y, bw, bh)
-
-    # name
-    app.stroke()
-    app.text_align(app.LEFT)
-    app.text(d['name'], x, height + 2)
+    app.fill(ch, bg=bg)
+    app.rect(x, y, int(bw), height - y)
 
     # value
+    app.stroke()
     app.text_align(app.CENTER)
-    app.text(str(d['value']), x + bw / 2 + 1, y - 2)
+    app.text(str(value), x + bw / 2 + 1, y - 2)
 
-# draw axes
+# bottom axes
 app.stroke('-')
 app.line(0, height + 1, width, height + 1)
-
-
+for name in x_scale.domain():
+    x = x_scale(name)
+    app.stroke()
+    app.text_align(app.LEFT)
+    app.text(name, x, height + 2)
 
 app.run()

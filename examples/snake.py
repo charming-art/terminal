@@ -1,23 +1,13 @@
-'''
-Use snake to write a poetry: 
-    title: This Is Just To Say
-    link: https://www.poetryfoundation.org/poems/56159/this-is-just-to-say
-'''
 import charming as app
+from random import choice
 
-# directions
-LEFT = 0
-RIGHT = 1
-UP = 2
-DOWN = 3
 
-# global vars
 poetry = "I have eaten the plums that were in the icebox and which you were probably saving for breakfast Forgive me they were delicious so sweet and so cold"
+directions = [app.LEFT, app.RIGHT, app.UP, app.DOWN]
 snake = []
 index = 0
-direction = int(app.random(4))
+direction = directions[0]
 food = None
-interval = 4
 game_over = False
 
 
@@ -32,7 +22,7 @@ def setup():
 @app.draw
 def draw():
     app.background(' ')
-    if app.get_frame_count() % interval == 0:
+    if app.get_frame_count() % 4 == 0:
         update_snake()
     collision_detection()
     draw_snake()
@@ -42,15 +32,7 @@ def draw():
 @app.cursor_moved
 def cursor_moved():
     global direction
-    key_code = app.get_key_code()
-    if key_code == app.LEFT:
-        direction = LEFT
-    elif key_code == app.RIGHT:
-        direction = RIGHT
-    elif key_code == app.DOWN:
-        direction = DOWN
-    elif key_code == app.UP:
-        direction = UP
+    direction = app.get_key_code()
 
 
 @app.key_typed
@@ -62,13 +44,13 @@ def key_typed():
 def init_game():
     global snake, index, direction, game_over
     game_over = False
-    x0 = app.get_width() / 2
-    y0 = app.get_height() / 2
-    app.set_cursor(x0, y0)
     index = 0
-    direction = int(app.random(4))
+    direction = choice(directions)
+    x0, y0 = int(app.get_width() / 2), int(app.get_height() / 2)
     snake = [[x0, y0, 0]]
     generate_food()
+
+    app.set_cursor(x0, y0)
     app.loop()
 
 
@@ -88,26 +70,16 @@ def draw_food():
 def update_snake():
     global game_over
     for i in range(len(snake) - 1):
-        p1 = snake[i]
-        p2 = snake[i + 1]
-        p1[0] = p2[0]
-        p1[1] = p2[1]
+        p1, p2 = snake[i], snake[i + 1]
+        p1[0], p1[1] = p2[0], p2[1]
 
     head = snake[-1]
-    width = app.get_width()
-    height = app.get_height()
-    if direction == UP:
-        next_y = (head[1] - 1) % height
-        next_x = head[0]
-    elif direction == DOWN:
-        next_y = (head[1] + 1) % height
-        next_x = head[0]
-    elif direction == LEFT:
-        next_x = (head[0] - 1) % width
-        next_y = head[1]
-    else:
-        next_x = (head[0] + 1) % width
-        next_y = head[1]
+    x_move = 0 if direction == app.UP or direction == app.DOWN else 1
+    y_move = 0 if direction == app.LEFT or direction == app.RIGHT else 1
+    x_d = 1 if direction == app.RIGHT else -1
+    y_d = 1 if direction == app.DOWN else -1
+    next_x = (head[0] + x_move * x_d) % app.get_width()
+    next_y = (head[1] + y_move * y_d) % app.get_height()
 
     if in_snake(next_x, next_y):
         app.no_loop()
@@ -139,11 +111,11 @@ def generate_food():
         app.no_loop()
     else:
         index = index + 1
-        x = int(app.random(app.get_width()))
-        y = int(app.random(app.get_height()))
-        while in_snake(x, y):
+        while True:
             x = int(app.random(app.get_width()))
             y = int(app.random(app.get_height()))
+            if not in_snake(x, y):
+                break
         food = [x, y, index]
 
 
