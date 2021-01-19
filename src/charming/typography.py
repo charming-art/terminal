@@ -17,11 +17,13 @@ def get_font_list():
 
 @add_on_return
 @params_check(
-    str,
+    (str, int, float),
     (int, float),
     (int, float)
 )
 def text(text, x, y):
+    if isinstance(text, int) or isinstance(text, float):
+        text = str(text)
     return Text(text, x, y)
 
 
