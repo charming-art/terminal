@@ -13,5 +13,5 @@ def print(*args, **kw):
     logger.debug(msg)
 
 
-def no_check():
-    sketch._check_params = False
+def check_params():
+    sketch._check_params = True

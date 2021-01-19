@@ -235,7 +235,7 @@ Charming implements most of Processing's APIs related to 2D, all of the supporte
 ## Helpers
 
 - print()
-- no_check()
+- check_params()
 
 *Examples*: [print](https://github.com/charming-art/charming/blob/master/tests/test_helper_print.py), [no check](https://github.com/charming-art/charming/blob/master/tests/test_helper_no_check.py)
 

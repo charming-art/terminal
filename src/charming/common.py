@@ -35,9 +35,8 @@ class CColor(object):
 def params_check(*check_args, **check_kw):
 
     def decorator(foo):
-        if sketch._check_params:
-            sig = signature(foo)
-            bound_checks = sig.bind_partial(*check_args, **check_kw).arguments
+        sig = signature(foo)
+        bound_checks = sig.bind_partial(*check_args, **check_kw).arguments
 
         @functools.wraps(foo)
         def wrapped(*args, **kw):
@@ -64,10 +63,12 @@ def params_check(*check_args, **check_kw):
                     # raise exception
                     if not result:
                         if is_more:
-                            msg = f'be one of {check}.'
+                            msg = f'be one of {check}'
                         else:
-                            msg = f'be {check[0]}.'
-                        raise TypeError(f'Argument {name} must {msg}')
+                            msg = f'be {check[0]}'
+                        raise TypeError(
+                            f'Argument {name} must {msg}, but get {type(value)}.'
+                        )
 
             return foo(*args, **kw)
 

@@ -45,7 +45,7 @@ class Sketch(object):
         self.has_setup_hook = False
         self.has_draw_hook = False
 
-        self._check_params = True
+        self._check_params = False
         self.hooks_map = {
             'setup': lambda: None,
             'draw': lambda: None,
