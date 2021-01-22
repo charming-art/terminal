@@ -6,6 +6,7 @@ from .app import renderer
 from .app import context
 from .app import sketch
 from .utils import logger
+from .utils import sign
 
 
 class CColor(object):
@@ -168,10 +169,10 @@ def get_bounding_rect_by_mode(a, b, c, d, mode):
     else:
         x1 = a
         y1 = b
-        x2 = a + c
+        x2 = a + c - sign(c)
         y2 = b
-        x3 = a + c
-        y3 = b + d
+        x3 = a + c - sign(c)
+        y3 = b + d - sign(d)
         x4 = a
-        y4 = b + d
+        y4 = b + d - sign(d)
     return (x1, y1, x2, y2, x3, y3, x4, y4)

@@ -52,11 +52,11 @@ for d in data:
 
 # bottom axes
 app.stroke('-')
-app.line(0, height + 1, width, height + 1)
+app.line(0, height, width, height)
 for name in x_scale.domain():
     x = x_scale(name)
     app.stroke()
     app.text_align(app.LEFT)
-    app.text(name, x, height + 2)
+    app.text(name, x, height + 1)
 
 app.run()

@@ -85,6 +85,15 @@ def map(value, start1, stop1, start2, stop2):
     return start2 * (1 - t) + stop2 * t
 
 
+def sign(x):
+    if x > 0:
+        return 1
+    elif x == 0:
+        return 0
+    else:
+        return -1
+
+
 def dist(x1, y1, x2, y2):
     p = [x1, y1]
     q = [x2, y2]
