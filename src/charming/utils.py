@@ -20,6 +20,9 @@ widths = [
 
 def get_char_width(ch):
     """Return the screen column width for unicode ordinal o."""
+    if isinstance(ch, tuple):
+        return ch[1]
+
     if len(ch) >= 2:
         return 2
 

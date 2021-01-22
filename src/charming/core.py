@@ -585,10 +585,13 @@ class Renderer(object):
             for p in pixels:
                 p.x *= scale
                 if p.x >= 0 and p.x < self.width and p.y >= 0 and p.y < self.height:
+                    # process text character
                     if need_wrap:
-                        ch_w = get_char_width(p.color.ch)
+                        ch = p.color.ch
+                        ch_w = get_char_width(ch)
+                        ch = ch[0] if isinstance(ch, tuple) else ch
                         if ch_w == 1:
-                            p.color.ch = p.color.ch + " "
+                            p.color.ch = (ch, 2)
                     pixels_clipped.append(p)
             fragments_clipped.append(pixels_clipped)
 
