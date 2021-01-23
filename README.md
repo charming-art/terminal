@@ -1,10 +1,4 @@
-
-<h1 align="center">Charming</h1>
-<p align="center" style="font-size:16px;font-weight:bold"><a href="https://charming-art.github.io/">Home |</a><a href="https://charming-art.github.io/docs"> Documentation |</a><a href="https://charming-art.github.io/gallery"> Gallery</a></p>
-<p align="center"><a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/home_code.png" alt="Charming" height="320"></a>&ensp;
-<a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/welcome.gif" alt="Charming" height="320"></a></p>
-
-## Overview
+# Charming
 
 Charming is a creative coding language designed for **Character Terminal Art Programming**.
 
@@ -15,6 +9,9 @@ It currently written in Python and provides Processing-like APIs, which aims to 
 - Terminal Game Application
 - Expressive Data Visualization
 
+<a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/home_code.png" alt="Charming" height="320"></a>&ensp;
+<a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/welcome.gif" alt="Charming" height="320"></a>
+
 ## Installation
 
 - **Supported OS**: Charming currently only supports **MacOS**, though it should also work for any other platform that provides a working [curses](https://docs.python.org/3/howto/curses.html) implementation. It soon will support **Windows** and run in **Modern Browsers**.
@@ -24,13 +21,10 @@ It currently written in Python and provides Processing-like APIs, which aims to 
 pip3 install charming --user
 ```
 
-## Quick example
-
-Create a new file named `sketch.py` and copy the following code to it.
+## A Simple Example
 
 ```py
-''' sketch.py '''
-
+# save this as sketch.py
 import charming as app
 
 # draw a rect
@@ -41,7 +35,9 @@ app.rect(0, 0, 10, 10)
 app.run()
 ```
 
-Run `python3 sketch.py` and congratulations to you if you get a simple rectangle in your terminal!
+```py
+python3 sketch.py
+```
 
 ![get started](https://raw.githubusercontent.com/charming-art/public-files/master/get_started.png)
 
