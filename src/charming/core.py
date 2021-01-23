@@ -493,12 +493,17 @@ class Renderer(object):
                     i2 = j * w + i + 1
                     i3 = (j + 1) * w + i + 1
                     i4 = (j + 1) * w + i
-                    ps.append(
-                        [vertices[i1],
-                         vertices[i2],
-                         vertices[i3],
-                         vertices[i4]]
-                    )
+                    v = None
+                    if vertices[i1].visible:
+                        v = vertices[i1]
+                    elif vertices[i2].visible:
+                        v = vertices[i2]
+                    elif vertices[i3].visible:
+                        v = vertices[i3]
+                    elif vertices[i4].visible:
+                        v = vertices[i4]
+                    if v:
+                     ps.append([v, v, v, v])
         elif primitive_type == constants.TEXT:
             ps = [[v] for v in vertices]
 
@@ -1398,15 +1403,16 @@ class Point(object):
         weight_x=0,
         weight_y=0,
         rotation=0,
-        type="normal"
+        type="normal",
+        visible=True
     ):
         self.x = x
         self.y = y
         self.weight_x = weight_x
         self.weight_y = weight_y
-        self.color = color
         self.type = type
         self.rotation = rotation
+        self.visible = visible
         self.color = Color(' ') if color == None else color
 
     def __str__(self):
@@ -1625,8 +1631,12 @@ class Image(object):
                 x0 = int(map(x, x1, x2, 0, self.image.width))
                 index = y0 * self.image.width + x0
                 color = self.image[index]
-                c = (color[0], color[1], color[2])
-                points.append(Point(x, y, color=Color('·', c, c)))
+                if color[3] == 0:
+                    points.append(Point(x, y, visible=False))
+                else:
+                    v = (color[0], color[1], color[2])
+                    c = Color('·', v, v)
+                    points.append(Point(x, y, color=c))
 
         Color.restore()
 

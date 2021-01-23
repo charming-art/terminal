@@ -59,4 +59,5 @@ for name in x_scale.domain():
     app.text_align(app.LEFT)
     app.text(name, x, height + 1)
 
-app.run()
+if __name__ == "__main__":
+    app.run()
