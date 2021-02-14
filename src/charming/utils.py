@@ -1,8 +1,9 @@
 import math
 import sys
 from abc import ABCMeta, abstractclassmethod
+import logging
+import time
 from .globals import WINDOWS
-from .globals import BROWSER
 from .globals import POSIX
 from .globals import DEBUG_MODE
 
@@ -230,56 +231,48 @@ class Logger(metaclass=ABCMeta):
             records.sort(key=lambda x: x[1])
             self.plot(records)
 
+if DEBUG_MODE:
+    import matplotlib.pyplot as plt
 
-if sys.platform == BROWSER:
-    class BrowserLogger(Logger):
-        pass
-else:
-    import logging
-    import time
+logging.basicConfig(filename='charming.log', level=logging.DEBUG)
 
-    if DEBUG_MODE:
-        import matplotlib.pyplot as plt
+class LocalLogger(Logger):
 
-    logging.basicConfig(filename='charming.log', level=logging.DEBUG)
+    def __init__(self, should_record):
+        super(LocalLogger, self).__init__(should_record)
 
-    class LocalLogger(Logger):
+    def debug(self, *args, **kw):
+        logging.debug(*args, **kw)
 
-        def __init__(self, should_record):
-            super(LocalLogger, self).__init__(should_record)
+    def time(self):
+        return time.time()
 
-        def debug(self, *args, **kw):
-            logging.debug(*args, **kw)
+    def plot(self, records):
+        total = 0
+        for _, value in records:
+            total += value
+        keys = [r[0] for r in records]
+        values = [r[1] for r in records]
+        proportions = [r[1] / total for r in records]
 
-        def time(self):
-            return time.time()
+        plt.figure(dpi=70, figsize=(24, 12))
 
-        def plot(self, records):
-            total = 0
-            for _, value in records:
-                total += value
-            keys = [r[0] for r in records]
-            values = [r[1] for r in records]
-            proportions = [r[1] / total for r in records]
+        # pie chart
+        plt.subplot(121)
+        plt.pie(
+            proportions,
+            labels=keys,
+            autopct='%1.1f%%',
+        )
 
-            plt.figure(dpi=70, figsize=(24, 12))
+        plt.subplot(122)
+        # bar chart
+        plt.bar(
+            keys,
+            values,
+            color="steelblue"
+        )
 
-            # pie chart
-            plt.subplot(121)
-            plt.pie(
-                proportions,
-                labels=keys,
-                autopct='%1.1f%%',
-            )
+        plt.show()
 
-            plt.subplot(122)
-            # bar chart
-            plt.bar(
-                keys,
-                values,
-                color="steelblue"
-            )
-
-            plt.show()
-
-    logger = LocalLogger(DEBUG_MODE)
+logger = LocalLogger(DEBUG_MODE)

@@ -1,3 +1,5 @@
+from PIL import ImageSequence
+from PIL import Image as PImage
 import sys
 import copy
 from .app import renderer
@@ -8,7 +10,6 @@ from .common import add_on_return
 from .common import color_check
 from .common import params_check
 from .utils import logger
-from .globals import BROWSER
 
 
 #### Loading & Displaying
@@ -87,22 +88,13 @@ def tint(ch=" ", fg=None, bg=None):
     c = Color(ch, fg, bg)
     renderer.tint_color = c
 
-
-if sys.platform == BROWSER:
-    def load_image(src):
-        return CImage([], 0, 0)
-
-else:
-    from PIL import Image as PImage
-    from PIL import ImageSequence
-
-    @params_check(str)
-    def load_image(src):
-        image = PImage.open(src)
-        images = []
-        for frame in ImageSequence.Iterator(image):
-            rgb_frame = frame.convert('RGBA')
-            w, h = rgb_frame.size
-            data = rgb_frame.getdata()
-            images.append(CImage(data, w, h))
-        return images[0] if len(images) == 1 else images
+@params_check(str)
+def load_image(src):
+    image = PImage.open(src)
+    images = []
+    for frame in ImageSequence.Iterator(image):
+        rgb_frame = frame.convert('RGBA')
+        w, h = rgb_frame.size
+        data = rgb_frame.getdata()
+        images.append(CImage(data, w, h))
+    return images[0] if len(images) == 1 else images

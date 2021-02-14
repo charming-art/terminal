@@ -3,12 +3,12 @@ import math
 import colorsys
 import string
 import copy
+import time
 from abc import ABCMeta, abstractclassmethod
 from pyfiglet import Figlet
 from . import constants
 
 from .globals import WINDOWS
-from .globals import BROWSER
 from .globals import POSIX
 
 from .utils import map
@@ -1153,11 +1153,6 @@ if sys.platform == WINDOWS:
     class WindowsContext(Context):
         pass
 
-elif sys.platform == BROWSER:
-
-    class BrowserContext(Context):
-        pass
-
 else:
     import curses
 
@@ -1314,45 +1309,25 @@ else:
             return event_queue
 
 
-class Timer(metaclass=ABCMeta):
-    @abstractclassmethod
+class LocalTimer(object):
+
     def run(self, ms, callback):
+        while True:
+            t1 = time.time()
+            stop = callback()
+            if not stop:
+                t2 = time.time()
+                d = ms / 1000 - (t2 - t1)
+                if d > 0:
+                    time.sleep(d)
+            else:
+                break
+
+    def stop(self):
         pass
 
-    @abstractclassmethod
-    def stop(self, ms, callback):
-        pass
-
-    @abstractclassmethod
     def wait(self):
-        pass
-
-
-if sys.platform == BROWSER:
-    class BrowserTimer(Timer):
-        pass
-else:
-    import time
-
-    class LocalTimer(Timer):
-
-        def run(self, ms, callback):
-            while True:
-                t1 = time.time()
-                stop = callback()
-                if not stop:
-                    t2 = time.time()
-                    d = ms / 1000 - (t2 - t1)
-                    if d > 0:
-                        time.sleep(d)
-                else:
-                    break
-
-        def stop(self):
-            pass
-
-        def wait(self):
-            input()
+        input()
 
 
 class Shape(object):
