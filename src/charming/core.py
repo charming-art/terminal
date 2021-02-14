@@ -947,10 +947,6 @@ class Context(metaclass=ABCMeta):
         pass
 
     @abstractclassmethod
-    def _write(self, content):
-        """ write content to screen """
-
-    @abstractclassmethod
     def _update_window_size(self):
         """ update the size of the window """
 
@@ -1148,11 +1144,33 @@ class Context(metaclass=ABCMeta):
         self._pad_x = (self.window_width - self._pad_width) // 2
         self._pad_y = (self.window_height - self._pad_height) // 2
 
+    def _write(self, content):
+        sys.stdout.write(content)
+        sys.stdout.flush()
+
 
 if sys.platform == WINDOWS:
     class WindowsContext(Context):
-        pass
+        def __init__(self):
+            pass
 
+        def init(self):
+            pass
+
+        def get_window_size(self):
+            pass
+
+        def close(self):
+            pass
+
+        def get_events(self):
+            pass
+
+        def background(self):
+            pass
+
+        def _update_window_size(self):
+            pass
 else:
     import curses
 
@@ -1252,10 +1270,6 @@ else:
                 for j in range(self.height):
                     self._addch(i, j, ch, color.fg, color.bg)
             self._refresh()
-
-        def _write(self, content):
-            sys.stdout.write(content)
-            sys.stdout.flush()
 
         def _update_window_size(self):
             curses.update_lines_cols()
