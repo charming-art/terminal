@@ -18,6 +18,13 @@ widths = [
 ]
 
 
+def list_find(list, cb):
+    for i, e in enumerate(list):
+        if cb(e):
+            return i
+    return -1
+
+
 def get_char_width(ch):
     """Return the screen column width for unicode ordinal o."""
     if isinstance(ch, tuple):

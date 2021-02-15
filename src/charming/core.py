@@ -494,17 +494,14 @@ class Renderer(object):
                     i2 = j * w + i + 1
                     i3 = (j + 1) * w + i + 1
                     i4 = (j + 1) * w + i
-                    v = None
-                    if vertices[i1].visible:
-                        v = vertices[i1]
-                    elif vertices[i2].visible:
-                        v = vertices[i2]
-                    elif vertices[i3].visible:
-                        v = vertices[i3]
-                    elif vertices[i4].visible:
-                        v = vertices[i4]
-                    if v:
-                        ps.append([v, v, v, v])
+                    v_list = [
+                        vertices[i1], vertices[i2],
+                        vertices[i3], vertices[i4]
+                    ]
+                    index_visible = list_find(v_list, lambda x: x.visible)
+                    if index_visible != -1:
+                        v = v_list[index_visible]
+                        ps.append([v] * 4)
 
         elif primitive_type == constants.TEXT:
             ps = [[v] for v in vertices]
