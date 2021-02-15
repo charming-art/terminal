@@ -19,6 +19,7 @@ from .utils import get_char_width
 from .utils import to_left
 from .utils import generate_xtermjs_colors
 from .utils import logger
+from .utils import list_find
 
 
 class Sketch(object):
@@ -487,8 +488,8 @@ class Renderer(object):
             w = options['width']
             h = options['height']
             ps = []
-            for j in range(0, h - 1):
-                for i in range(0, w - 1):
+            for j in range(h - 1):
+                for i in range(w - 1):
                     i1 = j * w + i
                     i2 = j * w + i + 1
                     i3 = (j + 1) * w + i + 1
@@ -503,7 +504,8 @@ class Renderer(object):
                     elif vertices[i4].visible:
                         v = vertices[i4]
                     if v:
-                     ps.append([v, v, v, v])
+                        ps.append([v, v, v, v])
+
         elif primitive_type == constants.TEXT:
             ps = [[v] for v in vertices]
 
@@ -558,8 +560,10 @@ class Renderer(object):
                 # fill polygon
                 if is_fill_enabled:
                     fill_edges = self._close_polygon(edges)
+                    is_image = primitive_type == constants.IMAGE
+                    is_text = primitive_type == constants.TEXT
 
-                    if primitive_type == constants.IMAGE or primitive_type == constants.TEXT:
+                    if is_image or is_text:
                         fill_color = fill_edges[0][0].color
 
                     fill_pixels += self._scan_line_filling(
@@ -568,7 +572,7 @@ class Renderer(object):
                     )
 
                 # stroke the polygon
-                if is_stroke_enabled:
+                if is_stroke_enabled and not is_image:
                     for e in edges:
                         stroke_pixels += self._rasterize_line(
                             e[0],
@@ -1626,6 +1630,7 @@ class Image(object):
         x1 = self.x
         x2 = self.x + self.width
         for y in range(y1, y2):
+            # add a extra col of image data
             for x in range(x1, x2):
                 y0 = int(map(y, y1, y2, 0, self.image.height))
                 x0 = int(map(x, x1, x2, 0, self.image.width))
