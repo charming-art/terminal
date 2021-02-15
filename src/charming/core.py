@@ -488,8 +488,8 @@ class Renderer(object):
             w = options['width']
             h = options['height']
             ps = []
-            for j in range(h - 1):
-                for i in range(w - 1):
+            for j in range(h):
+                for i in range(w):
                     i1 = j * w + i
                     i2 = j * w + i + 1
                     i3 = (j + 1) * w + i + 1
@@ -1626,11 +1626,10 @@ class Image(object):
         y2 = self.y + self.height
         x1 = self.x
         x2 = self.x + self.width
-        for y in range(y1, y2):
-            # add a extra col of image data
-            for x in range(x1, x2):
-                y0 = int(map(y, y1, y2, 0, self.image.height))
-                x0 = int(map(x, x1, x2, 0, self.image.width))
+        for y in range(y1, y2 + 1):
+            for x in range(x1, x2 + 1):
+                y0 = int(map(y, y1, y2, 0, self.image.height - 1))
+                x0 = int(map(x, x1, x2, 0, self.image.width - 1))
                 index = y0 * self.image.width + x0
                 color = self.image[index]
                 if color[3] == 0:
