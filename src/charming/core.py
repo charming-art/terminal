@@ -1654,12 +1654,25 @@ class Text(object):
         self.text = text
         self.x = x
         self.y = y
+        self._matrix = [[]]
 
     def to_shape(self, size, font, align_x, align_y):
-        text = self._convert(self.text, size, font)
-        matrix = self._matrixlize(text)
-        height = matrix.row
-        width = matrix.col
+        self.to_string(size, font, align_x, align_y)
+        points = []
+        for i, chars in enumerate(self._matrix):
+            for j, ch in enumerate(chars):
+                x0 = self.x + j
+                y0 = self.y + i
+                color = Color(ch)
+                points.append(Point(x0, y0, color=color))
+
+        return Shape(points=points, primitive_type=constants.TEXT)
+
+    def to_string(self, size, font, align_x, align_y):
+        self.text = self._convert(self.text, size, font)
+        self._matrix = self._matrixlize(self.text)
+        height = self._matrix.row
+        width = self._matrix.col
 
         if align_x == constants.RIGHT:
             self.x -= width
@@ -1670,16 +1683,6 @@ class Text(object):
             self.y -= height
         elif align_y == constants.MIDDLE:
             self.y -= height / 2
-
-        points = []
-        for i, chars in enumerate(matrix):
-            for j, ch in enumerate(chars):
-                x0 = self.x + j
-                y0 = self.y + i
-                color = Color(ch)
-                points.append(Point(x0, y0, color=color))
-
-        return Shape(points=points, primitive_type=constants.TEXT)
 
     @classmethod
     def text_width(cls, text, size, font):
