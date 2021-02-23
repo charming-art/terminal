@@ -24,7 +24,7 @@ def get_font_list():
 def text(text, x, y):
     if isinstance(text, int) or isinstance(text, float):
         text = str(text)
-    return Text(text, x, y)
+    return Text(text, x, y, renderer.mode)
 
 
 @params_check(str)

@@ -55,9 +55,10 @@ app.stroke('-')
 app.line(0, height, width, height)
 for name in x_scale.domain():
     x = x_scale(name)
+    bw = x_scale.band_width()
     app.stroke()
-    app.text_align(app.LEFT)
-    app.text(name, x, height + 1)
+    app.text_align(app.CENTER)
+    app.text(name, x + bw / 2 + 1, height + 1)
 
 if __name__ == "__main__":
     app.run()

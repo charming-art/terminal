@@ -1650,21 +1650,30 @@ class Image(object):
 
 class Text(object):
 
-    def __init__(self, text, x, y):
+    def __init__(self, text, x, y, mode):
         self.text = text
         self.x = x
         self.y = y
+        self.mode = mode
         self._matrix = [[]]
 
     def to_shape(self, size, font, align_x, align_y):
         self.to_string(size, font, align_x, align_y)
         points = []
+        is_double = self.mode == constants.DOUBLE
         for i, chars in enumerate(self._matrix):
-            for j, ch in enumerate(chars):
-                x0 = self.x + j
+            for j, c in enumerate(chars):
+                if is_double and j % 2 == 0:
+                    ch = c + chars[j + 1] if j < len(chars) - 1 else c
+                    x0 = self.x + j // 2
+                elif is_double and j % 2 != 0:
+                    continue
+                else:
+                    ch = c
+                    x0 = self.x + j
+
                 y0 = self.y + i
-                color = Color(ch)
-                points.append(Point(x0, y0, color=color))
+                points.append(Point(x0, y0, color=Color(ch)))
 
         return Shape(points=points, primitive_type=constants.TEXT)
 
