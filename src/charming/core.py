@@ -490,13 +490,14 @@ class Renderer(object):
             ps = []
             for j in range(h):
                 for i in range(w):
-                    i1 = j * w + i
-                    i2 = j * w + i + 1
-                    i3 = (j + 1) * w + i + 1
-                    i4 = (j + 1) * w + i
+                    w1 = w + 1
+                    i1 = j * w1 + i
+                    i2 = j * w1 + i + 1
+                    i3 = (j + 1) * w1 + i + 1
+                    i4 = (j + 1) * w1 + i
                     v_list = [
                         vertices[i1], vertices[i2],
-                        vertices[i3], vertices[i4]
+                        vertices[i4], vertices[i3]
                     ]
                     index_visible = list_find(v_list, lambda x: x.visible)
                     if index_visible != -1:
