@@ -40,5 +40,5 @@ def easing(x, scale=1):
     else:
         return scale
 
-
-app.run()
+if __name__ == "__main__":
+    app.run()

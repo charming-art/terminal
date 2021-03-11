@@ -234,8 +234,8 @@ Examples: [clock](https://github.com/charming-art/charming/blob/master/tests/tes
 
 ## Helpers
 
-- `print(*args, **kw)`
-- `no_check()`
+- print()
+- check_params()
 
 Examples: [print](https://github.com/charming-art/charming/blob/master/tests/test_helper_print.py), [no check](https://github.com/charming-art/charming/blob/master/tests/test_helper_no_check.py)
 

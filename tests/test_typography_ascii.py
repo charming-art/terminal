@@ -24,4 +24,8 @@ app.text(head, 0, 5)
 app.text(face, 25, 5)
 app.text_size(app.LARGE)
 app.text(face, 45, 5)
+
+# n = 1.2
+# app.text_size(app.NORMAL)
+# app.text(n, 0, 0)
 app.run()

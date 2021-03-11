@@ -94,10 +94,15 @@ if sys.platform == BROWSER:
 
 else:
     from PIL import Image as PImage
+    from PIL import ImageSequence
 
     @params_check(str)
     def load_image(src):
         image = PImage.open(src)
-        w, h = image.size
-        data = image.getdata()
-        return CImage(data, w, h)
+        images = []
+        for frame in ImageSequence.Iterator(image):
+            rgb_frame = frame.convert('RGBA')
+            w, h = rgb_frame.size
+            data = rgb_frame.getdata()
+            images.append(CImage(data, w, h))
+        return images[0] if len(images) == 1 else images

@@ -144,7 +144,7 @@ from .time import second
 from .time import year
 
 from .helpers import print
-from .helpers import no_check
+from .helpers import check_params
 
 from .constants import PI
 from .constants import HALF_PI

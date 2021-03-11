@@ -18,8 +18,18 @@ widths = [
 ]
 
 
+def list_find(list, cb):
+    for i, e in enumerate(list):
+        if cb(e):
+            return i
+    return -1
+
+
 def get_char_width(ch):
     """Return the screen column width for unicode ordinal o."""
+    if isinstance(ch, tuple):
+        return ch[1]
+
     if len(ch) >= 2:
         return 2
 
@@ -83,6 +93,15 @@ def map(value, start1, stop1, start2, stop2):
         return stop2
     t = (value - start1) / (stop1 - start1)
     return start2 * (1 - t) + stop2 * t
+
+
+def sign(x):
+    if x > 0:
+        return 1
+    elif x == 0:
+        return 0
+    else:
+        return -1
 
 
 def dist(x1, y1, x2, y2):

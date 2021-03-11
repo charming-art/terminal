@@ -1,8 +1,10 @@
 import charming as app
 
-app.no_check()
 app.full_screen()
-# app.arc(0, 0, 0, 0, 'a', 'b')
+app.check_params()
+app.arc(0, 0, 0, 0, 'a', 'b')
+app.run()
+
 # app.circle(0, 0, 'c')
 # app.ellipse(0, 0, 'c', 'c')
 # app.line(0, 0, 'c', 'c')
@@ -48,4 +50,3 @@ app.full_screen()
 # app.stroke('c', (0, ))
 # c = app.CColor('c', (1,))
 # app.lerp_color(c, c, 0.5)
-app.run()

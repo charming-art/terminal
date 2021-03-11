@@ -19,6 +19,7 @@ from .utils import get_char_width
 from .utils import to_left
 from .utils import generate_xtermjs_colors
 from .utils import logger
+from .utils import list_find
 
 
 class Sketch(object):
@@ -45,7 +46,7 @@ class Sketch(object):
         self.has_setup_hook = False
         self.has_draw_hook = False
 
-        self._check_params = True
+        self._check_params = False
         self.hooks_map = {
             'setup': lambda: None,
             'draw': lambda: None,
@@ -487,18 +488,22 @@ class Renderer(object):
             w = options['width']
             h = options['height']
             ps = []
-            for j in range(0, h - 1):
-                for i in range(0, w - 1):
-                    i1 = j * w + i
-                    i2 = j * w + i + 1
-                    i3 = (j + 1) * w + i + 1
-                    i4 = (j + 1) * w + i
-                    ps.append(
-                        [vertices[i1],
-                         vertices[i2],
-                         vertices[i3],
-                         vertices[i4]]
-                    )
+            for j in range(h):
+                for i in range(w):
+                    w1 = w + 1
+                    i1 = j * w1 + i
+                    i2 = j * w1 + i + 1
+                    i3 = (j + 1) * w1 + i + 1
+                    i4 = (j + 1) * w1 + i
+                    v_list = [
+                        vertices[i1], vertices[i2],
+                        vertices[i4], vertices[i3]
+                    ]
+                    index_visible = list_find(v_list, lambda x: x.visible)
+                    if index_visible != -1:
+                        v = v_list[index_visible]
+                        ps.append([v] * 4)
+
         elif primitive_type == constants.TEXT:
             ps = [[v] for v in vertices]
 
@@ -553,8 +558,10 @@ class Renderer(object):
                 # fill polygon
                 if is_fill_enabled:
                     fill_edges = self._close_polygon(edges)
+                    is_image = primitive_type == constants.IMAGE
+                    is_text = primitive_type == constants.TEXT
 
-                    if primitive_type == constants.IMAGE or primitive_type == constants.TEXT:
+                    if is_image or is_text:
                         fill_color = fill_edges[0][0].color
 
                     fill_pixels += self._scan_line_filling(
@@ -563,7 +570,7 @@ class Renderer(object):
                     )
 
                 # stroke the polygon
-                if is_stroke_enabled:
+                if is_stroke_enabled and not is_image:
                     for e in edges:
                         stroke_pixels += self._rasterize_line(
                             e[0],
@@ -585,10 +592,13 @@ class Renderer(object):
             for p in pixels:
                 p.x *= scale
                 if p.x >= 0 and p.x < self.width and p.y >= 0 and p.y < self.height:
+                    # process text character
                     if need_wrap:
-                        ch_w = get_char_width(p.color.ch)
+                        ch = p.color.ch
+                        ch_w = get_char_width(ch)
+                        ch = ch[0] if isinstance(ch, tuple) else ch
                         if ch_w == 1:
-                            p.color.ch = p.color.ch + " "
+                            p.color.ch = (ch, 2)
                     pixels_clipped.append(p)
             fragments_clipped.append(pixels_clipped)
 
@@ -1395,15 +1405,16 @@ class Point(object):
         weight_x=0,
         weight_y=0,
         rotation=0,
-        type="normal"
+        type="normal",
+        visible=True
     ):
         self.x = x
         self.y = y
         self.weight_x = weight_x
         self.weight_y = weight_y
-        self.color = color
         self.type = type
         self.rotation = rotation
+        self.visible = visible
         self.color = Color(' ') if color == None else color
 
     def __str__(self):
@@ -1616,14 +1627,18 @@ class Image(object):
         y2 = self.y + self.height
         x1 = self.x
         x2 = self.x + self.width
-        for y in range(y1, y2):
-            for x in range(x1, x2):
-                y0 = int(map(y, y1, y2, 0, self.image.height))
-                x0 = int(map(x, x1, x2, 0, self.image.width))
+        for y in range(y1, y2 + 1):
+            for x in range(x1, x2 + 1):
+                y0 = int(map(y, y1, y2, 0, self.image.height - 1))
+                x0 = int(map(x, x1, x2, 0, self.image.width - 1))
                 index = y0 * self.image.width + x0
                 color = self.image[index]
-                c = (color[0], color[1], color[2])
-                points.append(Point(x, y, color=Color('·', c, c)))
+                if color[3] == 0:
+                    points.append(Point(x, y, visible=False))
+                else:
+                    v = (color[0], color[1], color[2])
+                    c = Color('·', v, v)
+                    points.append(Point(x, y, color=c))
 
         Color.restore()
 
@@ -1636,16 +1651,38 @@ class Image(object):
 
 class Text(object):
 
-    def __init__(self, text, x, y):
+    def __init__(self, text, x, y, mode):
         self.text = text
         self.x = x
         self.y = y
+        self.mode = mode
+        self._matrix = [[]]
 
     def to_shape(self, size, font, align_x, align_y):
-        text = self._convert(self.text, size, font)
-        matrix = self._matrixlize(text)
-        height = matrix.row
-        width = matrix.col
+        self.to_string(size, font, align_x, align_y)
+        points = []
+        is_double = self.mode == constants.DOUBLE
+        for i, chars in enumerate(self._matrix):
+            for j, c in enumerate(chars):
+                if is_double and j % 2 == 0:
+                    ch = c + chars[j + 1] if j < len(chars) - 1 else c
+                    x0 = self.x + j // 2
+                elif is_double and j % 2 != 0:
+                    continue
+                else:
+                    ch = c
+                    x0 = self.x + j
+
+                y0 = self.y + i
+                points.append(Point(x0, y0, color=Color(ch)))
+
+        return Shape(points=points, primitive_type=constants.TEXT)
+
+    def to_string(self, size, font, align_x, align_y):
+        self.text = self._convert(self.text, size, font)
+        self._matrix = self._matrixlize(self.text)
+        height = self._matrix.row
+        width = self._matrix.col
 
         if align_x == constants.RIGHT:
             self.x -= width
@@ -1656,16 +1693,6 @@ class Text(object):
             self.y -= height
         elif align_y == constants.MIDDLE:
             self.y -= height / 2
-
-        points = []
-        for i, chars in enumerate(matrix):
-            for j, ch in enumerate(chars):
-                x0 = self.x + j
-                y0 = self.y + i
-                color = Color(ch)
-                points.append(Point(x0, y0, color=color))
-
-        return Shape(points=points, primitive_type=constants.TEXT)
 
     @classmethod
     def text_width(cls, text, size, font):

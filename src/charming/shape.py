@@ -158,8 +158,8 @@ def end_shape(close_mode=constants.OPEN):
 
 @contextmanager
 @params_check(
-    int,
-    int
+    primitive_type=int,
+    close_mode=int
 )
 def open_shape(primitive_type=constants.POLYGON, close_mode=constants.OPEN):
     begin_shape(primitive_type)
@@ -352,12 +352,12 @@ def bezier_tangent(n1, n2, n3, n4, t):
 
 #### attributes ####
 
-@params_check(int)
+@params_check(mode=int)
 def rect_mode(mode=constants.CORNER):
     renderer.rect_mode = mode
 
 
-@params_check(int)
+@params_check(mode=int)
 def ellipse_mode(mode=constants.CENTER):
     renderer.ellipse_mode = mode
 

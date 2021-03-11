@@ -118,5 +118,5 @@ def generate_food():
                 break
         food = [x, y, index]
 
-
-app.run()
+if __name__ == "__main__":
+    app.run()

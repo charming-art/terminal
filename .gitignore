@@ -6,8 +6,3 @@ dist/
 venv
 *.egg-info
 *.log
-index.html
-lib/
-docs/_build
-example.py
-avatar.png
