@@ -1409,7 +1409,7 @@ class Point(object):
         attrs = {
             "x": self.x,
             "y": self.y,
-            # "color": self.color
+            "color": self.color.ch
         }
         return attrs.__str__()
 
@@ -1649,21 +1649,32 @@ class Text(object):
     def to_shape(self, size, font, align_x, align_y):
         self.to_string(size, font, align_x, align_y)
         points = []
-        is_double = self.mode == constants.DOUBLE
         for i, chars in enumerate(self._matrix):
+            ch = ''
+            x0 = self.x
+            y0 = self.y + i
             for j, c in enumerate(chars):
-                if is_double and j % 2 == 0:
-                    ch = c + chars[j + 1] if j < len(chars) - 1 else c
-                    x0 = self.x + j // 2
-                elif is_double and j % 2 != 0:
-                    continue
+                # compress the line
+                if self.mode == constants.DOUBLE:
+                    w1 = get_char_width(ch)
+                    w2 = get_char_width(c)
+                    w = w1 + w2
+                    if w < 2:
+                        ch += c
+                        continue
+                    else:
+                        ch = ch + c if w == 2 else ch
+                        points.append(Point(x0, y0, color=Color(ch)))
+                        ch = '' if w == 2 else c
+                        x0 = x0 + 1
                 else:
-                    ch = c
                     x0 = self.x + j
+                    points.append(Point(x0, y0, color=Color(c)))
 
-                y0 = self.y + i
-                points.append(Point(x0, y0, color=Color(ch)))
+            if ch != '':
+               points.append(Point(x0, y0, color=Color(ch)))
 
+        logger.debug(points)
         return Shape(points=points, primitive_type=constants.TEXT)
 
     def to_string(self, size, font, align_x, align_y):

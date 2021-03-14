@@ -33,6 +33,9 @@ def get_char_width(ch):
 
     if len(ch) >= 2:
         return 2
+    
+    if ch == '':
+        return 0
 
     o = ord(ch)
     if o == 0xe or o == 0xf:
