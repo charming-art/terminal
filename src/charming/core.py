@@ -17,7 +17,6 @@ from .utils import Matrix
 from .utils import angle_between
 from .utils import get_char_width
 from .utils import to_left
-from .utils import generate_xtermjs_colors
 from .utils import logger
 from .utils import list_find
 

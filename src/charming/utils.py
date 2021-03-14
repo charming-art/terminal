@@ -111,43 +111,6 @@ def dist(x1, y1, x2, y2):
     return math.sqrt(sum((px - qx) ** 2 for px, qx in zip(p, q)))
 
 
-def generate_xtermjs_colors():
-    colors = [
-        (0x2e, 0x34, 0x36),
-        (0xcc, 0x00, 0x00),
-        (0x4e, 0x9a, 0x06),
-        (0xc4, 0xa0, 0x00),
-        (0x34, 0x65, 0xa4),
-        (0x75, 0x50, 0x7b),
-        (0x06, 0x98, 0x9a),
-        (0xd3, 0xd7, 0xcf),
-        (0x55, 0x57, 0x53),
-        (0xef, 0x29, 0x29),
-        (0x8a, 0xe2, 0x34),
-        (0xfc, 0xe9, 0x4f),
-        (0x72, 0x9f, 0xcf),
-        (0xad, 0x7f, 0xa8),
-        (0x34, 0xe2, 0xe2),
-        (0xee, 0xee, 0xec)
-    ]
-
-    # Fill in the remaining 240 ANSI colors.
-    # Generate colors (16-231)
-    v = [0x00, 0x5f, 0x87, 0xaf, 0xd7, 0xff]
-    for i in range(216):
-        r = v[int((i / 36) % 6)]
-        g = v[int((i / 6) % 6)]
-        b = v[int(i % 6)]
-        colors.append((r, g, b))
-
-    # Generate greys (232-255)
-    for i in range(24):
-        c = 8 + i * 10
-        colors.append((c, c, c))
-
-    return colors
-
-
 class Matrix(object):
 
     def __init__(self, matrix, type="normal", value=0):
