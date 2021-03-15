@@ -23,10 +23,10 @@ from .utils import list_find
 
 class Sketch(object):
 
-    def __init__(self, renderer, context, timer):
+    def __init__(self, renderer, context):
         self.renderer = renderer
         self.context = context
-        self.timer = timer
+        self.timer = LocalTimer()
 
         self.frame_rate = 30
         self.is_loop = True
