@@ -604,8 +604,8 @@ class Renderer(object):
         return fragments_clipped
 
     @logger.record('fragment processing')
-    def _fragment_processing(self, fragemnts):
-        for pixels in fragemnts:
+    def _fragment_processing(self, fragments):
+        for pixels in fragments:
             for p in pixels:
                 key = f'({p.x},{p.y})'
                 index = p.y * self.width + p.x
