@@ -76,7 +76,7 @@ class Sketch(object):
                 self._loop()
                 if self.has_draw_hook and self.has_setup_hook:
                     self.timer.run(1000 / self.frame_rate, self._loop)
-                else:
+                elif not self.should_exit:
                     self.timer.wait()
         except Exception as e:
             logger.debug(e)
