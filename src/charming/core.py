@@ -1672,9 +1672,8 @@ class Text(object):
                     points.append(Point(x0, y0, color=Color(c)))
 
             if ch != '':
-               points.append(Point(x0, y0, color=Color(ch)))
+                points.append(Point(x0, y0, color=Color(ch)))
 
-        logger.debug(points)
         return Shape(points=points, primitive_type=constants.TEXT)
 
     def to_string(self, size, font, align_x, align_y):
