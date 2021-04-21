@@ -1,9 +1,3 @@
----
-id: structure
-sidebar_label: Structure
-hide_title: True
----
-
 # Structure
 
 Like there are static mode for static effects and active mode for dynamic effects in Processing, you can also use them in Charming but with a little difference.

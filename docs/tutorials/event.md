@@ -1,10 +1,4 @@
----
-id: events
-sidebar_label: Events
-hide_title: True
----
-
-# Events
+# Event
 
 Events means you can bring life to your artworks, because you can interact with it and it will give you feedback.
 

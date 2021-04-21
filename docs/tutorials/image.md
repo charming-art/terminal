@@ -1,9 +1,3 @@
----
-id: image
-sidebar_label: Image
-hide_title: True
----
-
 # Image
 
 In Charming, it is possible for you to draw an image to terminal as simple as Processing, but only a subset of raw pixels will be displayed.

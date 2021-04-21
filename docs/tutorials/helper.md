@@ -1,10 +1,4 @@
----
-id: helpers
-hide_title: True
-sidebar_label: Helpers
----
-
-# Helpers
+# Helper
 
 There some useful helper functions.
 

@@ -1,9 +1,3 @@
----
-id: processing-to-charming
-sidebar_label: Processing to Charming
-hide_title: True
----
-
 # Processing to Charming
 
 It will be very helpful if you get to know the main differences between Charming and Processing.
