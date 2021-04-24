@@ -1,6 +1,6 @@
 import charming as app
-from _utils import scale_linear, scale_band, scale_ordinal
-from _data import covid_mock as data
+from utils import scale_linear, scale_band, scale_ordinal
+from data import covid_mock as data
 
 # open canvas
 app.full_screen(app.DOUBLE)

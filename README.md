@@ -41,6 +41,12 @@ python3 sketch.py
 
 ![get started](https://raw.githubusercontent.com/charming-art/public-files/master/get_started.png)
 
+## Gallery
+
+|  [Heart](./examples/heart/readme.md)   |  [Covid Bar Chart](./examples/barchart/readmd.md) |  [Eating Poetry](./examples/snake/readme.md) | [More](./docs/gallery.md) |
+|  :--:  |  :--: | :--:  | :--: |
+| <img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_heart.gif" height="180px" alt="heart" />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_barchart.png" height="180px" alt="bar chart" />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_snake.gif" alt="snake" height="180px" /> | 👀 |
+
 ## Why is it
 
 With [Open Frameworks](https://github.com/openframeworks/openFrameworks), [Processing](https://github.com/processing/processing), [P5js](https://github.com/processing/p5.js) getting more and more popular, people pay more attention on using computer and coding to make exquisite and complex artworks or information graphics nowadays. Here are some examples created by me.
@@ -123,18 +129,18 @@ Just like most of us do not play basketball for career purpose, we should consid
 
 Charming implements most of Processing's APIs related to 2D, all of the supported APIs are list below. You can take [Processing Documentation](https://processing.org/reference/) as a reference, and take a look at some basic [test samples](https://github.com/charming-art/charming/blob/master/tests/) to be familiar with the supported APIs.
 
-- [Color](./docs/apis/color.md)
-- [Constant](./docs/apis/constant.md)
-- [Environment](./docs/apis/environment.md)
-- [Event](./docs/apis/event.md)
-- [Helper](./docs/apis/helper.md)
-- [Image](./docs/apis/image.md)
-- [Math](./docs/apis/math.md)
-- [Shape](./docs/apis/shape.md)
-- [Structure](./docs/apis/structure.md)
-- [Time](./docs/apis/time.md)
-- [Transform](./docs/apis/transform.md)
-- [Typography](./docs/apis/typography.md)
+- [Color](./docs/api/color.md)
+- [Constant](./docs/api/constant.md)
+- [Environment](./docs/api/environment.md)
+- [Event](./docs/api/event.md)
+- [Helper](./docs/api/helper.md)
+- [Image](./docs/api/image.md)
+- [Math](./docs/api/math.md)
+- [Shape](./docs/api/shape.md)
+- [Structure](./docs/api/structure.md)
+- [Time](./docs/api/time.md)
+- [Transform](./docs/api/transform.md)
+- [Typography](./docs/api/typography.md)
 
 ## Future Work
 
