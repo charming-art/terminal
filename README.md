@@ -2,25 +2,25 @@
 
 Charming is a creative coding language designed for **Character Terminal Art Programming**.
 
-It currently written in Python and provides Processing-like APIs, which aims to help artists, designers, educators, beginners, and anyone else to easily create following visual effects in terminal.
+It is currently written in Python and provides Processing-like APIs, which aims to help artists, designers, educators, beginners, and anyone else to easily create following visual effects in terminal.
 
 - ASCII Art Animation
 - Character-Style Generative Art
 - Terminal Game Application
 - Expressive Data Visualization
 
-<a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/home_code.png" alt="Charming" height="320"></a>&ensp;
-<a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/welcome.gif" alt="Charming" height="320"></a>
-
-## Features
-
-- Highly Expressive
-- Easy to learn and use
-- Fun to create and build staff
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/home_code.png" alt="Charming" height="320">&ensp;
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/welcome.gif" alt="Charming" height="320">
 
 ## Why is it
 
-You can discovery more about the purpose of design such language [here](./docs/why-is-it.md).
+You can read more details about the purpose of design such language [here](./docs/why-is-it.md).
+
+## Features
+
+- **Highly Expressive**: Unlike traditional drawing system or tool using three numerical channels (`(r, g, b)` or `(h, s, v)`) to describe a color, Charming allows you to describe a color like `(character, foreground color, background color)`, which means you can express more with the extra the `character` channel. Please see this [bar chart](./docs/examples/barchart.md) as an example.
+- **Powerful and Flexible**: Charming is not as same as [urwid](https://github.com/urwid/urwid) or [click](https://github.com/pallets/click) to build console line interface. Actually it more like [asciimatics](https://github.com/peterbrittain/asciimatics), [art](https://github.com/sepandhaghighi/art) or [tcharts](https://github.com/ProtoTeam/tcharts.js) to draw some visual effects in the terminal but with more flexibility. Instead of drawing limited and predefined shapes or effects, you can draw some basic primitives, custom shapes, curves, images, typography with transforms (translate, rotate, shear) and even events (mouse, keyboard) in Charming.
+- **Easy to learn and use**: Charming is very beginner-friendly, because of Python's simple syntax and [Processing](https://processing.org/)'s concise APIs. It will be more easier if you are already familiar with them. Once you've master Charming, you can create anything interesting in you head with it and enjoy the pure joy of coding.
 
 ## Installation
 
@@ -100,7 +100,6 @@ Charming implements most of Processing's APIs related to 2D, all of the supporte
   - terminal game
   - expressive data visualization
 - **Better Documentation**: Write usages, parameters, returns, examples for each API.
-  
 ## License
 
 [LGPL-2.1 License](https://github.com/charming-art/charming/blob/master/LICENSE)
