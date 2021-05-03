@@ -2,7 +2,7 @@
 
 Charming is a creative coding language designed for **Character Terminal Art Programming**.
 
-It currently written in Python and provides Processing-like APIs, which aims to help artists, designers, educators, beginners, and anyone else to easily create:
+It currently written in Python and provides Processing-like APIs, which aims to help artists, designers, educators, beginners, and anyone else to easily create following visual effects in terminal.
 
 - ASCII Art Animation
 - Character-Style Generative Art
@@ -11,6 +11,16 @@ It currently written in Python and provides Processing-like APIs, which aims to 
 
 <a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/home_code.png" alt="Charming" height="320"></a>&ensp;
 <a href="https://charming-art.github.io/"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/welcome.gif" alt="Charming" height="320"></a>
+
+## Features
+
+- Highly Expressive
+- Easy to learn and use
+- Fun to create and build staff
+
+## Why is it
+
+You can discovery more about the purpose of design such language [here](./docs/why-is-it.md).
 
 ## Installation
 
@@ -24,7 +34,7 @@ pip3 install charming --user
 ## A Simple Example
 
 ```py
-# save this as sketch.py
+# save this as rect.py
 import charming as app
 
 # draw a rect
@@ -35,27 +45,29 @@ app.rect(0, 0, 10, 10)
 app.run()
 ```
 
-```py
-python3 sketch.py
+```bash
+python3 rect.py
 ```
 
 ![get started](https://raw.githubusercontent.com/charming-art/public-files/master/get_started.png)
 
 ## Gallery
 
-|  [Heart](./examples/heart/readme.md)   |  [Covid Bar Chart](./examples/barchart/readmd.md) |  [Eating Poetry](./examples/snake/readme.md) | [More](./docs/gallery.md) |
-|  :--:  |  :--: | :--:  | :--: |
-| <img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_heart.gif" height="180px" alt="heart" />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_barchart.png" height="180px" alt="bar chart" />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_snake.gif" alt="snake" height="180px" /> | 👀 |
+There are some awesome sketches created by Charming, you can take a quick look at them and view more [here](./docs/examples/readme.md) if you interested are in.
+
+|  [Heart](./docs/examples/heart.md)   |  [Covid Bar Chart](./docs/examples/barchart.md) |  [Eating Poetry](./docs/examples/snake.md) |
+|  :--:  |  :--: | :--:  |
+| <img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_heart.gif" height="180px" alt="heart" />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_barchart.png" height="180px" alt="bar chart" />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_snake.gif" alt="snake" height="180px" /> |
 
 ## Tutorials
 
-- [Why is it](./docs/tutorials/why-is-it.md)
-- [Structure](./docs/tutorials/stucture.md)
-- [Color](./docs/tutorials/color.md)
+- [Overview](./docs/tutorials/overview.md)
 - [Shape](./docs/tutorials/shape.md)
+- [Color](./docs/tutorials/color.md)
+- [Structure](./docs/tutorials/stucture.md)
+- [Event](./docs/tutorials/event.md)
 - [Image](./docs/tutorials/image.md)
 - [Typography](./docs/tutorials/typography.md)
-- [Event](./docs/tutorials/event.md)
 - [Helper](./docs/tutorials/helper.md)
 - [Processing to Charming](./docs/tutorials/processing-to-charming.md)
 
