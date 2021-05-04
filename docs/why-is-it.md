@@ -1,19 +1,18 @@
 # Why is it
 
-With [Open Frameworks](https://github.com/openframeworks/openFrameworks), [Processing](https://github.com/processing/processing), [P5js](https://github.com/processing/p5.js) getting more and more popular, people pay more attention on using computer and coding to make exquisite and complex artworks or information graphics nowadays. Here are some examples created by me.
+With [Open Frameworks](https://github.com/openframeworks/openFrameworks), [Processing](https://github.com/processing/processing), [P5js](https://github.com/processing/p5.js) getting more and more popular, people pay more attention on using computer and coding to make exquisite and complex artworks or information graphics nowadays as the following examples created by me.In this case, why we need a new creative coding language?
 
-<a href="https://www.openprocessing.org/sketch/748916"><img src="https://openprocessing-usercontent.s3.amazonaws.com/thumbnails/visualThumbnail748916@2x.jpg" height="190px" /></a>&ensp;
-<a href="https://www.openprocessing.org/sketch/757223"><img src="https://openprocessing-usercontent.s3.amazonaws.com/thumbnails/visualThumbnail757223@2x.jpg" height="190px" /></a>&ensp;
-<a href="https://www.openprocessing.org/sketch/720376"><img src="https://openprocessing-usercontent.s3.amazonaws.com/thumbnails/visualThumbnail720376@2x.jpg" height="190px" /></a>&ensp;
-<a href="https://www.openprocessing.org/sketch/736203"><img src="https://openprocessing-usercontent.s3.amazonaws.com/thumbnails/visualThumbnail736203@2x.jpg" height="190px" /></a>
-
-In this case, why we need a new creative coding language?
+| [Circles' Dances](https://www.openprocessing.org/sketch/748916) | [Gluttonous squid](https://www.openprocessing.org/sketch/757223) | [Broken Heart](https://www.openprocessing.org/sketch/720376) | [Tree Planet](https://www.openprocessing.org/sketch/736203) |
+| :--: | :--: | :--: | :--: |
+|<img src="https://openprocessing-usercontent.s3.amazonaws.com/thumbnails/visualThumbnail748916@2x.jpg"  /> | <img src="https://openprocessing-usercontent.s3.amazonaws.com/thumbnails/visualThumbnail757223@2x.jpg"  /> | <img src="https://openprocessing-usercontent.s3.amazonaws.com/thumbnails/visualThumbnail720376@2x.jpg"  /> | <img src="https://openprocessing-usercontent.s3.amazonaws.com/thumbnails/visualThumbnail736203@2x.jpg"  /> |
 
 ## Renaissance of ASCII Art
 
-First of all, it seems like we gradually forget an old and pure form of art which was born with the computer and programmer -- [ASCII Art](https://en.wikipedia.org/wiki/ASCII_art), pictures pieced together from the 95 printable (from a total of 128) characters defined by the ASCII Standard. There are some examples from [textfancy](https://textfancy.com/gallery/).
+First of all, it seems like we gradually forget an old and pure form of art which was born with the computer and programmer -- [ASCII Art](https://en.wikipedia.org/wiki/ASCII_art), pictures pieced together from the 95 printable (from a total of 128) characters defined by the ASCII Standard as the following examples from [textfancy](https://textfancy.com/gallery/).
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/baby.png" height="192px" />&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/spiderman.png" height="192px" />&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/batman.png" height="192px" />
+| Sponge | Spider-Man | Batman |
+| :--: | :--: | :--: |
+|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/baby.png"  />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/spiderman.png" />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/batman.png" />|
 
 Back in 1970s and early 1980s, computers were not as accessible as now, nevertheless to create sophisticated visual effects. But at that time, ASCII Art had showed up and somehow meant to belong to the programmers of that generation who mostly programmed in a text-based terminal day and night, so **ASCII Art may be the best way to show the original charm and romance of computers and of programmers.**
 
@@ -26,6 +25,8 @@ So we have to make the ASCII Art prosperous again.
 ## Powerful and intuitive
 
 Then, Charming is not the first tool which can make ANSCII Art and will certainly not be the last one , but it is more powerful and intuitive than most of existing tools.
+
+### More expressive
 
 We are not in 1970s or early 1980s after all, it will be very awkward if we limit ASCII Art to ASCII code and images.
 
@@ -41,25 +42,29 @@ But if we extend the concept of color to include character, the character defini
 
 There is a bar chart for mock data about covid-19 virus created by Charming. Instead of only using green for the curve, red for the confirm, gray for the dead, it also use 🌈 to express happiness and hopefulness, use 🦠 to strengthen the warning, and use ☠️ to show sadness and fear. They are indeed make this chart more vivid and unforgettable.
 
+### Flexible but easy
+
 Charming is born for Character Terminal Art, so only a small part of APIs are related to ASCII Art. Its power focus more on drawing some basic shapes such as *line*, *rectangle*, *circle*, *bezier curve*, *custom shape*, etc. or apply some transformations including *rotate*, *translate*, *scale* and *shear*.
 
-<a href="https://github.com/charming-art/charming/blob/master/tests/test_shape_primitives.py"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/primitives.png" height="150px" /></a>&emsp;<a href="https://github.com/charming-art/charming/blob/master/tests/test_transform.py"><img src="https://raw.githubusercontent.com/charming-art/public-files/master/transforms.png" height="150px" /></a>&emsp;<a href="https://github.com/charming-art/charming/blob/master/tests/test_shape_vertex.py" ><img src="https://raw.githubusercontent.com/charming-art/public-files/master/vertex.png" height="150px" /></a>
+| [Primitives](https://github.com/charming-art/charming/blob/master/tests/test_shape_primitives.py) | [Transforms](https://github.com/charming-art/charming/blob/master/tests/test_transform.py) | [Custom Shapes](https://github.com/charming-art/charming/blob/master/tests/test_shape_vertex.py) |
+| :--: | :--: | :--: |
+|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/primitives.png" />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/transforms.png"/>|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/vertex.png" /> |
 
-## Easy to learn and use
+In other words, it is very flexible. Sometimes being flexible usually means complex usage and steep learning curve because of its flexibility, but it is not true in Charming.
 
-Being powerful usually means complex usage and steep learning curve because of its flexibility.
+Thanks to Processing and P5js, they have already introduced a intuitive way of coding to the public. Charming makes full use of that and provide similar APIs with them, so you can code in Charming just like code in Processing or P5js if you are familiar with them.
 
-But thanks to Processing and P5js, they have already introduced a intuitive way of coding to the public. Charming makes full use of that and provide similar APIs with them, so you can code in Charming just like code in Processing or P5js if you are familiar with them.
-
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/code1.png" height="300px" />&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/code2.png" height="300px" />
+| Static Mode | Active Mode |
+| :--: | :--: |
+|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/code1.png"  />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/code2.png" />|
 
 ## Have fun and to be present
 
-Last but not the least, I hope not only does Charming make you love programming for fun or show a magic world to you, but also make this journey relaxing and interesting.
+Last but not the least, **I hope not only does Charming make you love programming for fun or show a magic world to you, but also make this journey relaxing and interesting**.
 
-With the help of artificial intelligence, computer science and software engineering gaining more and more attention and so does Python, a large number of people choose to learn Python to make a living, but programming and Python are far more than that.
+With the help of artificial intelligence, computer science and software engineering gaining more and more attention and so does Python, a large number of people choose to learn coding to make a living, but programming and Python are far more than that.
 
-Just like most of us do not play basketball for career purpose, we should consider programming or programming in Python as a new kind of hobby. Because life can be without machine learning, web crawler or automated operations, but it can not be without creating and sharing things to have fun and to be present.
+Just like most of us do not play basketball for career purpose, we should consider programming as a new kind of hobby. Because life can be without machine learning, web crawler or automated operations, but it can not be without creating and sharing things to have fun and to be present.
 
 **With the help of Charming, you are able to print something really awesome at the terminal when you are learning Python instead of just print some boring and stupid log information.**
 

@@ -9,8 +9,9 @@ It is currently written in Python and provides Processing-like APIs, which aims 
 - Terminal Game Application
 - Expressive Data Visualization
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/home_code.png" alt="Charming" height="320">&ensp;
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/welcome.gif" alt="Charming" height="320">
+| code | preview |
+| :--: | :-----: |
+| <img src="https://raw.githubusercontent.com/charming-art/public-files/master/home_code.png" alt="Charming" height="320"> | <img src="https://raw.githubusercontent.com/charming-art/public-files/master/welcome.gif" alt="Charming" height="320"> | 
 
 ## Why is it
 
@@ -26,7 +27,7 @@ Just like most of us do not play basketball for career purpose, we could conside
 
 - **Highly Expressive**: Unlike traditional drawing system or tool using three numerical channels (`(r, g, b)` or `(h, s, v)`) to describe a color, Charming allows you to describe a color like `(character, foreground color, background color)`, which means you can express more with the extra the `character` channel. Please see the following *Covid-19 Bar Chart* as an example.
 - **Powerful and Flexible**: Charming is not as same as [urwid](https://github.com/urwid/urwid) or [click](https://github.com/pallets/click) to build console line interface. Actually it more like [asciimatics](https://github.com/peterbrittain/asciimatics), [art](https://github.com/sepandhaghighi/art) or [tcharts](https://github.com/ProtoTeam/tcharts.js) to draw some visual effects in the terminal but with more flexibility. Instead of drawing limited and predefined shapes or effects, you can draw some basic primitives, custom shapes, curves, images, typography with transforms (translate, rotate, shear) and even events (mouse, keyboard) in Charming. Please see the following *Heart* and *Eating Poetry Game* as examples.
-- **Easy to learn and use**: Charming is very beginner-friendly, because of Python's simple syntax and [Processing](https://processing.org/)'s concise APIs. It will be more easier if you are already familiar with them. Once you've master Charming, you can create anything interesting in you head with it and enjoy the pure joy of coding.
+- **Easy to Learn and Use**: Charming is very beginner-friendly, because of Python's simple syntax and [Processing](https://processing.org/)'s concise APIs. It will be more easier if you are already familiar with them. Once you've master Charming, you can create anything interesting in you head with it and enjoy the pure joy of coding.
 
 |  [Covid-19 Bar Chart](./docs/examples/barchart.md)   |  [Heart](./docs/examples/heart.md) |  [Eating Poetry Game](./docs/examples/snake.md) |
 |  :--:  |  :--: | :--:  |
