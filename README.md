@@ -1,6 +1,6 @@
 <h1 align="center">Charming</h1>
 <p align="center">
-<a href="./docs/tutorials/overview.md">Tutorials</a> | <a href="./docs/api/overview.md">API Reference</a> | <a href="./docs/examples/overview.md">Gallery</a>
+<a href="./docs/tutorials/overview.md"><b>Tutorials</b></a> | <a href="./docs/api/overview.md"><b>API Reference</b></a> | <a href="./docs/examples/overview.md"><b>Gallery</b></a>
 </p>
 <div align="center">
 <img src="https://raw.githubusercontent.com/charming-art/public-files/master/home_code.png" alt="Charming" height="320">&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/welcome.gif" alt="Charming" height="320">
@@ -12,12 +12,12 @@ Charming is a creative coding language designed for **Character Terminal Art Pro
 
 It is currently written in Python and provides Processing-like APIs, which aims to help artists, designers, educators, beginners, and anyone else to easily create following visual effects in terminal.
 
-- ASCII Art Animation
-- Character-Style Generative Art
-- Terminal Game Application
-- Expressive Data Visualization
+- [ASCII Art Animation](./docs/examples/overview.md#ASCII-Art-Animation)
+- [Character-Style Generative Art](./docs/examples/overview.md#Character-Style-Generative-Art)
+- [Terminal Game Application](./docs/examples/overview.md#Terminal-Game-Application)
+- [Expressive Data Visualization](./docs/examples/overview.md#Expressive-Data-Visualization)
 
-|  [Character-Style Generative Art](./docs/examples/heart.md)   |  [Terminal Game Application](./docs/examples/snake.md) |  [Expressive Data Visualization](./docs/examples/barchart.md) |
+|  [Art of Heart](./docs/examples/heart.md)   |  [Eating Poetry Game](./docs/examples/snake.md) |  [Covid-19 Bar Chart](./docs/examples/barchart.md) |
 |  :--:  |  :--: | :--:  |
 | <img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_heart.gif" height="180px" alt="heart" />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_snake.gif" alt="snake" height="180px" />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/barchart.png" height="180px" alt="bar chart" /> |
 
@@ -50,14 +50,14 @@ $ pip3 install charming --user
 
 ```python
 # save this as rect.py
-import charming as app
+import charming as cm
 
 # draw a rect
-app.full_screen()
-app.rect(0, 0, 10, 10)
+cm.full_screen()
+cm.rect(0, 0, 10, 10)
 
 # run the sketch
-app.run()
+cm.run()
 ```
 
 ```bash
@@ -70,9 +70,6 @@ $ python3 rect.py
 
 For guidance how to make a contribution to Charming, see the [contributing guidelines](./CONTRIBUTING.md).
 
-## Links
+## Future Work
 
-- [Tutorials](./docs/tutorials/overview.md)
-- [API Reference](./docs/api/overview.md)
-- [Gallery](./docs/examples/overview.md)
-- [Future Work](https://github.com/charming-art/charming/projects/6)
+Currently Charming has many problems related to accessibility, robust, performance and so on, you can have a quick look [here](https://github.com/charming-art/charming/projects/6) for future work.
