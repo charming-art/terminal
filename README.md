@@ -31,7 +31,7 @@ Just like most of us do not play basketball for career purpose, we could conside
 
 |  [Covid-19 Bar Chart](./docs/examples/barchart.md)   |  [Heart](./docs/examples/heart.md) |  [Eating Poetry Game](./docs/examples/snake.md) |
 |  :--:  |  :--: | :--:  |
-| <img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_barchart.png" height="180px" alt="bar chart" />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_heart.gif" height="180px" alt="heart" />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_snake.gif" alt="snake" height="180px" /> |
+| <img src="https://raw.githubusercontent.com/charming-art/public-files/master/barchart.png" height="180px" alt="bar chart" />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_heart.gif" height="180px" alt="heart" />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_snake.gif" alt="snake" height="180px" /> |
 
 ## Installation
 
