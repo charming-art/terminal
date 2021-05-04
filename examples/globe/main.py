@@ -19,7 +19,7 @@ def draw():
     app.background()
     width = app.get_width()
     height = app.get_height()
-    w = 36
+    w = 30
     h = 30
     x = (width - w) / 2
     y = (height - h) / 2
