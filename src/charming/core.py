@@ -539,6 +539,8 @@ class Renderer(object):
         primitive_type
     ):
         fragments = []
+        is_image = primitive_type == constants.IMAGE
+        is_text = primitive_type == constants.TEXT
 
         for edges in primitives:
             fill_pixels = []
@@ -557,8 +559,6 @@ class Renderer(object):
                 # fill polygon
                 if is_fill_enabled:
                     fill_edges = self._close_polygon(edges)
-                    is_image = primitive_type == constants.IMAGE
-                    is_text = primitive_type == constants.TEXT
 
                     if is_image or is_text:
                         fill_color = fill_edges[0][0].color
