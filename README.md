@@ -11,6 +11,14 @@ It is currently written in Python and provides Processing-like APIs, which aims 
 
 <img src="https://raw.githubusercontent.com/charming-art/public-files/master/home_code.png" alt="Charming" height="320">&emsp;<img src="https://raw.githubusercontent.com/charming-art/public-files/master/welcome.gif" alt="Charming" height="320">
 
+## 📎 Links
+
+- [Tutorials](./docs/tutorials/readme.md)
+- [API Reference](./docs/api/readme.md)
+- [Examples](./docs/examples/readme.md)
+- [Contributing](./CONTRIBUTING.md)
+- [Future Work](https://github.com/charming-art/charming/projects/6)
+
 ## ⁉ Why is it
 
 There are [many reasons](./docs/why-is-it.md) for creating Charming, but the most important one is that **I hope not only does Charming make you love programming for fun or show a magic world to you, but also make this journey relaxing and interesting**.
@@ -60,11 +68,3 @@ $ python3 rect.py
 ```
 
 ![get started](https://raw.githubusercontent.com/charming-art/public-files/master/get_started.png)
-
-## 📎 Links
-
-- [Tutorials](./docs/tutorials/readme.md)
-- [API Reference](./docs/api/readme.md)
-- [Examples](./docs/examples/readme.md)
-- [Contributing](./CONTRIBUTING.md)
-- [Future Work](https://github.com/charming-art/charming/projects/6)
