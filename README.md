@@ -63,8 +63,8 @@ $ python3 rect.py
 
 ## 📎 Links
 
-- [Tutorials](./docs/tutorials/overview.md)
-- [API Reference](./docs/api/overview.md)
-- [Examples](./docs/examples/overview.md)
+- [Tutorials](./docs/tutorials/readme.md)
+- [API Reference](./docs/api/readme.md)
+- [Examples](./docs/examples/readme.md)
 - [Contributing](./CONTRIBUTING.md)
 - [Future Work](https://github.com/charming-art/charming/projects/6)

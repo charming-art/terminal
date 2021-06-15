@@ -165,6 +165,27 @@ cm.run()
 
 <a name="color_mode" href="#color_mode">#</a> cm.**color_mode**(*mode*=ANSI | RGB | HSB[, *max1*[, *max2*, [, *max3*]]])
 
+color_mode() changes the way Charming interprets color data. By default, the parameters for fill(), stroke(), background(), and color() are defined by values between 0 and 255 using ANSI color.
+
+```py
+import charming as cm
+
+cm.full_screen()
+cm.no_cursor()
+
+for i in range(256):
+    x = i % 32
+    y = i // 32
+    cm.stroke(' ', i, i)
+    cm.point(x, y)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_color_mode_ansi_256.png" width="100%"/>
+
+To make it easier to use ANSI color, there are some predefined constants which can be used directly as below.
+
 ```py
 import charming as cm
 
@@ -195,22 +216,7 @@ cm.run()
 
 <img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_color_mode_ansi_baisc.png" width="100%"/>
 
-```py
-import charming as cm
-
-cm.full_screen()
-cm.no_cursor()
-
-for i in range(256):
-    x = i % 32
-    y = i // 32
-    cm.stroke(' ', i, i)
-    cm.point(x, y)
-
-cm.run()
-```
-
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_color_mode_ansi_256.png" width="100%"/>
+Setting `color_mode(HSB)` lets you use the HSB system instead. In this situation, each color is represented by three-elements tuple `(hue, saturation, brightness)`. The hue channel is between 0 and 255, and the saturation or brightness channel is between 0 and 100. It is useful to draw a rainbow.
 
 ```py
 import charming as cm
@@ -235,6 +241,8 @@ cm.run()
 
 <img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_color_mode_hsb.png" width="100%"/>
 
+Setting `color_mode(RGB)` lets you use the HSB system instead. In this situation, each color is represented by three-elements tuple `(red, green, blue)`. The red, green, blue channels are all between 0 and 255. `(c,)` is short for `(c, c, c)`. It can be used to draw color with only one channel.
+
 ```py
 import charming as cm
 
@@ -254,6 +262,8 @@ cm.run()
 ```
 
 <img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_color_mode_rgb_red.png" width="100%"/>
+
+It also can be used to draw gray colors.
 
 ```py
 import charming as cm
@@ -277,6 +287,10 @@ cm.run()
 
 <a name="lerp_color" href="#lerp_color">#</a> cm.**lerp_color**(*start*, *stop*, *amt*)
 
+Blends two colors to find a third color somewhere between them. The amt parameter is the amount to interpolate between the two values where 0.0 equal to the first color, 0.1 is very near the first color, 0.5 is halfway in between, etc.
+
+Noticed that not only does it interpolate color `bg` and `fg`, it also will interpolates `ch` as well.
+
 ```py
 import charming as cm
 
@@ -298,6 +312,8 @@ cm.run()
 ```
 
 <img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_lerp_color_ansi.png" width="100%"/>
+
+It also can be used to interpolate color in RGB and HSB color mode.
 
 ```py
 import charming as cm
