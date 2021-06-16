@@ -2,7 +2,7 @@
 
 Methods for creating, reading and setting colors.
 
-<a name="ccolor" href="#ccolor">#</a> cm.**CColor**(*ch*=" "[, *fg*[, *bg*]])
+<a name="ccolor" href="#ccolor">#</a> cm.**CColor**(*ch*=" "[, *fg*[, *bg*]]) : CColor
 
 Creates colors for storing in variables of the color data type. The `fg` or `bg` parameters are interpreted as ANSI, RGB or HSB values depending on the current `color_mode`.
 
@@ -81,7 +81,8 @@ cm.run()
 
 <img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_background.gif" width="100%"/>
 
-<a name="fill" href="#fill">#</a> cm.**fill**(*ch*=" "[, *fg*[, *bg*]])
+<a name="fill" href="#fill">#</a> cm.**fill**(*ch*=" "[, *fg*[, *bg*]])<br/>
+<a name="fill" href="#fill">#</a> cm.**fill**(*ccolor*)
 
 Sets the color used to fill shapes. The `fg` or `bg` parameters are interpreted as ANSI, RGB or HSB values depending on the current `color_mode`.
 
@@ -144,7 +145,8 @@ cm.run()
 
 <img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_no_stroke.png" width="100%"/>
 
-<a name="stroke" href="#stroke">#</a> cm.**stroke**(*ch*="*"[, *fg*[, *bg*]])
+<a name="stroke" href="#stroke">#</a> cm.**stroke**(*ch*="*"[, *fg*[, *bg*]])<br/>
+<a name="stroke" href="#stroke">#</a> cm.**stroke**(*ccolor*)
 
 Sets the color used to draw lines and borders around shapes. The `fg` or `bg` parameters are interpreted as ANSI, RGB or HSB values depending on the current `color_mode`.
 

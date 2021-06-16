@@ -1,5 +1,7 @@
 # Time
 
+Methods for returning information about current time.
+
 <a name="day" href="#day">#</a> cm.**day**()
 
 Returns the current day as a value from 1 - 31.

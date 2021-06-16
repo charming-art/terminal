@@ -30,25 +30,29 @@ Methods for creating, reading and setting colors.
 
 ## Math
 
-### Vector
+Methods related to math.
+
+### CVector
+
+Methods for manipulation vector object which is useful for simulating physic system.
 
 - [cm.CVector](./math.md#cvector) - A class to describe a two dimensional vector, specifically a Euclidean (also known as geometric) vector.
+- [CVector.random_2D](./math.md#random_2D) - Make a new 2D unit vector with a random direction.
+- [CVector.from_angle](./math.md#from_angle) - Make a new 2D unit vector from an angle.
 - [cvector.set](./math.md#set) - Set the components of the vector.
-- [cvector.random_2D](./math.md#random-2d) - Make a new 2D unit vector with a random direction.
-- [cvector.from_angle](./math.md#from-angle) - Make a new 2D unit vector from an angle.
 - [cvector.copy](./math.md#copy) - Get a copy of the vector.
 - [cvector.mag](./math.md#mag) - Calculate the magnitude of the vector.
 - [cvector.mag_sq](./math.md#mag-sq) - Calculate the magnitude of the vector, squared.
-- [cvector.add](./math.md#add) - Adds x, y, and z components to a vector, one vector to another, or two independent vectors.
-- [cvector.sub](./math.md#sub) - Subtract x, y, and z components from a vector, one vector from another, or two independent vectors.
-- [cvector.mult](./math.md#mult) - Multiply a vector by a scalar.
-- [cvector.div](./math.md#div) - Divide a vector by a scalar.
+- [cvector + other](./math.md#add) - Adds x and y components to a vector, one vector to another, or two independent vectors .
+- [cvector - other](./math.md#sub) - Subtract x and y components from a vector, one vector from another, or two independent vectors.
+- [cvector * other](./math.md#mult) - Multiply a vector by a scalar  .
+- [cvector / other](./math.md#div) - Divide a vector by a scalar.
 - [cvector.dist](./math.md#dist) - Calculate the distance between two points.
 - [cvector.dot](./math.md#dot) - Calculate the dot product of two vectors.
 - [cvector.cross](./math.md#cross) - Calculate and return the cross product.
 - [cvector.normalize](./math.md#normalize) - Normalize the vector to a length of 1.
 - [cvector.limit](./math.md#limit) - Limit the magnitude of the vector.
-- [cvector.set_mag](./math.md#set-mag) - Set the magnitude of the vector.
+- [cvector.mag = number](./math.md#set_mag) - Set the magnitude of the vector.
 - [cvector.heading](./math.md#heading) - Calculate the angle of rotation for this vector.
 - [cvector.rotate](./math.md#rotate) - Rotate the vector by an angle.
 - [cvector.lerp](./math.md#lerp) - Linear interpolate the vector to another vector.
@@ -97,6 +101,8 @@ Methods for creating, reading and setting colors.
 - [random_seed](./math.md#random-seed) - Sets the seed value for random().
 
 ## Time
+
+Methods for returning information about current time.
 
 - [cm.day](./time.md#day) - The day() function returns the current day as a value from 1 - 31.
 - [cm.hour](./time.md#hour) - The hour() function returns the current hour as a value from 0 - 23.
