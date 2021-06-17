@@ -13,7 +13,7 @@ builtin_round = round
 
 def abs(n):
     '''
-    Calculates the absolute value of a number. The absolute value of a number is always positive.
+    Calculates the absolute value of a number.
 
     Example:
 

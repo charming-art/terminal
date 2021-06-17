@@ -286,23 +286,197 @@ v.array() # [1, 2]
 
 ## Calculation
 
-- `abs(n)`
-- `ceil(n)`
-- `constrain(amt, low, high)`
-- `dist(x1, y1, x2, y2)`
-- `exp(n)`
-- `floor(n)`
-- `lerp(start, stop, amt)`
-- `log(x)`
-- `mag(a, b, c=0)`
-- `map(value, start1, stop1, start2, stop2)`
-- `max(arg1, arg2, *args[, key])`
-- `min(arg1, arg2, *args[, key])`
-- `norm(value, start, stop)`
-- `pow(n, e)`
-- `round(n)`
-- `sq(n)`
-- `sqrt(n)`
+<a name="abs" href="#abs">#</a> cm.**abs**(*n*) : *number*
+
+Calculates the absolute value (magnitude) of a number.
+
+```py
+from charming import abs
+
+abs(1) # 1
+abs(-1) # 1
+abs(0) # 0
+```
+
+<a name="ceil" href="#ceil">#</a> cm.**ceil**(*n*) : *number*
+
+Calculates the closest int value that is greater than or equal to the value of the parameter.
+
+```py
+from charming import ceil
+
+ceil(1.2) # 2
+ceil(-1.2) # -1
+ceil(1) # 1
+ceil(-1) # -1
+```
+
+<a name="constrain" href="#constrain">#</a> cm.**constrain**(*amt*, *low*, *high*) : *number*
+
+Constrains a value to not exceed a maximum and minimum value.
+
+```py
+from charming import constrain
+
+constrain(-1, 2, 3) # 2
+constrain(4, 2, 3) # 3
+constrain(2.5, 2, 3) # 2.5
+```
+
+<a name="dist" href="#dist">#</a> cm.**dist**(*x*1, *y1*, *x2*, *y2*) : *number*
+
+Calculates the distance between two points.
+
+```py
+from charming import dist
+
+dist(0, 0, 1, 0) # 1.0
+dist(-1, -1, 2, 3) # 5.0
+```
+
+<a name="exp" href="#exp">#</a> cm.**exp**(*n*) : *number*
+
+Returns Euler's number e (2.71828...) raised to the power of the n parameter.
+
+```py
+from charming import exp
+
+exp(1) # 2.718281828459045
+```
+
+<a name="floor" href="#floor">#</a> cm.**floor**(*n*) : *number*
+
+Calculates the closest int value that is less than or equal to the value of the parameter.
+
+```py
+from charming import floor
+
+floor(1.2) # 1
+floor(-1.2) # -2
+floor(0) # 0
+```
+
+<a name="lerp" href="#lerp">#</a> cm.**lerp**(*start*, *stop*, *amt*) : *number*
+
+Calculates a number between two numbers at a specific increment.
+
+```py
+from charming import lerp
+
+lerp(1, 2, 0) # 1
+lerp(1, 2, 1) # 2
+lerp(10, 20, 0.2) # 12.0
+```
+
+<a name="log" href="#log">#</a> cm.**log**(*n*) : *number*
+
+Calculates the natural logarithm (the base-e logarithm) of a number.
+
+```py
+from charming import log
+
+log(math.e) # 1.0
+```
+
+<a name="mag" href="#mag">#</a> cm.**mag**(*a*, *b*, *c*=0) : *number*
+
+Calculates the magnitude (or length) of a vector.
+
+```py
+from charming import mag
+
+mag(3, 4) # 5.0
+mag(3, 4, 12) # 13.0
+```
+
+<a name="map" href="#map">#</a> cm.**map**(*value*, *start1*, *stop1*, *start2*, *stop2*) : *number*
+
+Re-maps a number from one range to another.
+
+```py
+from charming import map
+
+map(1.5, 1, 2, 10, 20) # 15
+```
+
+<a name="max" href="#max">#</a> cm.**max**(<i>*args<i/>, <i>**kw<i/>) : *number*
+
+Determines the largest value in a sequence of numbers, and then returns that value.
+
+```py
+from charming import max
+
+max(0, 1) # 1
+max(0, 1, 2) # 2
+max([0, 1, 2, 3]) # 3
+```
+
+<a name="min" href="#min">#</a> cm.**min**(<i>*args<i/>, <i>**kw<i/>) : *number*
+
+Determines the smallest value in a sequence of numbers, and then returns that value.
+
+```py
+from charming import min
+
+min(0, 1) # 0
+min(0, 1, 2) # 0
+min([0, 1, 2, 3]) # 0
+```
+
+<a name="norm" href="#norm">#</a> cm.**norm**(*value*, *start*, *stop*) : *number*
+
+Normalizes a number from another range into a value between 0 and 1.
+
+```py
+from charming import norm
+
+norm(20, 0, 50) # 0.4
+```
+
+<a name="pow" href="#pow">#</a> cm.**pow**(*n*, *e*) : *number*
+
+Facilitates exponential expressions.
+
+```py
+from charming import pow
+
+pow(3, 2) # 9.0
+pow(4, 0.5) # 2.0
+```
+
+<a name="round" href="#round">#</a> cm.**round**(*n*) : *number*
+
+Calculates the integer closest to the n parameter.
+
+```py
+from charming import round
+
+round(9.2) # 9
+round(9.4) # 9
+round(9.5) # 10
+round(-1.4) # -1
+round(-1.5) # -2
+```
+
+<a name="sq" href="#sq">#</a> cm.**sq**(*n*) : *number*
+
+Squares a number (multiplies a number by itself).
+
+```py
+from charming import sq
+
+sq(5) # 25
+```
+
+<a name="sqrt" href="#sqrt">#</a> cm.**sqrt**(*n*) : *number*
+
+Calculates the square root of a number.
+
+```py
+from charming import sqrt
+
+sqrt(25) # 5.0
+```
 
 ## Trigonometry
 
@@ -324,8 +498,3 @@ v.array() # [1, 2]
 - `random(low[, high])`
 - `random_gaussian()`
 - `random_seed(seed)`
-
-## Examples
-
-- [Source](https://github.com/charming-art/charming/blob/master/src/cmath.py)
-- [Random](https://github.com/charming-art/charming/blob/master/tests/test_math_random.py)
