@@ -399,7 +399,7 @@ from charming import map
 map(1.5, 1, 2, 10, 20) # 15
 ```
 
-<a name="max" href="#max">#</a> cm.**max**(<i>*args<i/>, <i>**kw<i/>) : *number*
+<a name="max" href="#max">#</a> cm.**max(*\*args*, *\*\*kw*)** : *number*
 
 Determines the largest value in a sequence of numbers, and then returns that value.
 
@@ -411,7 +411,7 @@ max(0, 1, 2) # 2
 max([0, 1, 2, 3]) # 3
 ```
 
-<a name="min" href="#min">#</a> cm.**min**(<i>*args<i/>, <i>**kw<i/>) : *number*
+<a name="min" href="#min">#</a> cm.**max(*\*args*, *\*\*kw*)** : *number*
 
 Determines the smallest value in a sequence of numbers, and then returns that value.
 
@@ -480,15 +480,99 @@ sqrt(25) # 5.0
 
 ## Trigonometry
 
-- `acos(n)`
-- `asin(n)`
-- `atan(n)`
-- `atan2(y, x)`
-- `cos(n)`
-- `degrees(n)`
-- `radians(n)`
-- `sin(n)`
-- `tan(n)`
+<a name="acos" href="#acos">#</a> cm.**acos**(*n*) : *number*
+
+The inverse of cos(), returns the arc cosine of a value.
+
+```py
+from charming import acos
+
+acos(0.5) # math.pi / 3
+```
+
+<a name="asin" href="#asin">#</a> cm.**asin**(*n*) : *number*
+
+The inverse of sin(), returns the arc sine of a value.
+
+```py
+from charming import asin
+
+acos(1) # math.pi / 2
+```
+
+<a name="atan" href="#atan">#</a> cm.**atan**(*n*) : *number*
+
+The inverse of tan(), returns the arc tangent of a value.
+
+```py
+from charming import atan
+
+atan(1) # math.pi / 4
+```
+
+<a name="atan2" href="#atan2">#</a> cm.**atan2**(*y*, *x*) : *number*
+
+Calculates the angle (in radians) from a specified point to the coordinate origin as measured from the positive x-axis.
+
+```py
+from charming import atan2
+
+atan2(1, 1) # math.pi / 4
+```
+
+<a name="cos" href="#cos">#</a> cm.**cos**(*n*) : *number*
+
+Calculates the cosine of an angle.
+
+```py
+from charming import cos
+from charming import PI
+
+cos(PI / 3) # 0.5
+```
+
+<a name="degrees" href="#degrees">#</a> cm.**degrees**(*n*) : *number*
+
+Converts a radian measurement to its corresponding value in degrees.
+
+```py
+from charming import degrees
+from charming import PI
+
+degrees(PI) # 180.0
+```
+
+<a name="radians" href="#radians">#</a> cm.**degrees**(*n*) : *number*
+
+Converts a degree measurement to its corresponding value in radians.
+
+```py
+from charming import radians
+
+radians(180.0) # math.pi
+```
+
+<a name="sin" href="#sin">#</a> cm.**sin**(*n*) : *number*
+
+Calculates the sine of an angle.
+
+```py
+from charming import sin
+from charming import PI
+
+sin(PI / 6) # 0.5
+```
+
+<a name="tan" href="#tan">#</a> cm.**tan**(*n*) : *number*
+
+Calculates the ratio of the sine and cosine of an angle
+
+```py
+from charming import tan
+from charming import PI
+
+tan(PI / 4) # 1
+```
 
 ## Random
 
