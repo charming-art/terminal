@@ -774,10 +774,13 @@ def noise_seed(seed):
     PERLIN = None
 
 
-def random(a, b=None):
+def random(a=None, b=None):
     '''
     Returns uniform random numbers.
     '''
+    if a == None and b == None:
+        low = 0
+        high = 1
     if b == None:
         low = 0
         high = a
@@ -794,11 +797,11 @@ def random_seed(seed):
     rd.seed(seed)
 
 
-def random_gaussian():
+def random_gaussian(mean = 0, sd = 1):
     '''
     Returns a float from a random series of numbers having a mean of 0 and standard deviation of 1.
     '''
-    return rd.gauss(0, 1)
+    return mean + rd.gauss(0, 1) * sd
 
 
 if __name__ == '__main__':

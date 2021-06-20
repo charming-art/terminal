@@ -97,8 +97,8 @@ Methods for manipulation vector object which is useful for simulating physic sys
 - [cm.noise_detail](./math.md#noise-detail) - Adjusts the character and level of detail produced by the Perlin noise function.
 - [cm.noise_seed](./math.md#noise-seed) - Sets the seed value for noise().
 - [cm.random](./math.md#random) - Generates random numbers.
-- [random_gaussian](./math.md#random-gaussian) - Returns a float from a random series of numbers having a mean of 0 and standard deviation of 1.
-- [random_seed](./math.md#random-seed) - Sets the seed value for random().
+- [cm.random_gaussian](./math.md#random-gaussian) - Returns a float from a random series of numbers having a mean of 0 and standard deviation of 1.
+- [cm.random_seed](./math.md#random-seed) - Sets the seed value for random().
 
 ## Time
 
