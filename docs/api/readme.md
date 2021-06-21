@@ -111,3 +111,11 @@ Methods for returning information about current time.
 - [cm.month](./time.md#month) - The month() function returns the current month as a value from 1 - 12.
 - [cm.second](./time.md#second) - The second() function returns the current second as a value from 0 - 59.
 - [cm.year](./time.md#year) - The year() function returns the current year as an integer (2003, 2004, 2005, etc).
+
+## Transform
+
+- [cm.translate](./transform.md#translate) - Specifies an amount to displace objects within the display window.
+- [cm.scale](./transform.md#scale) - Increases or decreases the size of a shape by expanding or contracting vertices.
+- [cm.rotate](./transform.md#rotate) - Rotates a shape by the amount specified by the angle parameter.
+- [shear_x](./transform.md#shear_x) - Shears a shape around the x-axis by the amount specified by the angle parameter.
+- [shear_y](./transform.md#shear_y) Shears a shape around the y-axis by the amount specified by the angle parameter.
