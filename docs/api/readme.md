@@ -121,3 +121,15 @@ Methods for applying transformations to objects.
 - [cm.rotate](./transform.md#rotate) - Rotates a shape by the amount specified by the angle parameter.
 - [cm.shear_x](./transform.md#shear_x) - Shears a shape around the x-axis by the amount specified by the angle parameter.
 - [cm.shear_y](./transform.md#shear_y) Shears a shape around the y-axis by the amount specified by the angle parameter.
+
+## Typography
+
+Methods for drawing expected text to screen.
+
+- [cm.text](./typography.md#text) - Draws text to the screen.
+- [cm.text_width](./typography.md#text_width) - Calculates and returns the width of any character or text string.
+- [cm.text_align](./typography.md#text_align) - Sets the current alignment for drawing text.
+- [cm.text_size](./typography.md#text_size) - Sets/gets the current font size.
+- [cm.text_height](./typography.md#text_height) - Calculates and returns the height of any character or text string.
+- [cm.get_font_list](./typography.md#get_font_list) - Returns the supported font list for terminal.
+- [cm.text_font](./typography.md#text_font) - Sets the current font that will be drawn with the text() function.
