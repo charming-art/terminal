@@ -114,8 +114,10 @@ Methods for returning information about current time.
 
 ## Transform
 
+Methods for applying transformations to objects.
+
 - [cm.translate](./transform.md#translate) - Specifies an amount to displace objects within the display window.
 - [cm.scale](./transform.md#scale) - Increases or decreases the size of a shape by expanding or contracting vertices.
 - [cm.rotate](./transform.md#rotate) - Rotates a shape by the amount specified by the angle parameter.
-- [shear_x](./transform.md#shear_x) - Shears a shape around the x-axis by the amount specified by the angle parameter.
-- [shear_y](./transform.md#shear_y) Shears a shape around the y-axis by the amount specified by the angle parameter.
+- [cm.shear_x](./transform.md#shear_x) - Shears a shape around the x-axis by the amount specified by the angle parameter.
+- [cm.shear_y](./transform.md#shear_y) Shears a shape around the y-axis by the amount specified by the angle parameter.

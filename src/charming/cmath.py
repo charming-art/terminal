@@ -797,7 +797,7 @@ def random_seed(seed):
     rd.seed(seed)
 
 
-def random_gaussian(mean = 0, sd = 1):
+def random_gaussian(mean=0, sd=1):
     '''
     Returns a float from a random series of numbers having a mean of 0 and standard deviation of 1.
     '''
