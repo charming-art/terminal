@@ -1,6 +1,6 @@
 # API Reference
 
-Charming implements most of Processing's APIs related to 2D, all of the supported APIs are list below. Noticed that the API reference for Charming copies most of Processing's API reference but replace examples and some features for Charming.
+Charming implements most of Processing's APIs related to 2D, all of the supported APIs are list below. Noticed that the API reference for Charming copies most of [Processing's API reference](https://processing.org/reference/) but replace examples and some features for Charming.
 
 - [Color](./color.md)
 - [Constant](./constant.md)
@@ -129,7 +129,7 @@ Methods for drawing expected text to screen.
 - [cm.text](./typography.md#text) - Draws text to the screen.
 - [cm.text_width](./typography.md#text_width) - Calculates and returns the width of any character or text string.
 - [cm.text_align](./typography.md#text_align) - Sets the current alignment for drawing text.
-- [cm.text_size](./typography.md#text_size) - Sets/gets the current font size.
+- [cm.text_size](./typography.md#text_size) - Sets the current font size.
 - [cm.text_height](./typography.md#text_height) - Calculates and returns the height of any character or text string.
 - [cm.get_font_list](./typography.md#get_font_list) - Returns the supported font list for terminal.
 - [cm.text_font](./typography.md#text_font) - Sets the current font that will be drawn with the text() function.

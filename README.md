@@ -13,9 +13,11 @@ It is currently written in Python and provides Processing-like APIs, which aims 
 
 ## 📎 Links
 
+- [Introduction](https://observablehq.com/@pearmini/charming)
 - [Tutorials](./docs/tutorials/readme.md)
 - [API Reference](./docs/api/readme.md)
 - [Examples](./docs/examples/readme.md)
+- [Processing/P5.js to Charming](./docs/migrate.md)
 - [Contributing](./CONTRIBUTING.md)
 - [Future Work](https://github.com/charming-art/charming/projects/6)
 
