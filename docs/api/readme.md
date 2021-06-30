@@ -131,5 +131,5 @@ Methods for drawing expected text to screen.
 - [cm.text_align](./typography.md#text_align) - Sets the current alignment for drawing text.
 - [cm.text_size](./typography.md#text_size) - Sets the current font size.
 - [cm.text_height](./typography.md#text_height) - Calculates and returns the height of any character or text string.
-- [cm.get_font_list](./typography.md#get_font_list) - Returns the supported font list for terminal.
+- [cm.get_font_list](./typography.md#get_font_list) - Returns the supported font list for text with BIG font size.
 - [cm.text_font](./typography.md#text_font) - Sets the current font that will be drawn with the text() function.
