@@ -803,7 +803,8 @@ class Renderer(object):
 
             x = pre_x * cos + pre_y * sin * (-a / b)
             y = pre_x * sin * (b / a) + pre_y * cos
-            if x != pre_x or y != pre_y:
+
+            if x != pre_x or y != pre_y or len(points) == 0:
                 pre_x = x
                 pre_y = y
                 rotated_x = math.cos(rotation) * x - math.sin(rotation) * y

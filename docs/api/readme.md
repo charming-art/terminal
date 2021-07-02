@@ -3,7 +3,7 @@
 Charming implements most of Processing's APIs related to 2D, all of the supported APIs are list below. Noticed that the API reference for Charming copies most of [Processing's API reference](https://processing.org/reference/) but replace examples and some features for Charming.
 
 - [Color](./color.md)
-- [Constant](./constant.md)
+- [Constants](./constants.md)
 - [Environment](./environment.md)
 - [Event](./event.md)
 - [Helpers](./helpers.md)
@@ -28,6 +28,16 @@ Methods for creating, reading and setting colors.
 - [cm.color_mode](./color.md#color_mode) - Changes the way Charming interprets color data.
 - [cm.lerp_color](./color.md#lerp_color) - Blends two colors to find a third color somewhere between them.
 
+## Constants
+
+Constants for angle.
+
+- [cm.PI](./constants.md#PI) - PI is a mathematical constant with the value 3.1415927.
+- [cm.HALF_PI](./constants.md#HALF_PI) - HALF_PI is a mathematical constant with the value 1.5707964.
+- [cm.QUARTER_PI](./constants.md#QUARTER_PI) - QUARTER_PI is a mathematical constant with the value 0.7853982.
+- [cm.TAU](./constants.md#TAU) - TAU is a mathematical constant with the value 6.2831855.
+- [cm.TWO_PI](./constants.md#TWO_PI) - TWO_PI is a mathematical constant with the value 6.2831855.
+  
 ## Helpers
 
 Methods for improving programming efficiency.
