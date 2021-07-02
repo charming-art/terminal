@@ -6,7 +6,7 @@ Charming implements most of Processing's APIs related to 2D, all of the supporte
 - [Constant](./constant.md)
 - [Environment](./environment.md)
 - [Event](./event.md)
-- [Helper](./helper.md)
+- [Helpers](./helpers.md)
 - [Image](./image.md)
 - [Math](./math.md)
 - [Shape](./shape.md)
@@ -28,6 +28,13 @@ Methods for creating, reading and setting colors.
 - [cm.color_mode](./color.md#color_mode) - Changes the way Charming interprets color data.
 - [cm.lerp_color](./color.md#lerp_color) - Blends two colors to find a third color somewhere between them.
 
+## Helpers
+
+Methods for improving programming efficiency.
+
+- [cm.print](./helpers.md#print) - Print output to file to debug.
+- [cm.check_params](./helpers.md#check_params) - Checks the type of params to output the potential error.
+  
 ## Math
 
 Methods related to math.
