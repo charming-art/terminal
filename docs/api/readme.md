@@ -44,7 +44,27 @@ Methods for improving programming efficiency.
 
 - [cm.print](./helpers.md#print) - Print output to file to debug.
 - [cm.check_params](./helpers.md#check_params) - Checks the type of params to output the potential error.
-  
+
+## Image
+
+Methods for drawing image to screen.
+
+### CImage
+
+- [cm.CImage](./image.md#cimage) - Creates a new charming.Image (the datatype for storing images).
+- [CImage.load_pixels](./image.md#load_pixels) - Loads the pixels data for this image into the `pixels` attribute.
+- [CImage.update_pixels](./image.md#update_pixels) - Updates the backing canvas for this image with the contents of the `pixels` array.
+- [CImage.set](./image.md#set) - Set the color of a single pixel.
+- [CImage.get](./image.md#get) - Get the color of a single pixel.
+
+### Display
+
+- [cm.image](./image.md#image) - Draw an image to the charming canvas.
+- [cm.image_mode](./image.md#image_mode) - Set image mode.
+- [cm.load_image](./image.md#load_image) - Loads an image from a path and creates a CImage from it.
+- [cm.no_tint](./image.md#no_tint) - Removes the current fill value for displaying images.
+- [cm.tint](./image.md#tint) - Sets the fill value for displaying images.
+
 ## Math
 
 Methods related to math.
