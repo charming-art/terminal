@@ -2,18 +2,21 @@
 
 Charming implements most of Processing's APIs related to 2D, all of the supported APIs are list below. Noticed that the API reference for Charming copies most of [Processing's API reference](https://processing.org/reference/) but replace examples and some features for Charming.
 
-- [Color](./color.md)
-- [Constants](./constants.md)
-- [Environment](./environment.md)
-- [Event](./event.md)
-- [Helpers](./helpers.md)
-- [Image](./image.md)
-- [Math](./math.md)
-- [Shape](./shape.md)
-- [Structure](./structure.md)
-- [Time](./time.md)
-- [Transform](./transform.md)
-- [Typography](./typography.md)
+- [API Reference](#api-reference)
+  - [Color](#color)
+  - [Constants](#constants)
+  - [Helpers](#helpers)
+  - [Image](#image)
+    - [CImage](#cimage)
+    - [Display](#display)
+  - [Math](#math)
+    - [CVector](#cvector)
+    - [Calculation](#calculation)
+    - [Trigonometry](#trigonometry)
+    - [Random](#random)
+  - [Time](#time)
+  - [Transform](#transform)
+  - [Typography](#typography)
 
 ## Color
 
@@ -51,13 +54,17 @@ Methods for drawing image to screen.
 
 ### CImage
 
-- [cm.CImage](./image.md#cimage) - Creates a new charming.Image (the datatype for storing images).
+Date type for Charming to store and manipulate image.
+
+- [cm.CImage](./image.md#cimage) - Creates a new CImage (the datatype for storing images).
 - [CImage.load_pixels](./image.md#load_pixels) - Loads the pixels data for this image into the `pixels` attribute.
 - [CImage.update_pixels](./image.md#update_pixels) - Updates the backing canvas for this image with the contents of the `pixels` array.
 - [CImage.set](./image.md#set) - Set the color of a single pixel.
 - [CImage.get](./image.md#get) - Get the color of a single pixel.
 
 ### Display
+
+Methods for display images.
 
 - [cm.image](./image.md#image) - Draw an image to the charming canvas.
 - [cm.image_mode](./image.md#image_mode) - Set image mode.

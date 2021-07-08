@@ -134,6 +134,7 @@ from .image import image_mode
 from .image import load_image
 from .image import no_tint
 from .image import tint
+from .image import CImage
 
 from .time import day
 from .time import hour

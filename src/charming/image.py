@@ -1,7 +1,5 @@
 from PIL import ImageSequence
 from PIL import Image as PImage
-import sys
-import copy
 from .app import renderer
 from .core import Color
 from .core import Image
@@ -16,8 +14,8 @@ from .utils import logger
 
 class CImage(object):
 
-    def __init__(self, data, width, height):
-        self._pixels = data
+    def __init__(self, width=10, height=10, data=None):
+        self._pixels = data if data else [[0, 0, 0, 1]] * width * height
         self.pixels = []
         self.width = width
         self.height = height
@@ -28,8 +26,13 @@ class CImage(object):
     def update_pixels(self):
         self._pixels = [p for p in self.pixels]
 
-    def copy(self):
-        return copy.deepcopy(self)
+    def set(self, x, y, color):
+        index = x + y * self.width
+        self.pixels[index] = color
+
+    def get(self, x, y):
+        index = x + y * self.width
+        return self.pixels[index]
 
     def __getitem__(self, index):
         return self._pixels[index]
@@ -52,13 +55,11 @@ class CImage(object):
     CImage,
     (int, float),
     (int, float),
-    c=(int, float),
-    d=(int, float)
+    (int, float),
+    (int, float)
 )
 @add_on_return
-def image(img, a, b, c=None, d=None):
-    c = img.width if c == None else c
-    d = img.height if d == None else d
+def image(img, a, b, c, d):
     x1, y1, x2, y2, _, y3, _, _ = get_bounding_rect_by_mode(
         a, b, c, d, renderer.image_mode)
 
@@ -88,6 +89,7 @@ def tint(ch=" ", fg=None, bg=None):
     c = Color(ch, fg, bg)
     renderer.tint_color = c
 
+
 @params_check(str)
 def load_image(src):
     image = PImage.open(src)
@@ -96,5 +98,5 @@ def load_image(src):
         rgb_frame = frame.convert('RGBA')
         w, h = rgb_frame.size
         data = rgb_frame.getdata()
-        images.append(CImage(data, w, h))
+        images.append(CImage(w, h, data))
     return images[0] if len(images) == 1 else images
