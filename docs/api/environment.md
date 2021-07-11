@@ -40,7 +40,7 @@ cm.run()
 
 Specifies the number of frames to be displayed every second. For example, the function call frameRate(30) will attempt to refresh 30 times a second. If the processor is not fast enough to maintain the specified rate, the frame rate will not be achieved. Setting the frame rate within setup() is recommended.
 
-<a name="get_frame_count" href="#get_frame_count">#</a> cm.**get_frame_count**()
+<a name="get_frame_count" href="#get_frame_count">#</a> cm.**get_frame_count**() : *number*
 
 The system variable frameCount contains the number of frames that have been displayed since the program started.
 
@@ -160,11 +160,11 @@ cm.run()
 
 <img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_full_screen_double.gif" />
 
-<a name="get_height" href="#get_height">#</a> cm.**get_height**()
+<a name="get_height" href="#get_height">#</a> cm.**get_height**() : *number*
 
 System variable that stores the height of the drawing canvas.
 
-<a name="get_width" href="#get_width">#</a> cm.**get_width**()
+<a name="get_width" href="#get_width">#</a> cm.**get_width**() : *number*
 
 System variable that stores the width of the drawing canvas.
 

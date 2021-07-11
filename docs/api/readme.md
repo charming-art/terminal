@@ -10,6 +10,10 @@ Charming implements most of Processing's APIs related to 2D, all of the supporte
     - [CImage](#cimage)
     - [Display](#display)
   - [Environment](#environment)
+  - [Events](#events)
+    - [Keyboard](#keyboard)
+    - [Mouse](#mouse)
+    - [Cursor](#cursor)
   - [IO](#io)
   - [Math](#math)
     - [CVector](#cvector)
@@ -84,10 +88,49 @@ Methods for set and get runtime environment.
 - [cm.no_cursor](./environment.md#no_cursor) - Hide the cursor.
 - [cm.frame_rate](./environment.md#frame_rate) - Specifies the number of frames to be displayed every second.
 - [cm.full_screen](./environment.md#full_screen) - Sets the sketch to fill the entire terminal.
-- [cm.get_frame_count](./environment.md#get_frame_count) - The system variable frameCount contains the number of frames that have been displayed since the program started.
+- [cm.get_frame_count](./environment.md#get_frame_count) - The system variable frame_count contains the number of frames that have been displayed since the program started.
 - [cm.get_height](./environment.md#get_height) - System variable that stores the height of the drawing canvas.
 - [cm.get_width](./environment.md#get_width) - System variable that stores the width of the drawing canvas.
 - [cm.size](./environment.md#size) - Sets the dimensions of it in cells for the sketch.
+
+## Events
+
+Methods for listening and handling events.
+
+### Keyboard
+
+Methods for keyboard events.
+
+- [cm.get_key](./events.md#get_key) - The system variable key always contains the value of the most recent key on the keyboard that was used (either pressed or released).
+- [cm.get_key_code](./events.md#get_key_code) - The variable keyCode is used to detect special keys such as the arrow keys (UP, DOWN, LEFT, and RIGHT) as well as ENTER, SPACE.
+- [cm.get_key_pressed](./events.md#get_key_pressed) - The boolean system variable key_pressed is true if any key is pressed and false if no keys are pressed.
+- [cm.key_pressed](./events.md#key_pressed) - The function decorated by key_pressed decorator is called once every time a key is pressed.
+- [cm.key_released](./events.md#key_released) - The function decorated by key_released decorator is called once every time a key is released.
+- [cm.key_typed](./events.md#key_typed) - The function decorated by key_typed decorator is called once every time a key is typed.
+
+### Mouse
+
+Methods for mouse events.
+
+- [cm.get_mouse_x](./events.md#get_mouse_x) - The system variable mouse_x always contains the current horizontal coordinate of the mouse.
+- [cm.get_mouse_y](./events.md#get_mouse_y) - The system variable mouse_y always contains the current vertical coordinate of the mouse.
+- [cm.get_mouse_pressed](./events.md#get_mouse_pressed) - The mouse_pressed variable stores whether or not a mouse button is currently being pressed.
+- [cm.get_mouse_button](./events.md#get_mouse_button) - When a mouse button is pressed, the value of the system variable mouseButton is set to either LEFT, RIGHT, or CENTER, depending on which button is pressed.
+- [cm.mouse_clicked](./events.md#mouse_clicked) - The function decorated mouse_clicked decorator is called after a mouse button has been pressed and then released.
+- [cm.mouse_pressed](./events.md#mouse_pressed) - The function decorated mouse_released decorator is called after a mouse button has been pressed.
+- [cm.mouse_released](./events.md#mouse_released) - The function decorated mouse_released decorator is called after a mouse button has been released.
+
+### Cursor
+
+Methods for cursor events.
+
+- [cm.get_cursor_x](./events.md#get_cursor_x) - The system variable cursor_x always contains the current horizontal coordinate of the cursor.
+- [cm.get_cursor_y](./events.md#get_cursor_y) - The system variable cursor_y always contains the current vertical coordinate of the cursor.
+- [cm.get_pcursor_x](./events.md#get_pcursor_x) - The system variable pcursor_x always contains the horizontal position of the cursor in the frame previous to the current frame.
+- [cm.get_pcursor_y](./events.md#get_pcursor_y) - The system variable pcursor_y always contains the vertical position of the cursor in the frame previous to the current frame.
+- [cm.cursor_moved](./events.md#cursor_moved) - The function decorated cursor_moved decorator is called after a cursor moved.
+- [cm.cursor_pressed](./events.md#cursor_pressed) - The function decorated cursor_pressed decorator is called after a cursor pressed.
+- [cm.get_cursor_moved](./events.md#get_cursor_moved) - The boolean system variable cursor_moved is true if any cursor is pressed and false if cursor is not pressed.
 
 ## IO
 
