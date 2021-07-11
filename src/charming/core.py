@@ -2,7 +2,6 @@ import sys
 import math
 import colorsys
 import string
-import copy
 import time
 from abc import ABCMeta, abstractclassmethod
 from pyfiglet import Figlet
@@ -238,7 +237,7 @@ class Renderer(object):
         self.width = width
         self.height = height
         self.frame_buffer = [
-            self.background_color for i in range(width * height)
+            self.background_color for _ in range(width * height)
         ]
 
     def render(self):
@@ -977,6 +976,7 @@ class Context(metaclass=ABCMeta):
 
         self.has_open = False
         self._has_cursor = True
+        self._has_background = False
         self._screen = None
 
         self._content = ""
@@ -998,6 +998,7 @@ class Context(metaclass=ABCMeta):
 
     @logger.record('flush screen')
     def draw(self, points, mode):
+        self._draw_background()
         self._draw_border()
         self._content = ''
 
@@ -1060,6 +1061,19 @@ class Context(metaclass=ABCMeta):
         cx = self._pad_x + 1 + self.cursor_x
         cy = self._pad_y + 1 + self.cursor_y
         self._move(cx, cy)
+
+    def _draw_background(self):
+        if self._has_background:
+            return
+
+        self._content += '\x1b[0m'
+
+        for i in range(self.window_width):
+            for j in range(self.window_height):
+                self._addch(i, j, ' ', constants.BLACK, constants.BLACK)
+
+        self._has_background = True
+        self._refresh()
 
     def _ch(self, ch, mode):
         if isinstance(ch, tuple):
@@ -1134,6 +1148,7 @@ class Context(metaclass=ABCMeta):
             if self._in(x, y):
                 ch = '+' if i == self._pad_width - 2 else '-'
                 self._addch(x, y, ch)
+
         self._refresh()
 
     def _in(self, x, y):
@@ -1202,8 +1217,10 @@ else:
             curses.start_color()
 
             # Enable mouse events
-            curses.mousemask(curses.ALL_MOUSE_EVENTS |
-                             curses.REPORT_MOUSE_POSITION)
+            curses.mousemask(
+                curses.ALL_MOUSE_EVENTS |
+                curses.REPORT_MOUSE_POSITION
+            )
 
         def get_window_size(self):
             if self._screen:

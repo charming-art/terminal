@@ -79,17 +79,14 @@ Methods for display images.
 Methods for set and get runtime environment.
 
 - [cm.cursor](./environment.md#cursor) - Set the cursor visible.
+- [cm.set_cursor](./environment.md#set_cursor)` - Set the positions of cursor in cells.
 - [cm.no_cursor](./environment.md#no_cursor) - Hide the cursor.
 - [cm.frame_rate](./environment.md#frame_rate) - Specifies the number of frames to be displayed every second.
 - [cm.full_screen](./environment.md#full_screen) - Sets the sketch to fill the entire terminal.
 - [cm.get_frame_count](./environment.md#get_frame_count) - The system variable frameCount contains the number of frames that have been displayed since the program started.
-- [cm.get_frame_rate](./environment.md#get_frame_rate)- Gets the number of frames to be displayed every second.
 - [cm.get_height](./environment.md#get_height) - System variable that stores the height of the drawing canvas.
 - [cm.get_width](./environment.md#get_width) - System variable that stores the width of the drawing canvas.
 - [cm.size](./environment.md#size) - Sets the dimensions of it in cells for the sketch.
-- [cm.window_resized](./environment.md#window_resized) - The function decorated by window_size decorator will be executed when terminal resized.
-- [cm.set_cursor](./environment.md#set_cursor)` - Set the positions of cursor in cells.
-- [cm.get_window_size](./environment.md#get_window_size) - Gets the dimensions of the terminal window.
 
 ## Math
 

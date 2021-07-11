@@ -42,10 +42,6 @@ def get_height():
     return sketch.context.height
 
 
-def get_frame_rate():
-    return sketch.frame_rate
-
-
 def get_frame_count():
     return sketch.frame_count
 
