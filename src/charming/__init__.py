@@ -8,6 +8,7 @@ from .structure import push
 from .structure import pop
 from .structure import open_context
 from .structure import exit
+from .structure import get_is_looping
 
 from .environment import frame_rate
 from .environment import size

@@ -87,3 +87,7 @@ def open_context():
     push()
     yield
     pop()
+
+
+def get_is_looping():
+    return sketch.is_loop

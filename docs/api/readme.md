@@ -14,6 +14,7 @@ Charming implements most of Processing's APIs related to 2D, all of the supporte
     - [Calculation](#calculation)
     - [Trigonometry](#trigonometry)
     - [Random](#random)
+  - [Structure](#structure)
   - [Time](#time)
   - [Transform](#transform)
   - [Typography](#typography)
@@ -143,6 +144,20 @@ Methods for manipulation vector object which is useful for simulating physic sys
 - [cm.random](./math.md#random) - Generates random numbers.
 - [cm.random_gaussian](./math.md#random-gaussian) - Returns a float from a random series of numbers having a mean of 0 and standard deviation of 1.
 - [cm.random_seed](./math.md#random-seed) - Sets the seed value for random().
+
+## Structure
+
+- [cm.setup](./structure.md#setup) - The function decorated by setup() decorator is called once when the program starts.
+- [cm.draw](./structure.md#draw) - The function decorated by draw() called directly after setup(), it continuously executes the lines of code contained inside its block until the program is stopped or no_loop() is called.
+- [cm.run](./structure.md#run) - Run the sketch or nothing magic will happen.
+- [cm.no_loop](./structure.md#no_loop) - Stops Charming from continuously executing the code within draw().
+- [cm.loop](./structure.md#loop) - The draw() loop may be stopped by calling no_loop(). In that case, the draw() loop can be resumed with loop().
+- [cm.get_is_looping](./structure.md#get_is_looping) - get_is_looping() returns the current state for use within custom event handlers.
+- [cm.redraw](./structure.md#redraw) - Executes the code within draw() one time.
+- [cm.push](./structure.md#push) - The push() function saves the current drawing style settings and transformations, while pop() restores these settings.
+- [cm.pop](./structure.md#pop) - The push() function saves the current drawing style settings and transformations, while pop() restores these settings.
+- [cm.open_context](./structure.md#open_context) - The syntactic sugar for push() and pop().
+- [cm.exit](./structure.md#exit) - Exit the sketch.
 
 ## Time
 
