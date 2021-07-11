@@ -2,28 +2,19 @@
 
 Charming implements most of Processing's APIs related to 2D, all of the supported APIs are list below. Noticed that the API reference for Charming copies most of [Processing's API reference](https://processing.org/reference/) but replace examples and some features for Charming.
 
-- [API Reference](#api-reference)
-  - [Color](#color)
-  - [Constants](#constants)
-  - [Helpers](#helpers)
-  - [Image](#image)
-    - [CImage](#cimage)
-    - [Display](#display)
-  - [Environment](#environment)
-  - [Events](#events)
-    - [Keyboard](#keyboard)
-    - [Mouse](#mouse)
-    - [Cursor](#cursor)
-  - [IO](#io)
-  - [Math](#math)
-    - [CVector](#cvector)
-    - [Calculation](#calculation)
-    - [Trigonometry](#trigonometry)
-    - [Random](#random)
-  - [Structure](#structure)
-  - [Time](#time)
-  - [Transform](#transform)
-  - [Typography](#typography)
+- [Color](#color)
+- [Constants](#constants)
+- [Helpers](#helpers)
+- [Image](#image) ([CImage](#cimage), [Display](#display))
+- [Environment](#environment)
+- [Events](#events)([Keyboard](#keyboard), [Mouse](#mouse), [Cursor](#cursor))
+- [IO](#io)
+- [Math](#math)([CVector](#cvector), [Calculation](#calculation), [Trigonometry](#trigonometry), [Random](#random))
+- [Structure](#structure)
+- [Shape](#shape)([2D Primitives](#2D-Primitives), [Attributes](#attributes), [Vertex](#vertex), [Curves](#curves))
+- [Time](#time)
+- [Transform](#transform)
+- [Typography](#typography)
 
 ## Color
 
@@ -232,6 +223,58 @@ Methods for controlling the running flow of sketch.
 - [cm.pop](./structure.md#pop) - The push() function saves the current drawing style settings and transformations, while pop() restores these settings.
 - [cm.open_context](./structure.md#open_context) - The syntactic sugar for push() and pop().
 - [cm.exit](./structure.md#exit) - Exit the sketch.
+
+## Shape
+
+Methods for drawing shapes.
+
+### 2D Primitives
+
+Methods for drawing 2D basic shapes.
+
+- [cm.arc](./shape.md#arc) - Draws an arc to the screen. Arcs are drawn along the outer edge of an ellipse defined by the a, b, c, and d parameters.
+- [cm.circle](./shape.md#circle) - Draws a circle to the screen. By default, the first two parameters set the location of the center, and the third sets the shape's width and height.
+- [cm.ellipse](./shape.md#ellipse) - Draws an ellipse (oval) to the screen. An ellipse with equal width and height is a circle.
+- [cm.line](./shape.md#line) - Draws a line (a direct path between two points) to the screen.
+- [cm.point](.shape.md#point) - Draws a point, a coordinate in space at the dimension of one cell.
+- [cm.quad](./shape.md#quad) - A quad is a quadrilateral, a four sided polygon.
+- [cm.rect](./shape.md#rect) - Draws a rectangle to the screen. A rectangle is a four-sided shape with every angle at ninety degrees.
+- [cm.square](./shape.md#square) - Draws a square to the screen.
+- [cm.triangle](./shape.md#triangle) - A triangle is a plane created by connecting three points
+  
+### Attributes
+
+Methods for setting drawing attributes.
+
+- [cm.ellipse_mode](./shape.md#ellipse_mode) - Modifies the location from which ellipses are drawn by changing the way in which parameters given to ellipse() are interpreted.
+- [cm.rect_mode](./shape.md#rect_mode) - Modifies the location from which rectangles are drawn by changing the way in which parameters given to rect() are interpreted.
+- [cm.stroke_weight](./shape.md#stroke_weight) - Sets the width of the stroke used for lines, points, and the border around shapes.
+
+### Vertex
+
+Methods for drawing custom shapes.
+
+- [cm.begin_contour](./shape.md#begin_contour) - Use the begin_contour() and end_contour() function to create negative shapes within shapes such as the center of the letter 'O'.
+- [cm.begin_shape](./shape.md#begin_shape) - Using the begin_shape() and end_shape() functions allow creating more complex forms.
+- [cm.bezier_vertex](./shape.md#bezier_vertex) - Specifies vertex coordinates for Bezier curves.
+- [cm.curve_vertex](./shape.md#curve_vertex) - Specifies vertex coordinates for curves.
+- [cm.end_contour](./shape.md#end_contour) - Use the begin_contour() and end_contour() function to create negative shapes within shapes such as the center of the letter 'O'.
+- [cm.end_shape](./shape.md#end_shape) - The end_shape() function is the companion to begin_shape() and may only be called after beginShape().
+- [cm.vertex](./shape.md#vertex) - All shapes are constructed by connecting a series of vertices.
+- [cm.open_shape](./shape.md#open_shape) - The syntax sugar for begin_shape and end_shape.
+- [cm.open_contour](./shape.md#open_contour) - The syntax sugar for begin_contour and end_contour.
+  
+### Curves
+
+Methods for drawing curves.
+
+- [cm.bezier](./shape.md#bezier) - Draws a Bezier curve on the screen.
+- [cm.bezier_point](./shape.md#bezier_point) - Evaluates the Bezier at point t for points a, b, c, d
+- [cm.bezier_tangent](./shape.md#bezier_tangent) - Calculates the tangent of a point on a Bezier curve.
+- [cm.curve](./shape.md#curve) - Draws a curved line on the screen.
+- [cm.curve_point](./shape.md#curve_point) - Evaluates the curve at point t for points a, b, c, d.
+- [cm.curve_tangent](./shape.md#curve_tangent) - Calculates the tangent of a point on a curve. 
+- [cm.curve_tightness](./shape.md#curve_tightness) - Modifies the quality of forms created with curve() and curveVertex().
 
 ## Time
 
