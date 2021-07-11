@@ -98,7 +98,7 @@ def draw():
 cm.run()
 ```
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_full_screen_single.png" />
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_full_screen_single.gif" />
 
 The double render mode will use two cells to render a shape character. If a character is two-cell width (💘, 🌈, etc.), it only render once while one-cell width character (a, ;, etc.) will be render twice.
 
@@ -158,7 +158,7 @@ def draw():
 cm.run()
 ```
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_full_screen_doublie.png" />
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_full_screen_double.gif" />
 
 <a name="get_height" href="#get_height">#</a> cm.**get_height**()
 
@@ -177,7 +177,7 @@ cm.point(cm.get_width() / 2, cm.get_height() / 2)
 cm.run()
 ```
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_get_dimensions.png" />
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_dimensions.png" />
 
 <a name="size" href="#size">#</a> cm.**get_width**(*width*, *height*, *mode=SINGLE | DOUBLE*)
 

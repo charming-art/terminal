@@ -10,6 +10,7 @@ Charming implements most of Processing's APIs related to 2D, all of the supporte
     - [CImage](#cimage)
     - [Display](#display)
   - [Environment](#environment)
+  - [IO](#io)
   - [Math](#math)
     - [CVector](#cvector)
     - [Calculation](#calculation)
@@ -87,6 +88,13 @@ Methods for set and get runtime environment.
 - [cm.get_height](./environment.md#get_height) - System variable that stores the height of the drawing canvas.
 - [cm.get_width](./environment.md#get_width) - System variable that stores the width of the drawing canvas.
 - [cm.size](./environment.md#size) - Sets the dimensions of it in cells for the sketch.
+
+## IO
+
+Methods for IO.
+
+- [cm.load_json](./io.md#load_json) - Loads data from JSON file to dict object.
+- [cm.load_csv](./io.md#load_csv) - Loads data from CSV file to dict object.
 
 ## Math
 

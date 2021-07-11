@@ -15,7 +15,7 @@
 - `get_mouseY()`
 - `get_mouse_pressed()`
 - `get_mouse_button()`
-- `mouse_clickd(f)`
+- `mouse_clicked(f)`
 - `mouse_pressed(f)`
 - `mouse_released(f)`
 

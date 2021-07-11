@@ -210,5 +210,7 @@ from .constants import TAB
 from .constants import ENTER
 from .constants import SPACE
 
+from .io import load_csv
+from .io import load_json
 
 __version__ = "v1.0.0-alpha.1"
