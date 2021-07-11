@@ -286,6 +286,8 @@ v.array() # [1, 2]
 
 ## Calculation
 
+Methods for basic math calculation.
+
 <a name="abs" href="#abs">#</a> cm.**abs**(*n*) : *number*
 
 Calculates the absolute value (magnitude) of a number.
@@ -480,6 +482,8 @@ sqrt(25) # 5.0
 
 ## Trigonometry
 
+Methods for calculate trigonometry.
+
 <a name="acos" href="#acos">#</a> cm.**acos**(*n*) : *number*
 
 The inverse of cos(), returns the arc cosine of a value.
@@ -575,6 +579,8 @@ tan(PI / 4) # 1
 ```
 
 ## Random
+
+Methods for generate random numbers.
 
 <a name="noise" href="#noise">#</a> cm.**noise**(*x*, *y=0*, *z=0*) : *number*
 

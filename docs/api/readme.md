@@ -9,6 +9,7 @@ Charming implements most of Processing's APIs related to 2D, all of the supporte
   - [Image](#image)
     - [CImage](#cimage)
     - [Display](#display)
+  - [Environment](#environment)
   - [Math](#math)
     - [CVector](#cvector)
     - [Calculation](#calculation)
@@ -73,6 +74,23 @@ Methods for display images.
 - [cm.no_tint](./image.md#no_tint) - Removes the current fill value for displaying images.
 - [cm.tint](./image.md#tint) - Sets the fill value for displaying images.
 
+## Environment
+
+Methods for set and get runtime environment.
+
+- [cm.cursor](./environment.md#cursor) - Set the cursor visible.
+- [cm.no_cursor](./environment.md#no_cursor) - Hide the cursor.
+- [cm.frame_rate](./environment.md#frame_rate) - Specifies the number of frames to be displayed every second.
+- [cm.full_screen](./environment.md#full_screen) - Sets the sketch to fill the entire terminal.
+- [cm.get_frame_count](./environment.md#get_frame_count) - The system variable frameCount contains the number of frames that have been displayed since the program started.
+- [cm.get_frame_rate](./environment.md#get_frame_rate)- Gets the number of frames to be displayed every second.
+- [cm.get_height](./environment.md#get_height) - System variable that stores the height of the drawing canvas.
+- [cm.get_width](./environment.md#get_width) - System variable that stores the width of the drawing canvas.
+- [cm.size](./environment.md#size) - Sets the dimensions of it in cells for the sketch.
+- [cm.window_resized](./environment.md#window_resized) - The function decorated by window_size decorator will be executed when terminal resized.
+- [cm.set_cursor](./environment.md#set_cursor)` - Set the positions of cursor in cells.
+- [cm.get_window_size](./environment.md#get_window_size) - Gets the dimensions of the terminal window.
+
 ## Math
 
 Methods related to math.
@@ -106,6 +124,8 @@ Methods for manipulation vector object which is useful for simulating physic sys
 
 ### Calculation
 
+Methods for basic math calculation.
+
 - [cm.abs](./math.md#abs) - Calculates the absolute value (magnitude) of a number. The absolute value of a number is always positive.
 - [cm.ceil](./math.md#ceil) - Calculates the closest int value that is greater than or equal to the value of the parameter.
 - [cm.constrain](./math.md#constrain) - Constrains a value to not exceed a maximum and minimum value.
@@ -126,6 +146,8 @@ Methods for manipulation vector object which is useful for simulating physic sys
 
 ### Trigonometry
 
+Methods for calculate trigonometry.
+
 - [cm.acos](./math.md#acos) - The inverse of cos(), returns the arc cosine of a value.
 - [cm.asin](./math.md#asin) - The inverse of sin(), returns the arc sine of a value.
 - [cm.atan](./math.md#atan) - The inverse of tan(), returns the arc tangent of a value.
@@ -138,6 +160,8 @@ Methods for manipulation vector object which is useful for simulating physic sys
 
 ### Random
 
+Methods for generate random numbers.
+
 - [cm.noise](./math.md#noise) - Returns the Perlin noise value at specified coordinates.
 - [cm.noise_detail](./math.md#noise-detail) - Adjusts the character and level of detail produced by the Perlin noise function.
 - [cm.noise_seed](./math.md#noise-seed) - Sets the seed value for noise().
@@ -146,6 +170,8 @@ Methods for manipulation vector object which is useful for simulating physic sys
 - [cm.random_seed](./math.md#random-seed) - Sets the seed value for random().
 
 ## Structure
+
+Methods for controlling the running flow of sketch.
 
 - [cm.setup](./structure.md#setup) - The function decorated by setup() decorator is called once when the program starts.
 - [cm.draw](./structure.md#draw) - The function decorated by draw() called directly after setup(), it continuously executes the lines of code contained inside its block until the program is stopped or no_loop() is called.
