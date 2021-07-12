@@ -17,9 +17,8 @@ It is currently written in Python and provides Processing-like APIs, which aims 
 - [Tutorials](./docs/tutorials/readme.md)
 - [API Reference](./docs/api/readme.md)
 - [Examples](./docs/examples/readme.md)
-- [Processing/P5.js to Charming](./docs/migrate.md)
+- [Processing&P5.js to Charming](./docs/processing&p5js-to-charming.md)
 - [Contributing](./CONTRIBUTING.md)
-- [Future Work](https://github.com/charming-art/charming/projects/6)
 
 ## ⁉ Why is it
 
@@ -70,3 +69,9 @@ $ python3 rect.py
 ```
 
 ![get started](https://raw.githubusercontent.com/charming-art/public-files/master/get_started.png)
+
+## 🛸 Future work
+
+- Using Rust as backend to run in browser and support multiple OS, using both JavaScript and Python as frontend.
+- Add more API to be more expressive.
+- Build a community and online playground like OpenProcessing.
