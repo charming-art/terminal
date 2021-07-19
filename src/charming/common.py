@@ -171,8 +171,8 @@ def get_bounding_rect_by_mode(a, b, c, d, mode):
         y1 = b
         x2 = a + c - sign(c)
         y2 = b
-        x3 = a + c - sign(c)
+        x3 = x2
         y3 = b + d - sign(d)
         x4 = a
-        y4 = b + d - sign(d)
+        y4 = y3
     return (x1, y1, x2, y2, x3, y3, x4, y4)
