@@ -316,23 +316,314 @@ cm.run()
 
 Methods for drawing custom shapes.
 
+<a name="begin_shape" href="#begin_shape">#</a> cm.**begin_shape**(*primitive_type=POLYGON | POINTS | LINES | TRIANGLES | TRIANGLE_STRIP | TRIANGLE_FAN | QUADS | QUAD_STRIP*)
+
+Using the begin_shape() and end_shape() functions allow creating more complex forms. begin_shape() begins recording vertices for a shape and end_shape() stops recording. The value of the kind parameter tells it which types of shapes to create from the provided vertices. With no mode specified, the shape can be any irregular polygon.
+
+```py
+import charming as cm
+
+# environment
+cm.full_screen()
+cm.no_cursor()
+
+# styles
+cm.fill('*', cm.YELLOW, cm.RED)
+cm.stroke('@', cm.GREEN, cm.BLUE)
+
+# custom shapes
+cm.begin_shape()
+cm.vertex(1, 1)
+cm.vertex(6, 1)
+cm.vertex(6, 6)
+cm.vertex(1, 6)
+cm.end_shape(close_mode=cm.CLOSE)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_begin_shape_polygon.png" width="100%"/>
+
+```py
+import charming as cm
+
+# environment
+cm.full_screen()
+cm.no_cursor()
+
+# styles
+cm.fill('*', cm.YELLOW, cm.RED)
+cm.stroke('@', cm.GREEN, cm.BLUE)
+
+# custom shapes
+cm.begin_shape(cm.LINES)
+cm.vertex(1, 1)
+cm.vertex(6, 1)
+cm.vertex(6, 6)
+cm.vertex(1, 6)
+cm.end_shape(close_mode=cm.CLOSE)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_begin_shape_lines.png" width="100%"/>
+
+```py
+import charming as cm
+
+# environment
+cm.full_screen()
+cm.no_cursor()
+
+# styles
+cm.fill('*', cm.YELLOW, cm.RED)
+cm.stroke('@', cm.GREEN, cm.BLUE)
+
+# custom shapes
+cm.begin_shape(cm.POINTS)
+cm.vertex(1, 1)
+cm.vertex(6, 1)
+cm.vertex(6, 6)
+cm.vertex(1, 6)
+cm.end_shape(close_mode=cm.CLOSE)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_begin_shape_points.png" width="100%"/>
+
+```py
+import charming as cm
+
+# environment
+cm.full_screen()
+cm.no_cursor()
+
+# styles
+cm.fill('*', cm.YELLOW, cm.RED)
+cm.stroke('@', cm.GREEN, cm.BLUE)
+
+# custom shapes
+cm.begin_shape(cm.TRIANGLES)
+cm.vertex(1, 6)
+cm.vertex(5, 1)
+cm.vertex(10, 6)
+cm.vertex(15, 1)
+cm.vertex(20, 6)
+cm.vertex(25, 1)
+cm.end_shape(close_mode=cm.CLOSE)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_begin_shape_triangles.png" width="100%"/>
+
+```py
+import charming as cm
+
+# environment
+cm.full_screen()
+cm.no_cursor()
+
+# styles
+cm.fill('*', cm.YELLOW, cm.RED)
+cm.stroke('@', cm.GREEN, cm.BLUE)
+
+# custom shapes
+cm.begin_shape(cm.TRIANGLE_STRIP)
+cm.vertex(1, 6)
+cm.vertex(5, 1)
+cm.vertex(10, 6)
+cm.vertex(15, 1)
+cm.vertex(20, 6)
+cm.vertex(25, 1)
+cm.vertex(30, 6)
+cm.end_shape(close_mode=cm.CLOSE)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_begin_shape_triangle_strip.png" width="100%"/>
+
+```py
+import charming as cm
+
+# environment
+cm.full_screen()
+cm.no_cursor()
+
+# styles
+cm.fill('*', cm.YELLOW, cm.RED)
+cm.stroke('@', cm.GREEN, cm.BLUE)
+
+# custom shapes
+cm.begin_shape(cm.TRIANGLE_FAN)
+cm.vertex(11, 6)
+cm.vertex(11, 1)
+cm.vertex(21, 6)
+cm.vertex(11, 11)
+cm.vertex(1, 6)
+cm.vertex(11, 1)
+cm.end_shape(close_mode=cm.CLOSE)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_begin_shape_triangle_fan.png" width="100%"/>
+
+```py
+import charming as cm
+
+# environment
+cm.full_screen()
+cm.no_cursor()
+
+# styles
+cm.fill('*', cm.YELLOW, cm.RED)
+cm.stroke('@', cm.GREEN, cm.BLUE)
+
+# custom shapes
+cm.begin_shape(cm.QUADS)
+cm.vertex(1, 1)
+cm.vertex(1, 6)
+cm.vertex(6, 6)
+cm.vertex(6, 1)
+cm.vertex(11, 1)
+cm.vertex(11, 6)
+cm.vertex(16, 6)
+cm.vertex(16, 1)
+cm.end_shape(close_mode=cm.CLOSE)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_begin_shape_quads.png" width="100%"/>
+
+```py
+import charming as cm
+
+# environment
+cm.full_screen()
+cm.no_cursor()
+
+# styles
+cm.fill('*', cm.YELLOW, cm.RED)
+cm.stroke('@', cm.GREEN, cm.BLUE)
+
+# custom shapes
+cm.begin_shape(cm.QUAD_STRIP)
+cm.vertex(1, 1)
+cm.vertex(1, 6)
+cm.vertex(6, 1)
+cm.vertex(6, 6)
+cm.vertex(11, 1)
+cm.vertex(11, 6)
+cm.vertex(16, 1)
+cm.vertex(16, 6)
+cm.end_shape(close_mode=cm.CLOSE)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_begin_shape_quad_strip.png" width="100%"/>
+
+<a name="end_shape" href="#end_shape">#</a> cm.**end_shape**(*mode=OPEN | CLOSE*)
+
+The end_shape() function is the companion to begin_shape() and may only be called after begin_shape(). When endShape() is called, all of image data defined since the previous call to begin_shape() is written into the image buffer. The constant CLOSE as the value for the MODE parameter to close the shape (to connect the beginning and the end).
+
+```py
+import charming as cm
+
+# environment
+cm.full_screen()
+cm.no_cursor()
+
+# styles
+cm.fill('*', cm.YELLOW, cm.RED)
+cm.stroke('@', cm.GREEN, cm.BLUE)
+
+# custom shapes
+cm.begin_shape()
+cm.vertex(1, 1)
+cm.vertex(6, 1)
+cm.vertex(1, 6)
+cm.end_shape()
+
+cm.begin_shape()
+cm.vertex(8, 1)
+cm.vertex(13, 1)
+cm.vertex(8, 6)
+cm.end_shape(cm.CLOSE)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_end_shape.png" width="100%"/>
+
+<a name="vertex" href="#vertex">#</a> cm.**vertex**(*x*, *y*)
+
+All shapes are constructed by connecting a series of vertices. vertex() is used to specify the vertex coordinates for points, lines, triangles, quads, and polygons. It is used exclusively within the begin_shape() and end_shape() functions.
+
+```py
+import charming as cm
+
+# environment
+cm.full_screen()
+cm.no_cursor()
+
+# styles
+cm.fill('*', cm.YELLOW, cm.RED)
+cm.stroke('@', cm.GREEN, cm.BLUE)
+
+# custom shapes
+cm.begin_shape()
+cm.vertex(1, 1)
+cm.vertex(6, 1)
+cm.vertex(6, 6)
+cm.vertex(1, 6)
+cm.end_shape(close_mode=cm.CLOSE)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_begin_shape_polygon.png" width="100%"/>
+
+<a name="open_shape" href="#open_shape">#</a> cm.**open_shape**(*primitive_type=POLYGON | POINTS | LINES | TRIANGLES | TRIANGLE_STRIP | TRIANGLE_FAN, mode=OPEN | CLOSE*)
+
+The syntactic sugar for begin_shape() and end_shape().
+
+```py
+import charming as cm
+
+# environment
+cm.full_screen()
+cm.no_cursor()
+
+# styles
+cm.fill('*', cm.YELLOW, cm.RED)
+cm.stroke('@', cm.GREEN, cm.BLUE)
+
+with cm.open_shape(cm.LINES, cm.CLOSE):
+    cm.vertex(1, 1)
+    cm.vertex(6, 1)
+    cm.vertex(6, 6)
+    cm.vertex(1, 6)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_open_shape.png" width="100%"/>
+
 <a name="begin_contour" href="#begin_contour">#</a> cm.**begin_contour**()
 
 <a name="end_contour" href="#end_contour">#</a> cm.**end_contour**()
 
 <a name="open_contour" href="#open_contour">#</a> cm.**open_contour**()
 
-<a name="begin_shape" href="#begin_shape">#</a> cm.**begin_shape**(*primitive_type=POLYGON | POINTS | LINES | TRIANGLES | TRIANGLE_STRIP | TRIANGLE_FAN | QUADS | QUAD_STRIP*)
-
-<a name="end_shape" href="#end_shape">#</a> cm.**end_shape**(*mode=OPEN | CLOSE*)
-
-<a name="open_shape" href="#open_shape">#</a> cm.**open_shape**(*primitive_type=POLYGON | POINTS | LINES | TRIANGLES | TRIANGLE_STRIP | TRIANGLE_FAN, mode=OPEN | CLOSE*)
-
 <a name="bezier_vertex" href="#bezier_vertex">#</a> cm.**bezier_vertex**(*x2*, *y*2, *x3*, *y3*, *x4*, *y4*)
 
 <a name="curve_vertex" href="#curve_vertex">#</a> cm.**bezier_vertex**(*x*, *y*)
 
-<a name="vertex" href="#vertex">#</a> cm.**vertex**(*x*, *y*)
   
 ## Curves
 

@@ -7,11 +7,11 @@ Charming implements most of Processing's APIs related to 2D, all of the supporte
 - [Helpers](#helpers)
 - [Image](#image) ([CImage](#cimage), [Display](#display))
 - [Environment](#environment)
-- [Events](#events)([Keyboard](#keyboard), [Mouse](#mouse), [Cursor](#cursor))
+- [Events](#events) ([Keyboard](#keyboard), [Mouse](#mouse), [Cursor](#cursor))
 - [IO](#io)
-- [Math](#math)([CVector](#cvector), [Calculation](#calculation), [Trigonometry](#trigonometry), [Random](#random))
+- [Math](#math) ([CVector](#cvector), [Calculation](#calculation), [Trigonometry](#trigonometry), [Random](#random))
 - [Structure](#structure)
-- [Shape](#shape)([2D Primitives](#2D-Primitives), [Attributes](#attributes), [Vertex](#vertex), [Curves](#curves))
+- [Shape](#shape) ([2D Primitives](#2D-Primitives), [Attributes](#attributes), [Vertex](#vertex), [Curves](#curves))
 - [Time](#time)
 - [Transform](#transform)
 - [Typography](#typography)
@@ -254,16 +254,16 @@ Methods for setting drawing attributes.
 
 Methods for drawing custom shapes.
 
-- [cm.begin_contour](./shape.md#begin_contour) - Use the begin_contour() and end_contour() function to create negative shapes within shapes such as the center of the letter 'O'.
 - [cm.begin_shape](./shape.md#begin_shape) - Using the begin_shape() and end_shape() functions allow creating more complex forms.
+- [cm.end_shape](./shape.md#end_shape) - The end_shape() function is the companion to begin_shape() and may only be called after beginShape().
+- [cm.open_shape](./shape.md#open_shape) - The syntax sugar for begin_shape and end_shape.
+- [cm.vertex](./shape.md#vertex) - All shapes are constructed by connecting a series of vertices.
+- [cm.begin_contour](./shape.md#begin_contour) - Use the begin_contour() and end_contour() function to create negative shapes within shapes such as the center of the letter 'O'.
+- [cm.end_contour](./shape.md#end_contour) - Use the begin_contour() and end_contour() function to create negative shapes within shapes such as the center of the letter 'O'.
+- [cm.open_contour](./shape.md#open_contour) - The syntax sugar for begin_contour and end_contour.
 - [cm.bezier_vertex](./shape.md#bezier_vertex) - Specifies vertex coordinates for Bezier curves.
 - [cm.curve_vertex](./shape.md#curve_vertex) - Specifies vertex coordinates for curves.
-- [cm.end_contour](./shape.md#end_contour) - Use the begin_contour() and end_contour() function to create negative shapes within shapes such as the center of the letter 'O'.
-- [cm.end_shape](./shape.md#end_shape) - The end_shape() function is the companion to begin_shape() and may only be called after beginShape().
-- [cm.vertex](./shape.md#vertex) - All shapes are constructed by connecting a series of vertices.
-- [cm.open_shape](./shape.md#open_shape) - The syntax sugar for begin_shape and end_shape.
-- [cm.open_contour](./shape.md#open_contour) - The syntax sugar for begin_contour and end_contour.
-  
+ 
 ### Curves
 
 Methods for drawing curves.
