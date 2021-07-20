@@ -75,7 +75,7 @@ Methods for display images.
 Methods for set and get runtime environment.
 
 - [cm.cursor](./environment.md#cursor) - Set the cursor visible.
-- [cm.set_cursor](./environment.md#set_cursor)` - Set the positions of cursor in cells.
+- [cm.set_cursor](./environment.md#set_cursor) - Set the positions of cursor in cells.
 - [cm.no_cursor](./environment.md#no_cursor) - Hide the cursor.
 - [cm.frame_rate](./environment.md#frame_rate) - Specifies the number of frames to be displayed every second.
 - [cm.full_screen](./environment.md#full_screen) - Sets the sketch to fill the entire terminal.
@@ -263,7 +263,7 @@ Methods for drawing custom shapes.
 - [cm.open_contour](./shape.md#open_contour) - The syntax sugar for begin_contour and end_contour.
 - [cm.bezier_vertex](./shape.md#bezier_vertex) - Specifies vertex coordinates for Bezier curves.
 - [cm.curve_vertex](./shape.md#curve_vertex) - Specifies vertex coordinates for curves.
- 
+
 ### Curves
 
 Methods for drawing curves.

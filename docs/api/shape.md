@@ -615,16 +615,138 @@ cm.run()
 <img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_open_shape.png" width="100%"/>
 
 <a name="begin_contour" href="#begin_contour">#</a> cm.**begin_contour**()
-
 <a name="end_contour" href="#end_contour">#</a> cm.**end_contour**()
+
+Use the begin_contour() and end_contour() functions to create negative shapes within shapes such as the center of the letter 'O'. beginContour() begins recording vertices for the shape and endContour() stops recording. The vertices that define a negative shape must "wind" in the opposite direction from the exterior shape. First draw vertices for the exterior clockwise order, then for internal shapes, draw vertices shape in counter-clockwise.
+
+These functions can only be used within a begin_shape()/end_shape() pair and transformations such as translate(), rotate(), and scale() do not work within a begin_contour()/end_contour() pair. It is also not possible to use other shapes, such as ellipse() or rect() within.
+
+```py
+import charming as cm
+
+# environment
+cm.full_screen()
+cm.no_cursor()
+
+# styles
+cm.fill('*', cm.YELLOW, cm.RED)
+cm.stroke('@', cm.GREEN, cm.BLUE)
+
+# Outer shape
+cm.begin_shape()
+
+cm.vertex(0, 0)
+cm.vertex(15, 0)
+cm.vertex(15, 15)
+cm.vertex(0, 15)
+
+# Inner shape
+cm.begin_contour()
+cm.vertex(5, 5)
+cm.vertex(5, 10)
+cm.vertex(10, 10)
+cm.vertex(10, 5)
+cm.end_contour()
+
+cm.end_shape(cm.CLOSE)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_contour.png" width="100%"/>
 
 <a name="open_contour" href="#open_contour">#</a> cm.**open_contour**()
 
-<a name="bezier_vertex" href="#bezier_vertex">#</a> cm.**bezier_vertex**(*x2*, *y*2, *x3*, *y3*, *x4*, *y4*)
+The syntactic sugar for begin_contour() and end_contour().
+
+```py
+import charming as cm
+
+# environment
+cm.full_screen()
+cm.no_cursor()
+
+# styles
+cm.fill('*', cm.YELLOW, cm.RED)
+cm.stroke('@', cm.GREEN, cm.BLUE)
+
+# Shapes
+cm.begin_shape()
+with cm.open_shape(close_mode=cm.CLOSE):
+  cm.vertex(0, 0)
+  cm.vertex(15, 0)
+  cm.vertex(15, 15)
+  cm.vertex(0, 15)
+  with cm.open_contour():
+    cm.vertex(5, 5)
+    cm.vertex(5, 10)
+    cm.vertex(10, 10)
+    cm.vertex(10, 5)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_open_contour.png" width="100%"/>
+
+<a name="bezier_vertex" href="#bezier_vertex">#</a> cm.**bezier_vertex**(*x1*, *y1*, *x2*, *y2*, *x3*, *y3*)
+
+Specifies vertex coordinates for Bezier curves. Each call to bezier_vertex() defines the position of two control points and one anchor point of a Bezier curve, adding a new segment to a line or shape.
+
+The first time bezier_vertex() is used within a begin_shape() call, it must be prefaced with a call to vertex() to set the first anchor point. This function must be used between begin_shape() and end_shape() and only when there is no MODE or POINTS parameter specified to begin_shape().
+
+```py
+import charming as cm
+
+# environment
+cm.full_screen()
+cm.no_cursor()
+
+# styles
+cm.fill('*', cm.YELLOW, cm.RED)
+cm.stroke('@', cm.GREEN, cm.BLUE)
+
+# custom curve
+with cm.open_shape():
+    cm.vertex(30, 5)
+    cm.bezier_vertex(80, 0, 80, 35, 30, 35)
+    cm.bezier_vertex(50, 30, 60, 25, 30, 5)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_bezier_vertex.png" width="100%"/>
 
 <a name="curve_vertex" href="#curve_vertex">#</a> cm.**bezier_vertex**(*x*, *y*)
 
-  
+Specifies vertex coordinates for curves. This function may only be used between begin_shape() and end_shape() and only when there is no MODE parameter specified to begin_shape().
+
+The first and last points in a series of curve_vertex() lines will be used to guide the beginning and end of a the curve. A minimum of four points is required to draw a tiny curve between the second and third points. Adding a fifth point with curve_vertex() will draw the curve between the second, third, and fourth points. The curve_vertex() function is an implementation of Catmull-Rom splines.
+
+```py
+import charming as cm
+
+# environment
+cm.full_screen()
+cm.no_cursor()
+
+# styles
+cm.fill('*', cm.YELLOW, cm.RED)
+cm.stroke('@', cm.GREEN, cm.BLUE)
+
+# custom curve
+with cm.open_shape():
+    cm.curve_vertex(44, 21)
+    cm.curve_vertex(44, 21)
+    cm.curve_vertex(48, 9)
+    cm.curve_vertex(21, 7)
+    cm.curve_vertex(2, 30)
+    cm.curve_vertex(2, 30)
+
+cm.run()
+```
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/test_curve_vertex.png" width="100%"/>
+
 ## Curves
 
 Methods for drawing curves.
