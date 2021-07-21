@@ -1,9 +1,9 @@
-import charming as app
+import charming as cm
 from random import choice
 
 
 poetry = "I have eaten the plums that were in the icebox and which you were probably saving for breakfast Forgive me they were delicious so sweet and so cold"
-directions = [app.LEFT, app.RIGHT, app.UP, app.DOWN]
+directions = [cm.LEFT, cm.RIGHT, cm.UP, cm.DOWN]
 snake = []
 index = 0
 direction = directions[0]
@@ -11,31 +11,31 @@ food = None
 game_over = False
 
 
-@app.setup
+@cm.setup
 def setup():
-    app.full_screen()
-    app.no_cursor()
-    app.color_mode(app.HSB)
+    cm.full_screen()
+    cm.no_cursor()
+    cm.color_mode(cm.HSB)
     init_game()
 
 
-@app.draw
+@cm.draw
 def draw():
-    app.background(' ')
-    if app.get_frame_count() % 4 == 0:
+    cm.background(' ')
+    if cm.get_frame_count() % 4 == 0:
         update_snake()
     collision_detection()
     draw_snake()
     draw_food()
 
 
-@app.cursor_moved
+@cm.cursor_moved
 def cursor_moved():
     global direction
-    direction = app.get_key_code()
+    direction = cm.get_key_code()
 
 
-@app.key_typed
+@cm.key_typed
 def key_typed():
     if game_over:
         init_game()
@@ -46,25 +46,25 @@ def init_game():
     game_over = False
     index = 0
     direction = choice(directions)
-    x0, y0 = int(app.get_width() / 2), int(app.get_height() / 2)
+    x0, y0 = int(cm.get_width() / 2), int(cm.get_height() / 2)
     snake = [[x0, y0, 0]]
     generate_food()
 
-    app.set_cursor(x0, y0)
-    app.loop()
+    cm.set_cursor(x0, y0)
+    cm.loop()
 
 
 def draw_snake():
     for x, y, i in snake:
-        h = app.map(i, 0, len(poetry), 0, 360)
-        app.stroke(poetry[i], bg=(h, 100, 100))
-        app.point(x, y)
+        h = cm.map(i, 0, len(poetry), 0, 360)
+        cm.stroke(poetry[i], bg=(h, 100, 100))
+        cm.point(x, y)
 
 
 def draw_food():
-    h = app.map(food[2], 0, len(poetry), 0, 360)
-    app.stroke(poetry[food[2]], bg=(h, 100, 100))
-    app.point(food[0], food[1])
+    h = cm.map(food[2], 0, len(poetry), 0, 360)
+    cm.stroke(poetry[food[2]], bg=(h, 100, 100))
+    cm.point(food[0], food[1])
 
 
 def update_snake():
@@ -74,15 +74,15 @@ def update_snake():
         p1[0], p1[1] = p2[0], p2[1]
 
     head = snake[-1]
-    x_move = 0 if direction == app.UP or direction == app.DOWN else 1
-    y_move = 0 if direction == app.LEFT or direction == app.RIGHT else 1
-    x_d = 1 if direction == app.RIGHT else -1
-    y_d = 1 if direction == app.DOWN else -1
-    next_x = (head[0] + x_move * x_d) % app.get_width()
-    next_y = (head[1] + y_move * y_d) % app.get_height()
+    x_move = 0 if direction == cm.UP or direction == cm.DOWN else 1
+    y_move = 0 if direction == cm.LEFT or direction == cm.RIGHT else 1
+    x_d = 1 if direction == cm.RIGHT else -1
+    y_d = 1 if direction == cm.DOWN else -1
+    next_x = (head[0] + x_move * x_d) % cm.get_width()
+    next_y = (head[1] + y_move * y_d) % cm.get_height()
 
     if in_snake(next_x, next_y):
-        app.no_loop()
+        cm.no_loop()
         game_over = True
     else:
         head[0] = next_x
@@ -108,15 +108,15 @@ def generate_food():
     global food, index, game_over
     if index == len(poetry) - 1:
         game_over = True
-        app.no_loop()
+        cm.no_loop()
     else:
         index = index + 1
         while True:
-            x = int(app.random(app.get_width()))
-            y = int(app.random(app.get_height()))
+            x = int(cm.random(cm.get_width()))
+            y = int(cm.random(cm.get_height()))
             if not in_snake(x, y):
                 break
         food = [x, y, index]
 
 if __name__ == "__main__":
-    app.run()
+    cm.run()
