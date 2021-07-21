@@ -7,7 +7,6 @@ from .common import get_bounding_rect_by_mode
 from .common import add_on_return
 from .common import color_check
 from .common import params_check
-from .utils import logger
 
 
 #### Loading & Displaying

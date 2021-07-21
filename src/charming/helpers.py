@@ -1,4 +1,3 @@
-import sys
 from .app import sketch
 from .utils import logger
 

@@ -3,9 +3,7 @@ from inspect import signature
 from . import constants
 from .core import Color
 from .app import renderer
-from .app import context
 from .app import sketch
-from .utils import logger
 from .utils import sign
 
 
