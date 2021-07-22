@@ -2,7 +2,7 @@
 
 This is a beating heart made up of a rectangle and two circles full of 💘 to show double love.
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_heart.gif" alt="bar chart" />
+![preview.md](https://raw.githubusercontent.com/charming-art/public-files/master/example_heart.gif)
 
 ```py
 import charming as cm
