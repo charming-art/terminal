@@ -2,7 +2,7 @@
 
 It will be very romantic if you using snake-eating to write a poem: you move the snake, eat the food and finally you get the poem: [This Is Just To Say](https://www.poetryfoundation.org/poems/56159/this-is-just-to-say). [[source](../../examples/snake.py)]
 
-![preview.md](https://raw.githubusercontent.com/charming-art/public-files/master/example_snake.gif")
+![preview.md](https://raw.githubusercontent.com/charming-art/public-files/master/example_snake.gif)
 
 ```py
 import charming as cm
