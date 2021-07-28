@@ -20,9 +20,9 @@
 
 ## Expressive Data Visualization
 
-|  [Covid-19 Bar Chart](./barchart.md)  |
-|  :--:  |
-| <img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_barchart.png" height="210px" alt="bar chart" />|
+|  [Covid-19 Bar Chart](./bar.md)  | [Hand Pie Chart](./pie.md) |
+|  :--:  |  :--:  |
+| <img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_barchart.png" height="210px" alt="bar chart" />|<img src="https://raw.githubusercontent.com/charming-art/public-files/master/example_piechart.png" height="210px" alt="pie chart" />|
 
 | [BFS](./bfs.md) | [DFS](./dfs.md) | [Prim](./prim.md) |
 |  :--:  |  :--:  |  :--:  |

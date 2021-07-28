@@ -2,7 +2,7 @@ from charming import map
 
 
 def scale_band(domain, range, padding=0):
-    band_width = int((range[1] - range[0]) / len(domain))
+    band_width = (range[1] - range[0]) / len(domain)
 
     def scale(value):
         i = domain.index(value)
