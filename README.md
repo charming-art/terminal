@@ -15,12 +15,11 @@ There are many reasons for creating Charming, but the most important one is that
 
 ## 📎 Links
 
-- [Introduction](https://observablehq.com/@pearmini/charming)
+- [Introduction](./docs/introduction.md)
 - [Tutorials](./docs/tutorials/readme.md)
 - [API Reference](./docs/api/readme.md)
 - [Examples](./docs/examples/readme.md)
 - [Processing&P5.js to Charming](./docs/processing&p5js-to-charming.md)
-- [Contributing](./CONTRIBUTING.md)
 
 ## ✨ Features
 
