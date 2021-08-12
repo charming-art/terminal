@@ -3,9 +3,8 @@ from inspect import signature
 from . import constants
 from .core import Color
 from .app import renderer
-from .app import context
 from .app import sketch
-from .utils import logger
+from .utils import sign
 
 
 class CColor(object):
@@ -35,9 +34,8 @@ class CColor(object):
 def params_check(*check_args, **check_kw):
 
     def decorator(foo):
-        if sketch._check_params:
-            sig = signature(foo)
-            bound_checks = sig.bind_partial(*check_args, **check_kw).arguments
+        sig = signature(foo)
+        bound_checks = sig.bind_partial(*check_args, **check_kw).arguments
 
         @functools.wraps(foo)
         def wrapped(*args, **kw):
@@ -64,10 +62,12 @@ def params_check(*check_args, **check_kw):
                     # raise exception
                     if not result:
                         if is_more:
-                            msg = f'be one of {check}.'
+                            msg = f'be one of {check}'
                         else:
-                            msg = f'be {check[0]}.'
-                        raise TypeError(f'Argument {name} must {msg}')
+                            msg = f'be {check[0]}'
+                        raise TypeError(
+                            f'Argument {name} must {msg}, but get {type(value)}.'
+                        )
 
             return foo(*args, **kw)
 
@@ -167,10 +167,10 @@ def get_bounding_rect_by_mode(a, b, c, d, mode):
     else:
         x1 = a
         y1 = b
-        x2 = a + c
+        x2 = a + c - sign(c)
         y2 = b
-        x3 = a + c
-        y3 = b + d
+        x3 = x2
+        y3 = b + d - sign(d)
         x4 = a
-        y4 = b + d
+        y4 = y3
     return (x1, y1, x2, y2, x3, y3, x4, y4)

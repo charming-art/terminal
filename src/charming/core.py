@@ -2,13 +2,12 @@ import sys
 import math
 import colorsys
 import string
-import copy
+import time
 from abc import ABCMeta, abstractclassmethod
 from pyfiglet import Figlet
 from . import constants
 
 from .globals import WINDOWS
-from .globals import BROWSER
 from .globals import POSIX
 
 from .utils import map
@@ -17,16 +16,16 @@ from .utils import Matrix
 from .utils import angle_between
 from .utils import get_char_width
 from .utils import to_left
-from .utils import generate_xtermjs_colors
 from .utils import logger
+from .utils import list_find
 
 
 class Sketch(object):
 
-    def __init__(self, renderer, context, timer):
+    def __init__(self, renderer, context):
         self.renderer = renderer
         self.context = context
-        self.timer = timer
+        self.timer = LocalTimer()
 
         self.frame_rate = 30
         self.is_loop = True
@@ -45,7 +44,7 @@ class Sketch(object):
         self.has_setup_hook = False
         self.has_draw_hook = False
 
-        self._check_params = True
+        self._check_params = False
         self.hooks_map = {
             'setup': lambda: None,
             'draw': lambda: None,
@@ -76,7 +75,7 @@ class Sketch(object):
                 self._loop()
                 if self.has_draw_hook and self.has_setup_hook:
                     self.timer.run(1000 / self.frame_rate, self._loop)
-                else:
+                elif not self.should_exit:
                     self.timer.wait()
         except Exception as e:
             logger.debug(e)
@@ -238,7 +237,7 @@ class Renderer(object):
         self.width = width
         self.height = height
         self.frame_buffer = [
-            self.background_color for i in range(width * height)
+            self.background_color for _ in range(width * height)
         ]
 
     def render(self):
@@ -487,18 +486,22 @@ class Renderer(object):
             w = options['width']
             h = options['height']
             ps = []
-            for j in range(0, h - 1):
-                for i in range(0, w - 1):
-                    i1 = j * w + i
-                    i2 = j * w + i + 1
-                    i3 = (j + 1) * w + i + 1
-                    i4 = (j + 1) * w + i
-                    ps.append(
-                        [vertices[i1],
-                         vertices[i2],
-                         vertices[i3],
-                         vertices[i4]]
-                    )
+            for j in range(h):
+                for i in range(w):
+                    w1 = w + 1
+                    i1 = j * w1 + i
+                    i2 = j * w1 + i + 1
+                    i3 = (j + 1) * w1 + i + 1
+                    i4 = (j + 1) * w1 + i
+                    v_list = [
+                        vertices[i1], vertices[i2],
+                        vertices[i4], vertices[i3]
+                    ]
+                    index_visible = list_find(v_list, lambda x: x.visible)
+                    if index_visible != -1:
+                        v = v_list[index_visible]
+                        ps.append([v] * 4)
+
         elif primitive_type == constants.TEXT:
             ps = [[v] for v in vertices]
 
@@ -535,6 +538,8 @@ class Renderer(object):
         primitive_type
     ):
         fragments = []
+        is_image = primitive_type == constants.IMAGE
+        is_text = primitive_type == constants.TEXT
 
         for edges in primitives:
             fill_pixels = []
@@ -554,7 +559,7 @@ class Renderer(object):
                 if is_fill_enabled:
                     fill_edges = self._close_polygon(edges)
 
-                    if primitive_type == constants.IMAGE or primitive_type == constants.TEXT:
+                    if is_image or is_text:
                         fill_color = fill_edges[0][0].color
 
                     fill_pixels += self._scan_line_filling(
@@ -563,7 +568,7 @@ class Renderer(object):
                     )
 
                 # stroke the polygon
-                if is_stroke_enabled:
+                if is_stroke_enabled and not is_image:
                     for e in edges:
                         stroke_pixels += self._rasterize_line(
                             e[0],
@@ -585,18 +590,21 @@ class Renderer(object):
             for p in pixels:
                 p.x *= scale
                 if p.x >= 0 and p.x < self.width and p.y >= 0 and p.y < self.height:
+                    # process text character
                     if need_wrap:
-                        ch_w = get_char_width(p.color.ch)
+                        ch = p.color.ch
+                        ch_w = get_char_width(ch)
+                        ch = ch[0] if isinstance(ch, tuple) else ch
                         if ch_w == 1:
-                            p.color.ch = p.color.ch + " "
+                            p.color.ch = (ch, 2)
                     pixels_clipped.append(p)
             fragments_clipped.append(pixels_clipped)
 
         return fragments_clipped
 
     @logger.record('fragment processing')
-    def _fragment_processing(self, fragemnts):
-        for pixels in fragemnts:
+    def _fragment_processing(self, fragments):
+        for pixels in fragments:
             for p in pixels:
                 key = f'({p.x},{p.y})'
                 index = p.y * self.width + p.x
@@ -794,7 +802,8 @@ class Renderer(object):
 
             x = pre_x * cos + pre_y * sin * (-a / b)
             y = pre_x * sin * (b / a) + pre_y * cos
-            if x != pre_x or y != pre_y:
+
+            if x != pre_x or y != pre_y or len(points) == 0:
                 pre_x = x
                 pre_y = y
                 rotated_x = math.cos(rotation) * x - math.sin(rotation) * y
@@ -937,10 +946,6 @@ class Context(metaclass=ABCMeta):
         pass
 
     @abstractclassmethod
-    def _write(self, content):
-        """ write content to screen """
-
-    @abstractclassmethod
     def _update_window_size(self):
         """ update the size of the window """
 
@@ -971,6 +976,7 @@ class Context(metaclass=ABCMeta):
 
         self.has_open = False
         self._has_cursor = True
+        self._has_background = False
         self._screen = None
 
         self._content = ""
@@ -992,6 +998,7 @@ class Context(metaclass=ABCMeta):
 
     @logger.record('flush screen')
     def draw(self, points, mode):
+        self._draw_background()
         self._draw_border()
         self._content = ''
 
@@ -1054,6 +1061,19 @@ class Context(metaclass=ABCMeta):
         cx = self._pad_x + 1 + self.cursor_x
         cy = self._pad_y + 1 + self.cursor_y
         self._move(cx, cy)
+
+    def _draw_background(self):
+        if self._has_background:
+            return
+
+        self._content += '\x1b[0m'
+
+        for i in range(self.window_width):
+            for j in range(self.window_height):
+                self._addch(i, j, ' ', constants.BLACK, constants.BLACK)
+
+        self._has_background = True
+        self._refresh()
 
     def _ch(self, ch, mode):
         if isinstance(ch, tuple):
@@ -1128,6 +1148,7 @@ class Context(metaclass=ABCMeta):
             if self._in(x, y):
                 ch = '+' if i == self._pad_width - 2 else '-'
                 self._addch(x, y, ch)
+
         self._refresh()
 
     def _in(self, x, y):
@@ -1138,16 +1159,33 @@ class Context(metaclass=ABCMeta):
         self._pad_x = (self.window_width - self._pad_width) // 2
         self._pad_y = (self.window_height - self._pad_height) // 2
 
+    def _write(self, content):
+        sys.stdout.write(content)
+        sys.stdout.flush()
+
 
 if sys.platform == WINDOWS:
     class WindowsContext(Context):
-        pass
+        def __init__(self):
+            pass
 
-elif sys.platform == BROWSER:
+        def init(self):
+            pass
 
-    class BrowserContext(Context):
-        pass
+        def get_window_size(self):
+            pass
 
+        def close(self):
+            pass
+
+        def get_events(self):
+            pass
+
+        def background(self):
+            pass
+
+        def _update_window_size(self):
+            pass
 else:
     import curses
 
@@ -1179,8 +1217,10 @@ else:
             curses.start_color()
 
             # Enable mouse events
-            curses.mousemask(curses.ALL_MOUSE_EVENTS |
-                             curses.REPORT_MOUSE_POSITION)
+            curses.mousemask(
+                curses.ALL_MOUSE_EVENTS |
+                curses.REPORT_MOUSE_POSITION
+            )
 
         def get_window_size(self):
             if self._screen:
@@ -1248,10 +1288,6 @@ else:
                     self._addch(i, j, ch, color.fg, color.bg)
             self._refresh()
 
-        def _write(self, content):
-            sys.stdout.write(content)
-            sys.stdout.flush()
-
         def _update_window_size(self):
             curses.update_lines_cols()
             self.window_width = self._screen.getmaxyx()[1]
@@ -1304,45 +1340,25 @@ else:
             return event_queue
 
 
-class Timer(metaclass=ABCMeta):
-    @abstractclassmethod
+class LocalTimer(object):
+
     def run(self, ms, callback):
+        while True:
+            t1 = time.time()
+            stop = callback()
+            if not stop:
+                t2 = time.time()
+                d = ms / 1000 - (t2 - t1)
+                if d > 0:
+                    time.sleep(d)
+            else:
+                break
+
+    def stop(self):
         pass
 
-    @abstractclassmethod
-    def stop(self, ms, callback):
-        pass
-
-    @abstractclassmethod
     def wait(self):
-        pass
-
-
-if sys.platform == BROWSER:
-    class BrowserTimer(Timer):
-        pass
-else:
-    import time
-
-    class LocalTimer(Timer):
-
-        def run(self, ms, callback):
-            while True:
-                t1 = time.time()
-                stop = callback()
-                if not stop:
-                    t2 = time.time()
-                    d = ms / 1000 - (t2 - t1)
-                    if d > 0:
-                        time.sleep(d)
-                else:
-                    break
-
-        def stop(self):
-            pass
-
-        def wait(self):
-            input()
+        input()
 
 
 class Shape(object):
@@ -1395,22 +1411,23 @@ class Point(object):
         weight_x=0,
         weight_y=0,
         rotation=0,
-        type="normal"
+        type="normal",
+        visible=True
     ):
         self.x = x
         self.y = y
         self.weight_x = weight_x
         self.weight_y = weight_y
-        self.color = color
         self.type = type
         self.rotation = rotation
+        self.visible = visible
         self.color = Color(' ') if color == None else color
 
     def __str__(self):
         attrs = {
             "x": self.x,
             "y": self.y,
-            # "color": self.color
+            "color": self.color.ch
         }
         return attrs.__str__()
 
@@ -1616,14 +1633,18 @@ class Image(object):
         y2 = self.y + self.height
         x1 = self.x
         x2 = self.x + self.width
-        for y in range(y1, y2):
-            for x in range(x1, x2):
-                y0 = int(map(y, y1, y2, 0, self.image.height))
-                x0 = int(map(x, x1, x2, 0, self.image.width))
+        for y in range(y1, y2 + 1):
+            for x in range(x1, x2 + 1):
+                y0 = int(map(y, y1, y2, 0, self.image.height - 1))
+                x0 = int(map(x, x1, x2, 0, self.image.width - 1))
                 index = y0 * self.image.width + x0
                 color = self.image[index]
-                c = (color[0], color[1], color[2])
-                points.append(Point(x, y, color=Color('·', c, c)))
+                if color[3] == 0:
+                    points.append(Point(x, y, visible=False))
+                else:
+                    v = (color[0], color[1], color[2])
+                    c = Color('·', v, v)
+                    points.append(Point(x, y, color=c))
 
         Color.restore()
 
@@ -1636,16 +1657,48 @@ class Image(object):
 
 class Text(object):
 
-    def __init__(self, text, x, y):
+    def __init__(self, text, x, y, mode):
         self.text = text
         self.x = x
         self.y = y
+        self.mode = mode
+        self._matrix = [[]]
 
     def to_shape(self, size, font, align_x, align_y):
-        text = self._convert(self.text, size, font)
-        matrix = self._matrixlize(text)
-        height = matrix.row
-        width = matrix.col
+        self.to_string(size, font, align_x, align_y)
+        points = []
+        for i, chars in enumerate(self._matrix):
+            ch = ''
+            x0 = self.x
+            y0 = self.y + i
+            for j, c in enumerate(chars):
+                # compress the line
+                if self.mode == constants.DOUBLE:
+                    w1 = get_char_width(ch)
+                    w2 = get_char_width(c)
+                    w = w1 + w2
+                    if w < 2:
+                        ch += c
+                        continue
+                    else:
+                        ch = ch + c if w == 2 else ch
+                        points.append(Point(x0, y0, color=Color(ch)))
+                        ch = '' if w == 2 else c
+                        x0 = x0 + 1
+                else:
+                    x0 = self.x + j
+                    points.append(Point(x0, y0, color=Color(c)))
+
+            if ch != '':
+                points.append(Point(x0, y0, color=Color(ch)))
+
+        return Shape(points=points, primitive_type=constants.TEXT)
+
+    def to_string(self, size, font, align_x, align_y):
+        self.text = self._convert(self.text, size, font)
+        self._matrix = self._matrixlize(self.text)
+        height = self._matrix.row
+        width = self._matrix.col
 
         if align_x == constants.RIGHT:
             self.x -= width
@@ -1656,16 +1709,6 @@ class Text(object):
             self.y -= height
         elif align_y == constants.MIDDLE:
             self.y -= height / 2
-
-        points = []
-        for i, chars in enumerate(matrix):
-            for j, ch in enumerate(chars):
-                x0 = self.x + j
-                y0 = self.y + i
-                color = Color(ch)
-                points.append(Point(x0, y0, color=color))
-
-        return Shape(points=points, primitive_type=constants.TEXT)
 
     @classmethod
     def text_width(cls, text, size, font):

@@ -5,7 +5,6 @@ from .common import color_check
 from .common import CColor
 from .common import params_check
 from .utils import lerp_color as utils_lerp_color
-from .utils import logger
 from .utils import map
 
 

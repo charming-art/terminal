@@ -1,8 +1,9 @@
 import math
 import sys
 from abc import ABCMeta, abstractclassmethod
+import logging
+import time
 from .globals import WINDOWS
-from .globals import BROWSER
 from .globals import POSIX
 from .globals import DEBUG_MODE
 
@@ -18,10 +19,23 @@ widths = [
 ]
 
 
+def list_find(list, cb):
+    for i, e in enumerate(list):
+        if cb(e):
+            return i
+    return -1
+
+
 def get_char_width(ch):
     """Return the screen column width for unicode ordinal o."""
+    if isinstance(ch, tuple):
+        return ch[1]
+
     if len(ch) >= 2:
         return 2
+    
+    if ch == '':
+        return 0
 
     o = ord(ch)
     if o == 0xe or o == 0xf:
@@ -85,47 +99,19 @@ def map(value, start1, stop1, start2, stop2):
     return start2 * (1 - t) + stop2 * t
 
 
+def sign(x):
+    if x > 0:
+        return 1
+    elif x == 0:
+        return 0
+    else:
+        return -1
+
+
 def dist(x1, y1, x2, y2):
     p = [x1, y1]
     q = [x2, y2]
     return math.sqrt(sum((px - qx) ** 2 for px, qx in zip(p, q)))
-
-
-def generate_xtermjs_colors():
-    colors = [
-        (0x2e, 0x34, 0x36),
-        (0xcc, 0x00, 0x00),
-        (0x4e, 0x9a, 0x06),
-        (0xc4, 0xa0, 0x00),
-        (0x34, 0x65, 0xa4),
-        (0x75, 0x50, 0x7b),
-        (0x06, 0x98, 0x9a),
-        (0xd3, 0xd7, 0xcf),
-        (0x55, 0x57, 0x53),
-        (0xef, 0x29, 0x29),
-        (0x8a, 0xe2, 0x34),
-        (0xfc, 0xe9, 0x4f),
-        (0x72, 0x9f, 0xcf),
-        (0xad, 0x7f, 0xa8),
-        (0x34, 0xe2, 0xe2),
-        (0xee, 0xee, 0xec)
-    ]
-
-    # Fill in the remaining 240 ANSI colors.
-    # Generate colors (16-231)
-    v = [0x00, 0x5f, 0x87, 0xaf, 0xd7, 0xff]
-    for i in range(216):
-        r = v[int((i / 36) % 6)]
-        g = v[int((i / 6) % 6)]
-        b = v[int(i % 6)]
-        colors.append((r, g, b))
-
-    # Generate greys (232-255)
-    for i in range(24):
-        c = 8 + i * 10
-        colors.append((c, c, c))
-
-    return colors
 
 
 class Matrix(object):
@@ -211,56 +197,48 @@ class Logger(metaclass=ABCMeta):
             records.sort(key=lambda x: x[1])
             self.plot(records)
 
+if DEBUG_MODE:
+    import matplotlib.pyplot as plt
 
-if sys.platform == BROWSER:
-    class BrowserLogger(Logger):
-        pass
-else:
-    import logging
-    import time
+logging.basicConfig(filename='charming.log', level=logging.DEBUG)
 
-    if DEBUG_MODE:
-        import matplotlib.pyplot as plt
+class LocalLogger(Logger):
 
-    logging.basicConfig(filename='charming.log', level=logging.DEBUG)
+    def __init__(self, should_record):
+        super(LocalLogger, self).__init__(should_record)
 
-    class LocalLogger(Logger):
+    def debug(self, *args, **kw):
+        logging.debug(*args, **kw)
 
-        def __init__(self, should_record):
-            super(LocalLogger, self).__init__(should_record)
+    def time(self):
+        return time.time()
 
-        def debug(self, *args, **kw):
-            logging.debug(*args, **kw)
+    def plot(self, records):
+        total = 0
+        for _, value in records:
+            total += value
+        keys = [r[0] for r in records]
+        values = [r[1] for r in records]
+        proportions = [r[1] / total for r in records]
 
-        def time(self):
-            return time.time()
+        plt.figure(dpi=70, figsize=(24, 12))
 
-        def plot(self, records):
-            total = 0
-            for _, value in records:
-                total += value
-            keys = [r[0] for r in records]
-            values = [r[1] for r in records]
-            proportions = [r[1] / total for r in records]
+        # pie chart
+        plt.subplot(121)
+        plt.pie(
+            proportions,
+            labels=keys,
+            autopct='%1.1f%%',
+        )
 
-            plt.figure(dpi=70, figsize=(24, 12))
+        plt.subplot(122)
+        # bar chart
+        plt.bar(
+            keys,
+            values,
+            color="steelblue"
+        )
 
-            # pie chart
-            plt.subplot(121)
-            plt.pie(
-                proportions,
-                labels=keys,
-                autopct='%1.1f%%',
-            )
+        plt.show()
 
-            plt.subplot(122)
-            # bar chart
-            plt.bar(
-                keys,
-                values,
-                color="steelblue"
-            )
-
-            plt.show()
-
-    logger = LocalLogger(DEBUG_MODE)
+logger = LocalLogger(DEBUG_MODE)

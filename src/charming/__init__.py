@@ -8,6 +8,7 @@ from .structure import push
 from .structure import pop
 from .structure import open_context
 from .structure import exit
+from .structure import get_is_looping
 
 from .environment import frame_rate
 from .environment import size
@@ -16,7 +17,6 @@ from .environment import get_height
 from .environment import full_screen
 from .environment import get_window_size
 from .environment import get_frame_count
-from .environment import get_frame_rate
 from .environment import no_cursor
 from .environment import cursor
 from .environment import window_resized
@@ -134,6 +134,7 @@ from .image import image_mode
 from .image import load_image
 from .image import no_tint
 from .image import tint
+from .image import CImage
 
 from .time import day
 from .time import hour
@@ -144,7 +145,7 @@ from .time import second
 from .time import year
 
 from .helpers import print
-from .helpers import no_check
+from .helpers import check_params
 
 from .constants import PI
 from .constants import HALF_PI
@@ -209,5 +210,7 @@ from .constants import TAB
 from .constants import ENTER
 from .constants import SPACE
 
+from .io import load_csv
+from .io import load_json
 
-__version__ = "v1.0.0-alpha.1"
+__version__ = "v1.0.0-alpha.2"

@@ -13,7 +13,7 @@ builtin_round = round
 
 def abs(n):
     '''
-    Calculates the absolute value of a number. The absolute value of a number is always positive.
+    Calculates the absolute value of a number.
 
     Example:
 
@@ -336,7 +336,7 @@ class CVector(object):
     @classmethod
     def random_2D(cls):
         '''
-        Make a new random 2D unit vector with a random direction
+        Make a new random 2D unit vector with a random direction.
 
         Example:
 
@@ -351,7 +351,7 @@ class CVector(object):
     @classmethod
     def from_angle(cls, angle):
         '''
-        Make a new 2D unit vector from an angle
+        Make a new 2D unit vector from an angle.
 
         Example:
 
@@ -366,7 +366,7 @@ class CVector(object):
 
     def copy(self):
         '''
-        Get a copy of the vector
+        Get a copy of the vector.
 
         Example:
 
@@ -379,7 +379,7 @@ class CVector(object):
     @property
     def mag(self):
         '''
-        Calculate the magnitude of the vector
+        Calculate the magnitude of the vector.
 
         Example:
 
@@ -391,7 +391,7 @@ class CVector(object):
 
     def mag_sq(self):
         '''
-        Calculate the magnitude of the vector, squared
+        Calculate the magnitude of the vector, squared.
 
         Example:
 
@@ -403,7 +403,7 @@ class CVector(object):
 
     def __add__(self, other):
         '''
-        Adds x and z components to a vector
+        Adds x and z components to a vector.
 
         Example:
 
@@ -421,7 +421,7 @@ class CVector(object):
 
     def __sub__(self, other):
         '''
-        Subtract x and ycomponents from a vector
+        Subtract x and y components from a vector.
 
         Example:
 
@@ -439,7 +439,7 @@ class CVector(object):
 
     def __mul__(self, k):
         '''
-        Multiply a vector by a scalar
+        Multiply a vector by a scalar.
 
         Example:
 
@@ -460,7 +460,7 @@ class CVector(object):
 
     def __truediv__(self, k):
         '''
-        Divide a vector by a scalar
+        Divide a vector by a scalar.
 
         Example:
 
@@ -477,13 +477,13 @@ class CVector(object):
 
     def __rmul__(self, k):
         '''
-        Multiply a vector by a scalar
+        Multiply a vector by a scalar.
         '''
         return self * k
 
     def __neg__(self):
         '''
-        Negate the vector
+        Negate the vector.
         '''
         return self * (-1)
 
@@ -502,7 +502,7 @@ class CVector(object):
 
     def dot(self, other):
         '''
-        Calculate the dot product of two vectors
+        Calculate the dot product of two vectors.
 
         Example:
 
@@ -513,9 +513,22 @@ class CVector(object):
         '''
         return self.x * other.x + self.y * other.y
 
+    def cross(self, other):
+        '''
+        Calculate and return the cross product.
+
+        Example:
+
+            >>> v1 = CVector(1, 2)
+            >>> v2 = CVector(2, 3)
+            >>> v1.cross(v2)
+            -1
+        '''
+        return self.x * other.y - self.y * other.x
+
     def normalize(self):
         '''
-        Normalize the vector to a length of 1
+        Normalize the vector to a length of 1.
 
         Example:
 
@@ -532,7 +545,7 @@ class CVector(object):
 
     def limit(self, max_len):
         '''
-        Limit the magnitude of the vector
+        Limit the magnitude of the vector.
 
         Example:
 
@@ -549,7 +562,7 @@ class CVector(object):
     @mag.setter
     def mag(self, len):
         '''
-        Set the magnitude of the vector
+        Set the magnitude of the vector.
 
         Example:
 
@@ -564,7 +577,7 @@ class CVector(object):
 
     def heading(self):
         '''
-        Calculate the angle of rotation for this vector
+        Calculate the angle of rotation for this vector.
 
         Example:
 
@@ -577,7 +590,7 @@ class CVector(object):
 
     def rotate(self, theta):
         '''
-        Rotate the vector by an angle (2D only)
+        Rotate the vector by an angle (2D only).
 
         Example:
 
@@ -594,7 +607,7 @@ class CVector(object):
 
     def lerp(self, other, amt):
         '''
-        Linear interpolate the vector to another vector
+        Linear interpolate the vector to another vector.
 
         Example:
 
@@ -613,7 +626,7 @@ class CVector(object):
 
     def angle_between(self, other):
         '''
-        Calculate and return the angle between two vectors
+        Calculate and return the angle between two vectors.
 
         Example:
 
@@ -761,10 +774,13 @@ def noise_seed(seed):
     PERLIN = None
 
 
-def random(a, b=None):
+def random(a=None, b=None):
     '''
     Returns uniform random numbers.
     '''
+    if a == None and b == None:
+        low = 0
+        high = 1
     if b == None:
         low = 0
         high = a
@@ -781,11 +797,11 @@ def random_seed(seed):
     rd.seed(seed)
 
 
-def random_gaussian():
+def random_gaussian(mean=0, sd=1):
     '''
     Returns a float from a random series of numbers having a mean of 0 and standard deviation of 1.
     '''
-    return rd.gauss(0, 1)
+    return mean + rd.gauss(0, 1) * sd
 
 
 if __name__ == '__main__':
