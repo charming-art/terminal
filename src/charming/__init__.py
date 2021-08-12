@@ -213,4 +213,4 @@ from .constants import SPACE
 from .io import load_csv
 from .io import load_json
 
-__version__ = "v1.0.0-alpha.1"
+__version__ = "v1.0.0-alpha.2"
