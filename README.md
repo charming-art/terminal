@@ -1,7 +1,5 @@
 # Charming: Character Terminal Art Programing
 
-<img src="https://raw.githubusercontent.com/charming-art/public-files/master/cover.png" alt="cover" width="100%">
-
 Charming is a creative coding language designed for **Character Terminal Art Programming**.
 
 It is currently written in Python and provides Processing-like APIs, which aims to help artists, designers, educators, beginners, and anyone else to easily create following visual effects in terminal.
@@ -12,6 +10,8 @@ It is currently written in Python and provides Processing-like APIs, which aims 
 - [Expressive Data Visualization](./docs/examples/readme.md#Expressive-Data-Visualization)
 
 There are many reasons for creating Charming, but the most important one is that **I hope not only does Charming make you love programming for fun or show a magic world to you, but also make this journey relaxing and interesting.**
+
+<img src="https://raw.githubusercontent.com/charming-art/public-files/master/cover.png" alt="cover" width="100%">
 
 ## 📎 Links
 
