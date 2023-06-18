@@ -1,0 +1,23 @@
+{
+  "name": "charming",
+  "version": "0.1.0",
+  "description": "Charming is a creative code language for character art programming.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charming-art/charming.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/charming-art/charming/issues"
+  },
+  "homepage": "https://github.com/charming-art/charming#readme",
+  "devDependencies": {
+    "vite": "^4.3.9"
+  }
+}
