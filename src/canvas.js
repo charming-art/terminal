@@ -36,16 +36,21 @@ function measureText(text, styles) {
   return { width: span.clientWidth, height: span.clientHeight };
 }
 
+// Default options from: https://github.com/xtermjs/xterm.js/blob/ac0207bf2e8a923d0cff95cc383f6f3e36a2e923/src/common/services/OptionsService.ts#LL12C1-L12C1
 export class Canvas {
   constructor({
-    cols = 30,
-    rows = 10,
     document = window.document,
-    background = "#000",
-    fontSize = 12,
-    fontFamily,
+    cols = 80,
+    rows = 24,
+    fontFamily = "courier-new, courier, monospace",
+    fontSize = 15,
+    fontWeight = "normal",
   } = {}) {
-    const { width: tw, height: th } = measureText("W", { fontSize });
+    const { width: tw, height: th } = measureText("W", {
+      fontSize,
+      fontFamily,
+      fontWeight,
+    });
     this._fontSize = fontSize;
     this._fontFamily = fontFamily;
     this._cellWidth = tw;
@@ -53,27 +58,23 @@ export class Canvas {
     this._width = cols * tw;
     this._height = rows * th;
     this._context = createContext(document, this._width, this._height);
-    this._context.fillStyle = background;
-    this._context.fillRect(0, 0, this._width, this._height);
   }
-  char(text, i, j, { color, background } = {}) {
+  background(color) {
+    this._context.fillStyle = color;
+    this._context.fillRect(0, 0, this._width, this._height);
+    return this;
+  }
+  char(text, i, j, fg, bg) {
     const x = this._cellWidth * i;
     const y = this._cellHeight * j;
-    const ch = text[0];
-    if (background) {
-      this._context.fillStyle = background;
-      this._context.fillRect(
-        x,
-        y,
-        this._cellWidth,
-        this._cellHeight,
-        background
-      );
+    if (bg) {
+      this._context.fillStyle = bg;
+      this._context.fillRect(x, y, this._cellWidth, this._cellHeight);
     }
-    this._context.fillStyle = color;
+    this._context.fillStyle = fg;
     this._context.font = `${this._fontSize}px ${this._fontFamily}`;
     this._context.textBaseline = TEXT_BASELINE;
-    this._context.fillText(ch, x, y + this._cellHeight);
+    this._context.fillText(text, x, y + this._cellHeight);
     return this;
   }
   node() {
