@@ -3,7 +3,7 @@
   <meta charset="utf-8" />
 </head>
 <script type="module">
-  import * as demos from "./index.js";
+  import * as apps from "./apps/index.js";
 
   // UI
   const select = createSelect(() => {
@@ -11,9 +11,17 @@
     history.pushState({ value }, "", `?name=${value}`);
     render();
   });
-  const options = Object.keys(demos).map(createOption);
+  const options = Object.keys(apps).map(createOption);
   document.body.append(select);
-  select.appendChild(...options);
+  select.append(...options);
+
+  // Init app name.
+  const initialValue = new URL(location).searchParams.get("name");
+  if (apps[initialValue]) select.value = initialValue;
+
+  let preClear = null;
+  let preNode = null;
+  render();
 
   function createSelect(onchange) {
     const select = document.createElement("select");
@@ -30,13 +38,10 @@
     return option;
   }
 
-  // Render
-  let preClear = null;
-  let preNode = null;
   function render() {
     if (typeof preClear === "function") preClear();
     if (isNode(preNode)) preNode.remove();
-    const fn = demos[select.value];
+    const fn = apps[select.value];
     preNode = fn();
     if (isNode(preNode)) {
       document.body.appendChild(preNode);
@@ -47,6 +52,4 @@
   function isNode(node) {
     return node instanceof HTMLElement || node instanceof SVGElement;
   }
-
-  render();
 </script>

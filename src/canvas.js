@@ -17,14 +17,14 @@ export const TEXT_BASELINE = "ideographic";
 function measureText(text, styles) {
   const span = document.createElement("span");
 
-  // Out of window.
+  // Hide span.
   span.style.visibility = "hidden";
   span.style.position = "absolute";
   span.style.display = "inline";
   span.style.left = "-1000px";
   span.style.top = "-1000px";
 
-  // Specified styles.
+  // Font attributes.
   span.style.fontSize = `${styles.fontSize}px`;
   span.style.fontFamily = styles.fontFamily;
   span.style.fontWeight = styles.fontWeight;
@@ -45,12 +45,14 @@ export class Canvas {
     fontFamily = "courier-new, courier, monospace",
     fontSize = 15,
     fontWeight = "normal",
+    mode = "single",
   } = {}) {
     const { width: tw, height: th } = measureText("W", {
       fontSize,
       fontFamily,
       fontWeight,
     });
+    this._mode = mode;
     this._fontSize = fontSize;
     this._fontFamily = fontFamily;
     this._cellWidth = tw;
@@ -64,17 +66,21 @@ export class Canvas {
     this._context.fillRect(0, 0, this._width, this._height);
     return this;
   }
-  char(text, i, j, fg, bg) {
-    const x = this._cellWidth * i;
+  char(char, i, j, fg, bg, wide = false) {
+    const cols = this._mode === "single" ? 1 : 2;
+    const x = this._cellWidth * i * cols;
     const y = this._cellHeight * j;
     if (bg) {
       this._context.fillStyle = bg;
-      this._context.fillRect(x, y, this._cellWidth, this._cellHeight);
+      this._context.fillRect(x, y, this._cellWidth * cols, this._cellHeight);
     }
     this._context.fillStyle = fg;
     this._context.font = `${this._fontSize}px ${this._fontFamily}`;
     this._context.textBaseline = TEXT_BASELINE;
-    this._context.fillText(text, x, y + this._cellHeight);
+    this._context.fillText(char, x, y + this._cellHeight);
+    if (this._mode === "double" && !wide) {
+      this._context.fillText(char, x + this._cellWidth, y + this._cellHeight);
+    }
     return this;
   }
   node() {

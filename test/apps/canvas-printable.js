@@ -1,7 +1,7 @@
 import { Canvas } from "@charming-art/charming-canvas";
 
 export default function () {
-  const cols = 20;
+  const cols = 19;
   const rows = 5;
 
   const canvas = new Canvas({

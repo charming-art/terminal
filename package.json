@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/charming-art/charming#readme",
   "devDependencies": {
-    "vite": "^4.3.9"
+    "vite": "^4.3.9",
+    "vitest": "^0.32.1"
   }
 }
