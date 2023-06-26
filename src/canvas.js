@@ -47,19 +47,25 @@ export class Canvas {
     fontWeight = "normal",
     mode = "single",
   } = {}) {
+    this._mode = mode;
+    this._fontSize = fontSize;
+    this._fontFamily = fontFamily;
+    this._fontWeight = fontWeight;
+    this._cols = cols;
+    this._rows = rows;
+
     const { width: tw, height: th } = measureText("W", {
       fontSize,
       fontFamily,
       fontWeight,
     });
-    this._mode = mode;
-    this._fontSize = fontSize;
-    this._fontFamily = fontFamily;
+
     this._cellWidth = tw;
     this._cellHeight = th;
     this._width = cols * tw;
     this._height = rows * th;
     this._context = createContext(document, this._width, this._height);
+    this._context.canvas.classList.add("charming-canvas");
   }
   background(color) {
     this._context.fillStyle = color;
