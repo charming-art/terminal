@@ -1,21 +1,13 @@
 import { describe, test, expect, beforeAll, afterAll } from "vitest";
-import { chromium } from "playwright";
-
-function app(name) {
-  return `http://localhost:${process.env.TEST_PORT}/?name=${name}`;
-}
-
-function isMac() {
-  return process.platform === "darwin";
-}
+import { createBrowser, createPage, isMac, app } from "./utils";
 
 describe("Canvas Integration Tests", () => {
   let browser;
   let page;
 
   beforeAll(async () => {
-    browser = await chromium.launch();
-    page = await (await browser.newContext()).newPage();
+    browser = await createBrowser();
+    page = await createPage(browser);
     await page.goto(app("canvas"));
     await page.waitForSelector(".charming-canvas");
   });

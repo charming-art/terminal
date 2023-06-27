@@ -1,6 +1,6 @@
 import { Canvas } from "@charming-art/charming-canvas";
 
-export default function () {
+export function canvasPrintable() {
   const cols = 19;
   const rows = 5;
 
@@ -23,3 +23,5 @@ export default function () {
 
   return canvas.node();
 }
+
+canvasPrintable.snap = true;

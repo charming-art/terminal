@@ -1,6 +1,6 @@
 import { Canvas } from "@charming-art/charming-canvas";
 
-export default function () {
+export function canvasDouble() {
   const chars = [
     ["💯", undefined, undefined, true],
     ["a", "#fff", "steelblue"],
@@ -31,3 +31,5 @@ export default function () {
 
   return canvas.node();
 }
+
+canvasDouble.snap = true;

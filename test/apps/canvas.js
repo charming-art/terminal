@@ -1,6 +1,6 @@
 import { Canvas } from "@charming-art/charming-canvas";
 
-export default function () {
+export function canvas() {
   const canvas = new Canvas();
   canvas.background("black");
   window.canvas = canvas;
