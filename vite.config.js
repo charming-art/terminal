@@ -1,4 +1,6 @@
 import path from "path";
+import wasm from "vite-plugin-wasm";
+import topLevelAwait from "vite-plugin-top-level-await";
 import { defineConfig } from "vite";
 
 export default defineConfig({
@@ -14,4 +16,5 @@ export default defineConfig({
     },
   },
   test: { globalSetup: path.resolve("./scripts/vite.js") },
+  plugins: [wasm(), topLevelAwait()],
 });
