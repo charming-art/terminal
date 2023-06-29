@@ -4,8 +4,9 @@
   "description": "Charming is a creative coding language for character art programming.",
   "main": "index.js",
   "scripts": {
-    "dev": "vite",
-    "test": "vitest"
+    "dev": "npm run build:rust && vite",
+    "test": "npm run build:rust && vitest",
+    "build:rust": "wasm-pack build ./rust --out-dir ../rasterizer --out-name index"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,11 @@
     "playwright": "^1.35.0",
     "pngjs": "^7.0.0",
     "vite": "^4.3.9",
+    "vite-plugin-top-level-await": "^1.3.1",
+    "vite-plugin-wasm": "^3.2.2",
     "vitest": "^0.32.1"
+  },
+  "dependencies": {
+    "d3-color": "^3.1.0"
   }
 }
