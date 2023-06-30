@@ -28,15 +28,22 @@ function decodeChar(ch) {
   return ch === -1 ? "" : String.fromCodePoint(ch);
 }
 
+function maybePixel(size) {
+  if (typeof size === "number") return [size, undefined];
+  return [undefined, parseFloat(size)];
+}
+
 class App {
   constructor(options = {}) {
     this._options = options;
   }
   size(cols = 80, rows = 24) {
-    this._cols = cols;
-    this._rows = rows;
-    this._renderer = new Canvas({ cols, rows, ...this._options });
-    this._rasterizer = Rasterizer.new(cols, rows);
+    const [_cols, width] = maybePixel(cols);
+    const [_rows, height] = maybePixel(rows);
+    this._renderer = new Canvas({ cols: _cols, rows: _rows, width, height, ...this._options });
+    this._cols = this._renderer.cols;
+    this._rows = this._renderer.rows;
+    this._rasterizer = Rasterizer.new(this._cols, this._rows);
     return this;
   }
   stroke(ch, fg = -1, bg = -1) {
@@ -64,6 +71,12 @@ class App {
       }
     }
     return this;
+  }
+  get cols() {
+    return this._cols;
+  }
+  get rows() {
+    return this._rows;
   }
   node() {
     return this._renderer.node();

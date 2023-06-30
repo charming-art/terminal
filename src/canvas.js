@@ -1,3 +1,7 @@
+// TODO Set text baseline conditionally by browser.
+// https://github.com/xtermjs/xterm.js/blob/096fe171356fc9519e0a6b737a98ca82d0587e91/src/browser/renderer/shared/Constants.ts#LL14C1-L14C1
+export const TEXT_BASELINE = "ideographic";
+
 function createContext(document, width = 640, height = 480, dpi = null) {
   if (dpi == null) dpi = devicePixelRatio;
   const canvas = document.createElement("canvas");
@@ -9,10 +13,6 @@ function createContext(document, width = 640, height = 480, dpi = null) {
   context.scale(dpi, dpi);
   return context;
 }
-
-// TODO Set text baseline conditionally by browser.
-// https://github.com/xtermjs/xterm.js/blob/096fe171356fc9519e0a6b737a98ca82d0587e91/src/browser/renderer/shared/Constants.ts#LL14C1-L14C1
-export const TEXT_BASELINE = "ideographic";
 
 function measureText(text, styles) {
   const span = document.createElement("span");
@@ -36,6 +36,11 @@ function measureText(text, styles) {
   return { width: span.clientWidth, height: span.clientHeight };
 }
 
+function dimensionOf(pixel, count, unit) {
+  if (pixel === undefined) return count;
+  return (pixel / unit) | 0;
+}
+
 // Default options from: https://github.com/xtermjs/xterm.js/blob/ac0207bf2e8a923d0cff95cc383f6f3e36a2e923/src/common/services/OptionsService.ts#LL12C1-L12C1
 export class Canvas {
   constructor({
@@ -46,13 +51,13 @@ export class Canvas {
     fontSize = 15,
     fontWeight = "normal",
     mode = "single",
+    width,
+    height,
   } = {}) {
     this._mode = mode;
     this._fontSize = fontSize;
     this._fontFamily = fontFamily;
     this._fontWeight = fontWeight;
-    this._cols = cols;
-    this._rows = rows;
 
     const { width: tw, height: th } = measureText("W", {
       fontSize,
@@ -60,10 +65,12 @@ export class Canvas {
       fontWeight,
     });
 
+    this._cols = dimensionOf(width, cols, tw);
+    this._rows = dimensionOf(height, rows, th);
     this._cellWidth = tw;
     this._cellHeight = th;
-    this._width = cols * tw;
-    this._height = rows * th;
+    this._width = this._cols * tw;
+    this._height = this._rows * th;
     this._context = createContext(document, this._width, this._height);
     this._context.canvas.classList.add("charming-canvas");
   }
@@ -88,6 +95,12 @@ export class Canvas {
       this._context.fillText(char, x + this._cellWidth, y + this._cellHeight);
     }
     return this;
+  }
+  get cols() {
+    return this._cols;
+  }
+  get rows() {
+    return this._rows;
   }
   node() {
     return this._context.canvas;
