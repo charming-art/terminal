@@ -46,4 +46,9 @@ describe("Canvas Integration Tests", () => {
     expect(await page.evaluate("window.canvas.node() instanceof HTMLCanvasElement")).toBe(true);
     expect(await page.evaluate("window.canvas.node().classList[0]")).toBe("charming-canvas");
   });
+
+  test("canvas.rows and canvas.cols should return dimensions.", async () => {
+    expect(await page.evaluate(`window.canvas.cols`)).toBe(80);
+    expect(await page.evaluate(`window.canvas.rows`)).toBe(24);
+  });
 });
