@@ -4,7 +4,9 @@ use std::vec;
 
 use wasm_bindgen::prelude::*;
 
-const CELL_SIZE: usize = 3;
+const CELL_SIZE: usize = 4;
+
+const NULL_VALUE: u32 = 0xFFFFFFFF;
 
 struct Vertex {
     color: Color,
@@ -13,7 +15,7 @@ struct Vertex {
 }
 
 #[derive(Clone, Copy)]
-struct Color(i32, i32, i32);
+struct Color(u32, u32, u32, u32);
 
 struct Shape {
     vertices: Vec<Vertex>,
@@ -24,24 +26,24 @@ pub struct Rasterizer {
     cols: usize,
     rows: usize,
     stroke: Color,
-    buffer: Vec<i32>,
+    buffer: Vec<u32>,
     shapes: Vec<Shape>,
 }
 
 #[wasm_bindgen]
 impl Rasterizer {
     pub fn new(cols: usize, rows: usize) -> Rasterizer {
-        let buffer: Vec<i32> = vec![-1; cols * rows * CELL_SIZE];
+        let buffer: Vec<u32> = vec![NULL_VALUE; cols * rows * CELL_SIZE];
         Rasterizer {
             cols,
             rows,
             buffer,
-            stroke: Color(0, 0, 0),
+            stroke: Color(NULL_VALUE, NULL_VALUE, NULL_VALUE, NULL_VALUE),
             shapes: vec![],
         }
     }
-    pub fn stroke(&mut self, ch: i32, fg: i32, bg: i32) {
-        self.stroke = Color(ch, fg, bg);
+    pub fn stroke(&mut self, ch: u32, ch1: u32, fg: u32, bg: u32) {
+        self.stroke = Color(ch, ch1, fg, bg);
     }
     pub fn point(&mut self, x: isize, y: isize) {
         let vertices: Vec<Vertex> = vec![Vertex {
@@ -52,7 +54,7 @@ impl Rasterizer {
         let point: Shape = Shape { vertices };
         self.shapes.push(point);
     }
-    pub fn render(&mut self) -> *const i32 {
+    pub fn render(&mut self) -> *const u32 {
         for shape in &self.shapes {
             for vertex in &shape.vertices {
                 let x: isize = vertex.x;
@@ -64,6 +66,7 @@ impl Rasterizer {
                     self.buffer[index] = vertex.color.0;
                     self.buffer[index + 1] = vertex.color.1;
                     self.buffer[index + 2] = vertex.color.2;
+                    self.buffer[index + 3] = vertex.color.3;
                 }
             }
         }
