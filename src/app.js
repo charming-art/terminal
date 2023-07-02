@@ -3,29 +3,43 @@ import { Canvas } from "./canvas";
 import { Rasterizer } from "../rasterizer/index";
 import { memory } from "../rasterizer/index_bg.wasm";
 
-const CELL_SIZE = 3;
+const CELL_SIZE = 4;
+
+const NULL_VALUE = 0xffffffff;
+
+function codePointAt(ch, i) {
+  const n = ch.codePointAt(i);
+  if (n === undefined) return NULL_VALUE;
+  return n;
+}
+
+function fromCodePoint(ch) {
+  return ch === NULL_VALUE ? "" : String.fromCodePoint(ch);
+}
 
 // TODO Handle opacity.
 function encodeColor(color) {
-  if (color === -1) return -1;
+  if (color === NULL_VALUE) return NULL_VALUE;
   const { r, g, b } = rgb(color);
   return b + (g << 8) + (r << 16);
 }
 
 function encodeChar(ch) {
-  return ch.codePointAt(0);
+  const n = codePointAt(ch, 0);
+  const n1 = codePointAt(ch, 1);
+  return [n, n1];
 }
 
 function decodeColor(color) {
-  if (color === -1) return undefined;
+  if (color === NULL_VALUE) return undefined;
   const r = (color & 0xff0000) >> 16;
   const g = (color & 0x00ff00) >> 8;
   const b = color & 0x0000ff;
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-function decodeChar(ch) {
-  return ch === -1 ? "" : String.fromCodePoint(ch);
+function decodeChar(n, n1) {
+  return fromCodePoint(n) + fromCodePoint(n1);
 }
 
 function maybePixel(size) {
@@ -46,8 +60,9 @@ class App {
     this._rasterizer = Rasterizer.new(this._cols, this._rows);
     return this;
   }
-  stroke(ch, fg = -1, bg = -1) {
-    this._rasterizer.stroke(encodeChar(ch), encodeColor(fg), encodeColor(bg));
+  stroke(ch, fg = NULL_VALUE, bg = NULL_VALUE) {
+    const [n, n1] = encodeChar(ch);
+    this._rasterizer.stroke(n, n1, encodeColor(fg), encodeColor(bg));
     return this;
   }
   point(x, y) {
@@ -60,14 +75,15 @@ class App {
   }
   render() {
     const bufferPtr = this._rasterizer.render();
-    const buffer = new Int32Array(memory.buffer, bufferPtr, this._cols * this._rows * CELL_SIZE);
+    const buffer = new Uint32Array(memory.buffer, bufferPtr, this._cols * this._rows * CELL_SIZE);
     for (let i = 0; i < this._rows; i++) {
       for (let j = 0; j < this._cols; j++) {
         const index = (this._cols * i + j) * CELL_SIZE;
-        const ch = buffer[index];
-        const fg = buffer[index + 1];
-        const bg = buffer[index + 2];
-        this._renderer.char(decodeChar(ch), j, i, decodeColor(fg), decodeColor(bg));
+        const n = buffer[index];
+        const n1 = buffer[index + 1];
+        const fg = buffer[index + 2];
+        const bg = buffer[index + 3];
+        this._renderer.char(decodeChar(n, n1), j, i, decodeColor(fg), decodeColor(bg));
       }
     }
     return this;
