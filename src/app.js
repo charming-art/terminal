@@ -2,20 +2,7 @@ import { color as rgb } from "d3-color";
 import { Canvas } from "./canvas";
 import { Rasterizer } from "../rasterizer/index";
 import { memory } from "../rasterizer/index_bg.wasm";
-
-const CELL_SIZE = 4;
-
-const NULL_VALUE = 0xffffffff;
-
-function codePointAt(ch, i) {
-  const n = ch.codePointAt(i);
-  if (n === undefined) return NULL_VALUE;
-  return n;
-}
-
-function fromCodePoint(ch) {
-  return ch === NULL_VALUE ? "" : String.fromCodePoint(ch);
-}
+import { NULL_VALUE, CELL_SIZE } from "./constant";
 
 // TODO Handle opacity.
 function encodeColor(color) {
@@ -25,9 +12,10 @@ function encodeColor(color) {
 }
 
 function encodeChar(ch) {
-  const n = codePointAt(ch, 0);
-  const n1 = codePointAt(ch, 1);
-  return [n, n1];
+  if (Array.isArray(ch)) return ch;
+  return Array.from(ch)
+    .slice(0, 2)
+    .map((ch) => ch.codePointAt(0));
 }
 
 function decodeColor(color) {
@@ -38,8 +26,12 @@ function decodeColor(color) {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-function decodeChar(n, n1) {
-  return fromCodePoint(n) + fromCodePoint(n1);
+function decodeChar(n) {
+  if (n === NULL_VALUE) return ["", 0];
+  const first = n >> 31;
+  const n1 = n & 0x0fffffff;
+  const w = first === 0 ? 1 : 2;
+  return [String.fromCodePoint(n1), w];
 }
 
 function maybePixel(size) {
@@ -61,7 +53,7 @@ class App {
     return this;
   }
   stroke(ch, fg = NULL_VALUE, bg = NULL_VALUE) {
-    const [n, n1] = encodeChar(ch);
+    const [n, n1 = NULL_VALUE] = encodeChar(ch);
     this._rasterizer.stroke(n, n1, encodeColor(fg), encodeColor(bg));
     return this;
   }
@@ -83,7 +75,10 @@ class App {
         const n1 = buffer[index + 1];
         const fg = buffer[index + 2];
         const bg = buffer[index + 3];
-        this._renderer.char(decodeChar(n, n1), j, i, decodeColor(fg), decodeColor(bg));
+        const [ch, wch] = decodeChar(n);
+        const [ch1, wch1] = decodeChar(n1);
+        const wide = wch + wch1 >= 2;
+        this._renderer.char(ch + ch1, j, i, decodeColor(fg), decodeColor(bg), wide);
       }
     }
     return this;
