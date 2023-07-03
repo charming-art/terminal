@@ -45,12 +45,12 @@ function dimensionOf(pixel, count, unit) {
 export class Canvas {
   constructor({
     document = window.document,
-    cols = 80,
+    mode = "single",
+    cols = mode === "single" ? 80 : 40,
     rows = 24,
     fontFamily = "courier-new, courier, monospace",
     fontSize = 15,
     fontWeight = "normal",
-    mode = "single",
     width,
     height,
   } = {}) {
@@ -65,12 +65,12 @@ export class Canvas {
       fontWeight,
     });
 
-    this._cols = dimensionOf(width, cols, tw);
-    this._rows = dimensionOf(height, rows, th);
-    this._cellWidth = tw;
+    this._cellWidth = mode === "double" ? tw * 2 : tw;
     this._cellHeight = th;
-    this._width = this._cols * tw;
-    this._height = this._rows * th;
+    this._cols = dimensionOf(width, cols, this._cellWidth);
+    this._rows = dimensionOf(height, rows, this._cellHeight);
+    this._width = this._cols * this._cellWidth;
+    this._height = this._rows * this._cellHeight;
     this._context = createContext(document, this._width, this._height);
     this._context.canvas.classList.add("charming-canvas");
   }
@@ -80,19 +80,18 @@ export class Canvas {
     return this;
   }
   char(char, i, j, fg, bg, wide = false) {
-    const cols = this._mode === "single" ? 1 : 2;
-    const x = this._cellWidth * i * cols;
+    const x = this._cellWidth * i;
     const y = this._cellHeight * j;
     if (bg) {
       this._context.fillStyle = bg;
-      this._context.fillRect(x, y, this._cellWidth * cols, this._cellHeight);
+      this._context.fillRect(x, y, this._cellWidth, this._cellHeight);
     }
     this._context.fillStyle = fg;
     this._context.font = `${this._fontSize}px ${this._fontFamily}`;
     this._context.textBaseline = TEXT_BASELINE;
     this._context.fillText(char, x, y + this._cellHeight);
     if (this._mode === "double" && !wide) {
-      this._context.fillText(char, x + this._cellWidth, y + this._cellHeight);
+      this._context.fillText(char, x + this._cellWidth / 2, y + this._cellHeight);
     }
     return this;
   }

@@ -15,7 +15,7 @@ export function canvasDouble() {
   const n = 3;
 
   const canvas = new Canvas({
-    cols: n * 2,
+    cols: n,
     rows: n,
     mode: "double",
     fontFamily: '"Fira Code", courier-new, courier, monospace, "Powerline Extra Symbols"',
