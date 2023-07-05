@@ -1,6 +1,6 @@
 import { app as createApp } from "@charming-art/charming";
 
-export function appPoint() {
+export async function appPoint() {
   const points = [
     [-1, -1, "@"],
     [0, 1, "@", "steelblue", "orange"],
@@ -8,7 +8,9 @@ export function appPoint() {
     [3, 3, "@"],
   ];
 
-  const app = createApp().size(3, 3).background("#000");
+  const app = await createApp();
+
+  app.size(3, 3).background("#000");
 
   for (const [x, y, ch, fg, bg] of points) {
     app.stroke(ch, fg, bg);

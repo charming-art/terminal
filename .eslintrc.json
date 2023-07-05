@@ -5,5 +5,9 @@
     "node": true,
     "browser": true
   },
-  "parserOptions": { "sourceType": "module" }
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": "latest"
+  },
+  "ignorePatterns": ["src/wasm/*"]
 }

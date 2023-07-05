@@ -1,6 +1,4 @@
 import path from "path";
-import wasm from "vite-plugin-wasm";
-import topLevelAwait from "vite-plugin-top-level-await";
 import { defineConfig } from "vite";
 
 export default defineConfig({
@@ -13,8 +11,9 @@ export default defineConfig({
     alias: {
       "@charming-art/charming": path.resolve("./src/index.js"),
       "@charming-art/charming-canvas": path.resolve("./src/canvas.js"),
+      "./wasm/index_bg.wasm": "./wasm/index_bg.wasm?url",
     },
   },
   test: { globalSetup: path.resolve("./scripts/vite.js") },
-  plugins: [wasm(), topLevelAwait()],
+  build: { outDir: "../" },
 });
