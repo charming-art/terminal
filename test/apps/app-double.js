@@ -1,13 +1,15 @@
 import { app as createApp, wide } from "@charming-art/charming";
 
-export function appDouble() {
+export async function appDouble() {
   const chars = [
     [" +", "-", "+ "],
     [" |", wide("🚀"), "| "],
     [" +", "-", "+ "],
   ];
 
-  const app = createApp({ mode: "double" }).size(3, 3).background("#000");
+  const app = await createApp({ mode: "double" });
+
+  app.size(3, 3).background("#000");
 
   for (let i = 0; i < chars.length; i++) {
     const row = chars[i];

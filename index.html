@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Preview</title>
+  </head>
+  <body>
+    <script src="./dist/cm.umd.min.js" type="text/javascript"></script>
+    <script>
+      (async () => {
+        const chars = [
+          [" +", "-", "+ "],
+          [" |", cm.wide("🚀"), "| "],
+          [" +", "-", "+ "],
+        ];
+
+        const app = await cm.app({ mode: "double" });
+
+        app.size(3, 3).background("#000");
+
+        for (let i = 0; i < chars.length; i++) {
+          const row = chars[i];
+          for (let j = 0; j < row.length; j++) {
+            const ch = row[j];
+            app.stroke(ch, "#fff", "#000");
+            app.point(j, i);
+          }
+        }
+
+        document.body.append(app.render().node());
+      })();
+    </script>
+  </body>
+</html>

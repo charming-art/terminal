@@ -1,8 +1,10 @@
 import { color as rgb } from "d3-color";
-import { Canvas } from "./canvas";
-import { Rasterizer } from "../rasterizer/index";
-import { memory } from "../rasterizer/index_bg.wasm";
-import { NULL_VALUE, CELL_SIZE } from "./constant";
+import { Canvas } from "./canvas.js";
+import init, { Rasterizer } from "./wasm/index.js";
+import wasm from "./wasm/index_bg.wasm";
+import { NULL_VALUE, CELL_SIZE } from "./constant.js";
+
+let memory;
 
 // TODO Handle opacity.
 function encodeColor(color) {
@@ -94,6 +96,8 @@ class App {
   }
 }
 
-export function app(options) {
+export async function app(options) {
+  const module = await init(typeof wasm === "function" ? await wasm() : undefined);
+  memory = module.memory;
   return new App(options);
 }

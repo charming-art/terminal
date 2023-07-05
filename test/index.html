@@ -38,11 +38,11 @@
     return option;
   }
 
-  function render() {
+  async function render() {
     if (typeof preClear === "function") preClear();
     if (isNode(preNode)) preNode.remove();
     const fn = apps[select.value];
-    preNode = fn();
+    preNode = await fn();
     if (isNode(preNode)) {
       document.body.appendChild(preNode);
       preClear = preNode.clear;
