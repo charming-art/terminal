@@ -3,4 +3,3 @@ node_modules
 **/target
 src/wasm
 dist
-esm

@@ -16,7 +16,7 @@ export default [
     input: "src/index.js",
     output: {
       format: "es",
-      dir: "esm",
+      dir: "dist/es",
       preserveModules: true,
     },
     plugins: [wasm()],
