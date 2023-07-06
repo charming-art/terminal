@@ -1,30 +1,40 @@
 {
   "name": "charming",
-  "version": "0.1.0",
-  "description": "Charming is a creative coding language for character art programming.",
-  "main": "index.js",
+  "description": "A creative coding language for character art programming.",
+  "version": "0.0.1",
+  "author": {
+    "name": "pearmini",
+    "url": "https://github.com/pearmini"
+  },
   "type": "module",
+  "license": "ISC",
+  "main": "dist/es/index.js",
+  "module": "dist/es/index.js",
+  "jsdelivr": "dist/cm.umd.min.js",
+  "unpkg": "dist/cm.umd.min.js",
+  "exports": {
+    "umd": "./dist/cm.umd.min.js",
+    "default": "./dist/es/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charming-art/charming.git"
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.wasm"
+  ],
   "scripts": {
     "dev": "npm run build:wasm && vite",
     "test": "npm run build:wasm && vitest && npm run test:lint && npm run test:format",
     "test:lint": "eslint src test",
     "test:format": "prettier --check src test && cargo fmt --manifest-path ./rust/Cargo.toml --check",
     "build": "npm run build:wasm && npm run build:js",
-    "build:js": "rm -rf dist && rm -rf esm && rollup -c",
+    "build:js": "rm -rf dist && rollup -c",
     "build:wasm": "rm -rf ./src/wasm && wasm-pack build ./rust --out-dir ../src/wasm --out-name index --target web",
     "preview": "npm run build && vite preview"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/charming-art/charming.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/charming-art/charming/issues"
-  },
-  "homepage": "https://github.com/charming-art/charming#readme",
+  "sideEffects": false,
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@rollup/plugin-terser": "^0.4.3",
@@ -41,5 +51,11 @@
   },
   "dependencies": {
     "d3-color": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=14.18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
