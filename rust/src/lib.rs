@@ -55,6 +55,7 @@ impl Rasterizer {
         self.shapes.push(point);
     }
     pub fn render(&mut self) -> *const u32 {
+        self.buffer.fill(NULL_VALUE);
         for shape in &self.shapes {
             for vertex in &shape.vertices {
                 let x: isize = vertex.x;
@@ -70,6 +71,7 @@ impl Rasterizer {
                 }
             }
         }
+        self.shapes.clear();
         self.buffer.as_ptr()
     }
 }

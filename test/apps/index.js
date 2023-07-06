@@ -5,3 +5,4 @@ export { canvas } from "./canvas.js";
 export { appPoint } from "./app-point.js";
 export { appSize } from "./app-size.js";
 export { appDouble } from "./app-double.js";
+export { appInterval } from "./app-interval.js";
