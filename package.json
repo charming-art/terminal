@@ -9,8 +9,8 @@
     "test": "npm run build:wasm && vitest && npm run test:lint && npm run test:format",
     "test:lint": "eslint src test",
     "test:format": "prettier --check src test && cargo fmt --manifest-path ./rust/Cargo.toml --check",
-    "build": "npm run build:wasm && npm run build:umd",
-    "build:umd": "rm -rf dist && rm -rf esm && rollup -c",
+    "build": "npm run build:wasm && npm run build:js",
+    "build:js": "rm -rf dist && rm -rf esm && rollup -c",
     "build:wasm": "rm -rf ./src/wasm && wasm-pack build ./rust --out-dir ../src/wasm --out-name index --target web",
     "preview": "npm run build && vite preview"
   },
