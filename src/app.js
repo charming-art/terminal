@@ -4,8 +4,6 @@ import init, { Rasterizer } from "./wasm/index.js";
 import wasm from "./wasm/index_bg.wasm";
 import { NULL_VALUE, CELL_SIZE } from "./constant.js";
 
-let memory;
-
 // TODO Handle opacity.
 function encodeColor(color) {
   if (color === NULL_VALUE) return NULL_VALUE;
@@ -42,7 +40,8 @@ function maybePixel(size) {
 }
 
 class App {
-  constructor(options = {}) {
+  constructor(memory, options = {}) {
+    this._memory = memory;
     this._options = options;
   }
   size(cols = 80, rows = 24) {
@@ -69,18 +68,17 @@ class App {
   }
   render() {
     const bufferPtr = this._rasterizer.render();
-    const buffer = new Uint32Array(memory.buffer, bufferPtr, this._cols * this._rows * CELL_SIZE);
+    const buffer = new Uint32Array(this._memory.buffer, bufferPtr, this._cols * this._rows * CELL_SIZE);
     for (let i = 0; i < this._rows; i++) {
       for (let j = 0; j < this._cols; j++) {
         const index = (this._cols * i + j) * CELL_SIZE;
-        const n = buffer[index];
-        const n1 = buffer[index + 1];
-        const fg = buffer[index + 2];
-        const bg = buffer[index + 3];
-        const [ch, wch] = decodeChar(n);
-        const [ch1, wch1] = decodeChar(n1);
+        const [ch, wch] = decodeChar(buffer[index]);
+        const [ch1, wch1] = decodeChar(buffer[index + 1]);
+        const fg = decodeColor(buffer[index + 2]);
+        const bg = decodeColor(buffer[index + 3]);
         const wide = wch + wch1 >= 2;
-        this._renderer.char(ch + ch1, j, i, decodeColor(fg), decodeColor(bg), wide);
+        const ch2 = ch + ch1;
+        if (ch2 || fg) this._renderer.char(ch2, j, i, fg, bg, wide);
       }
     }
     return this;
@@ -98,6 +96,6 @@ class App {
 
 export async function app(options) {
   const module = await init(typeof wasm === "function" ? await wasm() : undefined);
-  memory = module.memory;
-  return new App(options);
+  const { memory } = module;
+  return new App(memory, options);
 }
