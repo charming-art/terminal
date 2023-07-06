@@ -2,7 +2,7 @@ import node from "@rollup/plugin-node-resolve";
 import { wasm } from "@rollup/plugin-wasm";
 import terser from "@rollup/plugin-terser";
 
-const config = {
+const umd = {
   input: "src/index.js",
   output: {
     format: "umd",
@@ -13,18 +13,27 @@ const config = {
 
 export default [
   {
-    ...config,
+    input: "src/index.js",
     output: {
-      ...config.output,
+      format: "es",
+      dir: "esm",
+      preserveModules: true,
+    },
+    plugins: [wasm()],
+  },
+  {
+    ...umd,
+    output: {
+      ...umd.output,
       file: "dist/cm.umd.js",
     },
   },
   {
-    ...config,
+    ...umd,
     output: {
-      ...config.output,
+      ...umd.output,
       file: "dist/cm.umd.min.js",
     },
-    plugins: [...config.plugins, terser()],
+    plugins: [...umd.plugins, terser()],
   },
 ];
