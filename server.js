@@ -1,5 +1,5 @@
 import { createServer } from "vite";
-import config from "../vite.config";
+import config from "./vite.config";
 
 const PORT = 3001;
 

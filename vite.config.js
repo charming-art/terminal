@@ -14,6 +14,6 @@ export default defineConfig({
       "./wasm/index_bg.wasm": "./wasm/index_bg.wasm?url",
     },
   },
-  test: { globalSetup: path.resolve("./scripts/vite.js") },
+  test: { globalSetup: path.resolve("./server.js") },
   build: { outDir: "../" },
 });
