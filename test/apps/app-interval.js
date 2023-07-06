@@ -37,4 +37,3 @@ export async function appInterval() {
 }
 
 appInterval.snap = TARGET_FRAME;
-appInterval.only = true;
