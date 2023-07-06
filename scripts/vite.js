@@ -12,6 +12,7 @@ export default async function () {
       port: PORT,
       strictPort: true,
     },
+    mode: "test",
   });
   await server.listen();
   server.printUrls();
