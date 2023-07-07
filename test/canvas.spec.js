@@ -33,9 +33,9 @@ describe("Canvas Integration Tests", () => {
   test.runIf(isMac())("new Canvas() should has expected computed attributes.", async () => {
     const computes = {
       cellWidth: 9,
-      cellHeight: 18,
+      cellHeight: 17,
       width: 720,
-      height: 432,
+      height: 408,
     };
     for (const [key, value] of Object.entries(computes)) {
       expect(await page.evaluate(`window.canvas._${key}`)).toBe(value);

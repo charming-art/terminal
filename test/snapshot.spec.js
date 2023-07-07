@@ -8,13 +8,7 @@ import { isMac, createBrowser, createPage, app } from "./utils.js";
 import { frameOf } from "./common.js";
 
 async function screenshot(page, path, className = "charming-canvas") {
-  const { x, y, width, height } = await page.evaluate(
-    `window.document.getElementsByClassName('${className}')[0].getBoundingClientRect()`
-  );
-  await page.screenshot({
-    path,
-    clip: { x, y, width, height },
-  });
+  await page.locator(`.${className}`).screenshot({ path, scale: "css" });
 }
 
 function match(expect, actual, diff, { maxError = 0 } = {}) {

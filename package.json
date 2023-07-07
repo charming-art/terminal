@@ -32,7 +32,8 @@
     "build": "npm run build:wasm && npm run build:js",
     "build:js": "rm -rf dist && rollup -c",
     "build:wasm": "rm -rf ./src/wasm && wasm-pack build ./rust --out-dir ../src/wasm --out-name index --target web",
-    "preview": "npm run build && vite preview"
+    "preview": "npm run build && vite preview",
+    "prepublishOnly":"npm run build"
   },
   "sideEffects": false,
   "devDependencies": {

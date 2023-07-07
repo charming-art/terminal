@@ -3,7 +3,7 @@
 export const TEXT_BASELINE = "ideographic";
 
 function createContext(document, width = 640, height = 480, dpi = null) {
-  if (dpi == null) dpi = devicePixelRatio;
+  if (dpi == null) dpi = window.devicePixelRatio;
   const canvas = document.createElement("canvas");
   canvas.width = width * dpi;
   canvas.height = height * dpi;
@@ -20,20 +20,21 @@ function measureText(text, styles) {
   // Hide span.
   span.style.visibility = "hidden";
   span.style.position = "absolute";
-  span.style.display = "inline";
-  span.style.left = "-1000px";
-  span.style.top = "-1000px";
+  span.style.display = "inline-block";
+  span.style.left = "-9999em";
+  span.style.top = "0";
+  span.style.lineHeight = "normal";
+  span.setAttribute("aria-hidden", true);
 
   // Font attributes.
   span.style.fontSize = `${styles.fontSize}px`;
   span.style.fontFamily = styles.fontFamily;
-  span.style.fontWeight = styles.fontWeight;
-  span.style.fontStyle = styles.fontStyle;
-  span.style.fontVariant = styles.fontVariant;
 
-  span.innerHTML = text;
+  span.textContent = text;
   document.body.appendChild(span);
-  return { width: span.clientWidth, height: span.clientHeight };
+
+  const bbox = span.getBoundingClientRect();
+  return { width: Math.floor(bbox.width), height: Math.floor(bbox.height) };
 }
 
 function dimensionOf(pixel, count, unit) {
@@ -71,7 +72,7 @@ export class Canvas {
     this._rows = dimensionOf(height, rows, this._cellHeight);
     this._width = this._cols * this._cellWidth;
     this._height = this._rows * this._cellHeight;
-    this._context = createContext(document, this._width, this._height);
+    this._context = createContext(document, this._width, this._height, 2);
     this._context.canvas.classList.add("charming-canvas");
   }
   background(color) {

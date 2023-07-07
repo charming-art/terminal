@@ -5,7 +5,7 @@ export async function createBrowser() {
 }
 
 export async function createPage(browser) {
-  return await (await browser.newContext()).newPage();
+  return await (await browser.newContext({ deviceScaleFactor: 2 })).newPage();
 }
 
 export function app(name) {
