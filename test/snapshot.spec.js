@@ -1,60 +1,40 @@
-import { describe, test, beforeAll, afterAll } from "vitest";
+import { describe, test, beforeAll, afterAll, expect } from "vitest";
 import path from "path";
-import pixelmatch from "pixelmatch";
-import { PNG } from "pngjs";
 import * as fs from "fs";
 import * as apps from "./apps";
-import { isMac, createBrowser, createPage, app } from "./utils.js";
+import { createBrowser, createPage, app } from "./utils.js";
 import { frameOf } from "./common.js";
 
-async function screenshot(page, path, className = "charming-canvas") {
-  const { x, y, width, height } = await page.evaluate(
-    `window.document.getElementsByClassName('${className}')[0].getBoundingClientRect()`
-  );
-  await page.screenshot({
-    path,
-    clip: { x, y, width, height },
-  });
+async function screenshot(page, path) {
+  const string = await page.evaluate(`"" + (window.app ? window.app._renderer : window.canvas)`);
+  if (string === "undefined") throw new Error(`Nothing to compare: ${path}`);
+  fs.writeFileSync(path, string, { encoding: "utf-8" });
 }
 
-function match(expect, actual, diff, { maxError = 0 } = {}) {
-  const expectImage = PNG.sync.read(fs.readFileSync(expect));
-  const actualImage = PNG.sync.read(fs.readFileSync(actual));
-  const { width, height } = expectImage;
-  const diffImage = new PNG({ width, height });
-  const mismatch = pixelmatch(expectImage.data, actualImage.data, diffImage.data, width, height, {
-    threshold: 0.1,
-  });
-  const error = mismatch - maxError;
-  if (error > 0) {
-    fs.writeFileSync(diff, PNG.sync.write(diffImage));
-  }
-  return error === 0;
+function match(expectPath, actualPath) {
+  const expectString = fs.readFileSync(expectPath, { encoding: "utf8", flag: "r" });
+  const actualString = fs.readFileSync(actualPath, { encoding: "utf8", flag: "r" });
+  expect(expectString).toBe(actualString);
 }
 
-async function expectMatchSnapshot(page, name, className) {
-  const expect = path.resolve(__dirname, `./output/${name}.png`);
-  const actual = path.resolve(__dirname, `./output/${name}-actual.png`);
-  const diff = path.resolve(__dirname, `./output/${name}-diff.png`);
+async function expectMatchSnapshot(page, name) {
+  const dir = path.resolve(__dirname, "./output");
+  const expect = path.resolve(__dirname, `./output/${name}.txt`);
+  const actual = path.resolve(__dirname, `./output/${name}-actual.txt`);
 
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir);
   if (!fs.existsSync(expect)) {
-    if (process.env.CI === "true") {
-      throw new Error(`Please generate golden image for ${name}`);
-    }
+    if (process.env.CI === "true") throw new Error(`Please generate golden image for ${name}`);
     console.warn(`! generate ${name}`);
-    await screenshot(page, expect, className);
+    await screenshot(page, expect);
   } else {
     await screenshot(page, actual);
-    if (match(expect, actual, diff)) {
-      if (fs.existsSync(diff)) fs.unlinkSync(diff);
-      fs.unlinkSync(actual);
-    } else {
-      throw new Error(`Mismatch: ${name}`);
-    }
+    match(expect, actual);
+    fs.unlinkSync(actual);
   }
 }
 
-describe.runIf(isMac())("Snapshots", () => {
+describe("Snapshots", () => {
   let browser;
   let page;
 

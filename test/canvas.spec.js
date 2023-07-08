@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeAll, afterAll } from "vitest";
-import { createBrowser, createPage, isMac, app } from "./utils";
+import { createBrowser, createPage, app } from "./utils";
 
 describe("Canvas Integration Tests", () => {
   let browser;
@@ -26,18 +26,6 @@ describe("Canvas Integration Tests", () => {
       mode: "single",
     };
     for (const [key, value] of Object.entries(defaults)) {
-      expect(await page.evaluate(`window.canvas._${key}`)).toBe(value);
-    }
-  });
-
-  test.runIf(isMac())("new Canvas() should has expected computed attributes.", async () => {
-    const computes = {
-      cellWidth: 9,
-      cellHeight: 18,
-      width: 720,
-      height: 432,
-    };
-    for (const [key, value] of Object.entries(computes)) {
       expect(await page.evaluate(`window.canvas._${key}`)).toBe(value);
     }
   });

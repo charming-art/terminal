@@ -1,4 +1,5 @@
-import { app as createApp, wide } from "@charming-art/charming";
+import { wide } from "@charming-art/charming";
+import { createApp } from "./utils";
 
 export async function appDouble() {
   const chars = [

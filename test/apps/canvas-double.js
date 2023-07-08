@@ -1,4 +1,4 @@
-import { Canvas } from "@charming-art/charming-canvas";
+import { createCanvas } from "./utils";
 
 export function canvasDouble() {
   const chars = [
@@ -14,7 +14,7 @@ export function canvasDouble() {
   ];
   const n = 3;
 
-  const canvas = new Canvas({
+  const canvas = createCanvas({
     cols: n,
     rows: n,
     mode: "double",

@@ -3,3 +3,4 @@ node_modules
 **/target
 src/wasm
 dist
+**/*-actual.txt
