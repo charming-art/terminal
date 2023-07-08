@@ -22,20 +22,21 @@ function measureText(text, styles) {
   // Hide span.
   span.style.visibility = "hidden";
   span.style.position = "absolute";
-  span.style.display = "inline";
-  span.style.left = "-1000px";
-  span.style.top = "-1000px";
+  span.style.display = "inline-block";
+  span.style.left = "-9999em";
+  span.style.top = "0";
+  span.style.lineHeight = "normal";
+  span.setAttribute("aria-hidden", true);
 
   // Font attributes.
   span.style.fontSize = `${styles.fontSize}px`;
   span.style.fontFamily = styles.fontFamily;
-  span.style.fontWeight = styles.fontWeight;
-  span.style.fontStyle = styles.fontStyle;
-  span.style.fontVariant = styles.fontVariant;
 
   span.innerHTML = text;
   document.body.appendChild(span);
-  return { width: span.clientWidth, height: span.clientHeight };
+
+  const bbox = span.getBoundingClientRect();
+  return { width: bbox.width, height: Math.ceil(bbox.height) };
 }
 
 function dimensionOf(pixel, count, unit) {
@@ -118,7 +119,7 @@ export class Canvas {
       if (j !== 0) string += "\n";
       for (let i = 0; i < this._cols; i++) {
         const index = (this._cols * j + i) * CELL_SIZE;
-        const empty = this._mode === 'double' ? "··" : "·";
+        const empty = this._mode === "double" ? "··" : "·";
         const char = this._buffer[index] || empty;
         string += char;
       }
