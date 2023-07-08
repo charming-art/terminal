@@ -1,4 +1,18 @@
 import { frameOf } from "../common.js";
+import { app as App } from "@charming-art/charming";
+import { Canvas } from "@charming-art/charming-canvas";
+
+export async function createApp(options) {
+  const app = await App(options);
+  window.app = app;
+  return app;
+}
+
+export function createCanvas(options) {
+  const canvas = new Canvas(options);
+  window.canvas = canvas;
+  return canvas;
+}
 
 export function useFrame(TARGET_FRAME, stop) {
   let frame = 0;

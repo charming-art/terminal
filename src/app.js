@@ -2,7 +2,10 @@ import { color as rgb } from "d3-color";
 import { Canvas } from "./canvas.js";
 import init, { Rasterizer } from "./wasm/index.js";
 import wasm from "./wasm/index_bg.wasm";
-import { NULL_VALUE, CELL_SIZE } from "./constant.js";
+
+export const CELL_SIZE = 4;
+
+export const NULL_VALUE = 0xffffffff;
 
 // TODO Handle opacity.
 function encodeColor(color) {

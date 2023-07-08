@@ -1,10 +1,10 @@
-import { Canvas } from "@charming-art/charming-canvas";
+import { createCanvas } from "./utils";
 
 export function canvasPrintable() {
   const cols = 19;
   const rows = 5;
 
-  const canvas = new Canvas({
+  const canvas = createCanvas({
     cols,
     rows,
     fontSize: 15,

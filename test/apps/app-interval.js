@@ -1,5 +1,4 @@
-import { app as createApp } from "@charming-art/charming";
-import { useFrame } from "./utils";
+import { createApp, useFrame } from "./utils";
 
 const TARGET_FRAME = 2;
 

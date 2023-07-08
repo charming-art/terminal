@@ -1,4 +1,4 @@
-import { app as createApp } from "@charming-art/charming";
+import { createApp } from "./utils";
 
 export async function appSize() {
   const app = await createApp();
