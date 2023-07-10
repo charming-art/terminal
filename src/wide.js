@@ -1,4 +1,4 @@
-import { NULL_VALUE } from "./app.js";
+import { NULL_VALUE } from "./app/constant.js";
 
 export function wide(string) {
   const code = string.codePointAt(0);
