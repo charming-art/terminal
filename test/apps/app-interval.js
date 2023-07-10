@@ -17,14 +17,14 @@ export async function appInterval() {
 
   // Draw
   timer = setInterval(() => {
-    const i = x % app.cols;
-    const j = (x / app.cols) | 0;
-    app.background("#000");
+    const i = x % app.cols();
+    const j = (x / app.cols()) | 0;
+    app.canvasFill("#000");
     app.point(i, j);
     app.render();
     x += 1;
     update();
-    if (x > app.cols * app.rows - 1) clearInterval(timer);
+    if (x > app.cols() * app.rows() - 1) clearInterval(timer);
   }, 100);
 
   const node = app.node();

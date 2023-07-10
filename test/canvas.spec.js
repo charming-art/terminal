@@ -36,7 +36,7 @@ describe("Canvas Integration Tests", () => {
   });
 
   test("canvas.rows and canvas.cols should return dimensions.", async () => {
-    expect(await page.evaluate(`window.canvas.cols`)).toBe(80);
-    expect(await page.evaluate(`window.canvas.rows`)).toBe(24);
+    expect(await page.evaluate(`window.canvas.cols()`)).toBe(80);
+    expect(await page.evaluate(`window.canvas.rows()`)).toBe(24);
   });
 });

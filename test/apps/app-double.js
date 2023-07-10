@@ -10,7 +10,7 @@ export async function appDouble() {
 
   const app = await createApp({ mode: "double" });
 
-  app.size(3, 3).background("#000");
+  app.size(3, 3).canvasFill("#000");
 
   for (let i = 0; i < chars.length; i++) {
     const row = chars[i];
