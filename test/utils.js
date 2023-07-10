@@ -12,6 +12,15 @@ export function app(name) {
   return `http://localhost:${process.env.TEST_PORT}/?name=${name}`;
 }
 
-export function isMac() {
-  return process.platform === "darwin";
+export async function openApp(page, options = {}) {
+  await page.evaluate(`(async () => window.app = await createApp(${JSON.stringify(options)}))()`);
+  await page.evaluate("window.app.size()");
+  await page.evaluate("document.body.appendChild(window.app.node())");
+  await page.waitForSelector(".charming-canvas");
+}
+
+export async function openCanvas(page, options = {}) {
+  await page.evaluate(`window.canvas = new Canvas(${JSON.stringify(options)})`);
+  await page.evaluate("document.body.appendChild(window.canvas.node())");
+  await page.waitForSelector(".charming-canvas");
 }

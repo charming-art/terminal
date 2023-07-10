@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeAll, afterAll } from "vitest";
-import { createBrowser, createPage, app } from "./utils";
+import { createBrowser, createPage, app, openCanvas } from "./utils";
 
 describe("Canvas Integration Tests", () => {
   let browser;
@@ -8,8 +8,8 @@ describe("Canvas Integration Tests", () => {
   beforeAll(async () => {
     browser = await createBrowser();
     page = await createPage(browser);
-    await page.goto(app("canvas"));
-    await page.waitForSelector(".charming-canvas");
+    await page.goto(app("noop"));
+    await openCanvas(page);
   });
 
   afterAll(async () => {
@@ -35,8 +35,8 @@ describe("Canvas Integration Tests", () => {
     expect(await page.evaluate("window.canvas.node().classList[0]")).toBe("charming-canvas");
   });
 
-  test("canvas.rows and canvas.cols should return dimensions.", async () => {
-    expect(await page.evaluate(`window.canvas.cols()`)).toBe(80);
-    expect(await page.evaluate(`window.canvas.rows()`)).toBe(24);
+  test("canvas.rows() and canvas.cols() should return dimensions.", async () => {
+    expect(await page.evaluate("window.canvas.cols()")).toBe(80);
+    expect(await page.evaluate("window.canvas.rows()")).toBe(24);
   });
 });
