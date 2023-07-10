@@ -53,8 +53,8 @@ Object.defineProperties(Canvas.prototype, {
   char: { value: canvas$char, writable: true, configurable: true },
   toString: { value: canvas$toString, writable: true, configurable: true },
   node: { value: canvas$node, writable: true, configurable: true },
-  cols: { get: canvas$cols, configurable: true },
-  rows: { get: canvas$rows, configurable: true },
+  cols: { value: canvas$cols, writable: true, configurable: true },
+  rows: { value: canvas$rows, writable: true, configurable: true },
 });
 
 function canvas$background(color) {

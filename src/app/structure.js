@@ -6,13 +6,17 @@ export function app$size(cols = 80, rows = 24) {
   const [_cols, width] = maybePixel(cols);
   const [_rows, height] = maybePixel(rows);
   this._renderer = new Canvas({ cols: _cols, rows: _rows, width, height, ...this._options });
-  this._cols = this._renderer.cols;
-  this._rows = this._renderer.rows;
+  this._cols = this._renderer.cols();
+  this._rows = this._renderer.rows();
   this._rasterizer = Rasterizer.new(this._cols, this._rows);
   return this;
 }
 
 export function app$render() {
+  if (this._fill) {
+    this._renderer.background(this._fill);
+    this._fill = null;
+  }
   const bufferPtr = this._rasterizer.render();
   const buffer = new Uint32Array(this._memory.buffer, bufferPtr, this._cols * this._rows * CELL_SIZE);
   for (let i = 0; i < this._rows; i++) {
