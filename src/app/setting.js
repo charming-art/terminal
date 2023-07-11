@@ -8,7 +8,7 @@ export function app$canvasFill(color) {
 
 export function app$stroke(ch, fg = NULL_VALUE, bg = NULL_VALUE) {
   const [n, n1 = NULL_VALUE] = encodeChar(ch);
-  this._rasterizer.stroke(n, n1, encodeColor(fg), encodeColor(bg));
+  this._renderer.stroke(n, n1, encodeColor(fg), encodeColor(bg));
   return this;
 }
 
