@@ -1,20 +1,20 @@
-import { NULL_VALUE, CELL_SIZE } from "./constant";
-import { Canvas } from "../canvas.js";
+import { NULL_VALUE, CELL_SIZE } from "./constants";
+import { Terminal } from "../terminal.js";
 import { Renderer } from "../wasm/index.js";
 
 export function app$size(cols = 80, rows = 24) {
   const [_cols, width] = maybePixel(cols);
   const [_rows, height] = maybePixel(rows);
-  this._canvas = new Canvas({ cols: _cols, rows: _rows, width, height, ...this._options });
-  this._cols = this._canvas.cols();
-  this._rows = this._canvas.rows();
+  this._terminal = new Terminal({ ...this._options, cols: _cols, rows: _rows, width, height });
+  this._cols = this._terminal.cols();
+  this._rows = this._terminal.rows();
   this._renderer = Renderer.new(this._cols, this._rows);
   return this;
 }
 
 export function app$render() {
   if (this._fill) {
-    this._canvas.background(this._fill);
+    this._terminal.background(this._fill);
     this._fill = null;
   }
   const bufferPtr = this._renderer.render();
@@ -28,7 +28,7 @@ export function app$render() {
       const bg = decodeColor(buffer[index + 3]);
       const wide = wch + wch1 >= 2;
       const ch2 = ch + ch1;
-      if (ch2 || fg) this._canvas.char(ch2, j, i, fg, bg, wide);
+      if (ch2 || fg) this._terminal.char(ch2, j, i, fg, bg, wide);
     }
   }
   return this;

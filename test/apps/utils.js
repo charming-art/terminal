@@ -1,6 +1,6 @@
 import { frameOf } from "../common.js";
 import { app as App } from "@charming-art/charming";
-import { Canvas } from "@charming-art/charming-canvas";
+import { Terminal } from "@charming-art/charming-terminal";
 
 export async function createApp(options) {
   const app = await App(options);
@@ -8,10 +8,10 @@ export async function createApp(options) {
   return app;
 }
 
-export function createCanvas(options) {
-  const canvas = new Canvas(options);
-  window.canvas = canvas;
-  return canvas;
+export function createTerminal(options) {
+  const terminal = new Terminal(options);
+  window.terminal = terminal;
+  return terminal;
 }
 
 export function useFrame(TARGET_FRAME, stop) {

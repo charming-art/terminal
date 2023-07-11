@@ -1,16 +1,16 @@
 import { app$render, app$size } from "./structure.js";
 import { app$canvasFill, app$stroke } from "./setting.js";
-import { app$point } from "./primitive.js";
+import { app$point } from "./primitives.js";
 import { app$cols, app$rows, app$node } from "./control.js";
 
-export function App(memory, { cols, rows, canvas = null, renderer = null, ...options } = {}) {
+export function App({ memory, cols, rows, terminal = null, renderer = null, ...options } = {}) {
   Object.defineProperties(this, {
     _memory: { value: memory },
     _options: { value: options },
     _fill: { value: null, writable: true },
     _cols: { value: cols, writable: true },
     _rows: { value: rows, writable: true },
-    _canvas: { value: canvas, writable: true },
+    _terminal: { value: terminal, writable: true },
     _renderer: { value: renderer, writable: true },
   });
 }

@@ -4,10 +4,10 @@ export const TEXT_BASELINE = "ideographic";
 
 export const CELL_SIZE = 3;
 
-export const CANVAS_CLASS = "charming-canvas";
+export const TERMINAL_CLASS = "charming-terminal";
 
 // Default options from: https://github.com/xtermjs/xterm.js/blob/ac0207bf2e8a923d0cff95cc383f6f3e36a2e923/src/common/services/OptionsService.ts#LL12C1-L12C1
-export function Canvas({
+export function Terminal({
   document = window.document,
   mode = "single",
   cols = mode === "single" ? 80 : 40,
@@ -31,7 +31,7 @@ export function Canvas({
   const computedHeight = computedRows * cellHeight;
   const context = createContext(document, computedWidth, computedHeight);
   const buffer = Array.from({ length: computedCols * computedRows }, () => null);
-  context.canvas.classList.add(CANVAS_CLASS);
+  context.canvas.classList.add(TERMINAL_CLASS);
   Object.defineProperties(this, {
     _mode: { value: mode },
     _fontSize: { value: fontSize },
@@ -48,23 +48,23 @@ export function Canvas({
   });
 }
 
-Object.defineProperties(Canvas.prototype, {
-  background: { value: canvas$background, writable: true, configurable: true },
-  char: { value: canvas$char, writable: true, configurable: true },
-  toString: { value: canvas$toString, writable: true, configurable: true },
-  node: { value: canvas$node, writable: true, configurable: true },
-  cols: { value: canvas$cols, writable: true, configurable: true },
-  rows: { value: canvas$rows, writable: true, configurable: true },
+Object.defineProperties(Terminal.prototype, {
+  background: { value: terminal$background, writable: true, configurable: true },
+  char: { value: terminal$char, writable: true, configurable: true },
+  toString: { value: terminal$toString, writable: true, configurable: true },
+  node: { value: terminal$node, writable: true, configurable: true },
+  cols: { value: terminal$cols, writable: true, configurable: true },
+  rows: { value: terminal$rows, writable: true, configurable: true },
 });
 
-function canvas$background(color) {
+function terminal$background(color) {
   this._context.fillStyle = color;
   this._context.fillRect(0, 0, this._width, this._height);
   this._buffer.fill(null);
   return this;
 }
 
-function canvas$char(char, i, j, fg, bg, wide = false) {
+function terminal$char(char, i, j, fg, bg, wide = false) {
   const x = this._cellWidth * i;
   const y = this._cellHeight * j;
   const index = (this._cols * j + i) * CELL_SIZE;
@@ -93,7 +93,7 @@ function canvas$char(char, i, j, fg, bg, wide = false) {
   return this;
 }
 
-function canvas$toString() {
+function terminal$toString() {
   let string = "";
   for (let j = 0; j < this._rows; j++) {
     if (j !== 0) string += "\n";
@@ -107,15 +107,15 @@ function canvas$toString() {
   return string;
 }
 
-function canvas$node() {
+function terminal$node() {
   return this._context.canvas;
 }
 
-function canvas$rows() {
+function terminal$rows() {
   return this._rows;
 }
 
-function canvas$cols() {
+function terminal$cols() {
   return this._cols;
 }
 

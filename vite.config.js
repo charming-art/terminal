@@ -10,7 +10,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@charming-art/charming": path.resolve("./src/index.js"),
-      "@charming-art/charming-canvas": path.resolve("./src/canvas.js"),
+      "@charming-art/charming-terminal": path.resolve("./src/terminal.js"),
       "./wasm/index_bg.wasm": "./wasm/index_bg.wasm?url",
     },
   },

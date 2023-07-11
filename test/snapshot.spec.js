@@ -6,7 +6,7 @@ import { createBrowser, createPage, app } from "./utils.js";
 import { frameOf } from "./common.js";
 
 async function screenshot(page, path) {
-  const string = await page.evaluate(`"" + (window.app ? window.app._canvas : window.canvas)`);
+  const string = await page.evaluate(`"" + (window.app ? window.app._terminal : window.terminal)`);
   if (string === "undefined") throw new Error(`Nothing to compare: ${path}`);
   fs.writeFileSync(path, string, { encoding: "utf-8" });
 }
@@ -56,7 +56,7 @@ describe("Snapshots", () => {
     test(name, async () => {
       await page.goto(app(name));
       if (typeof snap === "number") await page.getByText(frameOf(snap)).click();
-      else await page.waitForSelector(".charming-canvas");
+      else await page.waitForSelector(".charming-terminal");
       await expectMatchSnapshot(page, name);
     });
   }
