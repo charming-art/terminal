@@ -25,3 +25,17 @@ impl Renderer {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Renderer;
+
+    #[test]
+    fn should_have_expected_defaults() {
+        let renderer: Renderer = Renderer::new(10, 10);
+        assert_eq!(renderer.cols, 10);
+        assert_eq!(renderer.rows, 10);
+        assert_eq!(renderer.buffer.len(), 400);
+        assert_eq!(renderer.shapes.len(), 0);
+    }
+}

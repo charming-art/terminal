@@ -8,3 +8,18 @@ impl Renderer {
         self.stroke_color = Color(ch, ch1, fg, bg);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Renderer;
+
+    #[test]
+    fn should_set_stroke() {
+        let mut renderer: Renderer = Renderer::new(10, 10);
+        renderer.stroke(0, 0, 0, 0);
+        assert_eq!(renderer.stroke_color.0, 0);
+        assert_eq!(renderer.stroke_color.1, 0);
+        assert_eq!(renderer.stroke_color.2, 0);
+        assert_eq!(renderer.stroke_color.3, 0);
+    }
+}
