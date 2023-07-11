@@ -1,5 +1,5 @@
 mod globals;
 mod pipeline;
-mod primitive;
+mod primitives;
 pub mod renderer;
 mod setting;

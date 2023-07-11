@@ -16,11 +16,11 @@ export async function openApp(page, options = {}) {
   await page.evaluate(`(async () => window.app = await createApp(${JSON.stringify(options)}))()`);
   await page.evaluate("window.app.size()");
   await page.evaluate("document.body.appendChild(window.app.node())");
-  await page.waitForSelector(".charming-canvas");
+  await page.waitForSelector(".charming-terminal");
 }
 
-export async function openCanvas(page, options = {}) {
-  await page.evaluate(`window.canvas = new Canvas(${JSON.stringify(options)})`);
-  await page.evaluate("document.body.appendChild(window.canvas.node())");
-  await page.waitForSelector(".charming-canvas");
+export async function openTerminal(page, options = {}) {
+  await page.evaluate(`window.terminal = new Terminal(${JSON.stringify(options)})`);
+  await page.evaluate("document.body.appendChild(window.terminal.node())");
+  await page.waitForSelector(".charming-terminal");
 }

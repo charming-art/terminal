@@ -1,8 +1,8 @@
 import { app } from "@charming-art/charming";
-import { Canvas } from "@charming-art/charming-canvas";
+import { Terminal } from "@charming-art/charming-terminal";
 
 export function noop() {
   window.createApp = app;
-  window.Canvas = Canvas;
+  window.Terminal = Terminal;
   return null;
 }

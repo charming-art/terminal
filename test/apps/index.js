@@ -1,7 +1,7 @@
 export { noop } from "./noop";
-export { canvasPrintable } from "./canvas-printable.js";
-export { canvasDouble } from "./canvas-double.js";
-export { canvasSize } from "./canvas-size.js";
+export { terminalPrintable } from "./terminal-printable.js";
+export { terminalDouble } from "./terminal-double.js";
+export { terminalSize } from "./terminal-size.js";
 export { appPoint } from "./app-point.js";
 export { appSize } from "./app-size.js";
 export { appDouble } from "./app-double.js";

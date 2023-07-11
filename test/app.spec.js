@@ -42,6 +42,6 @@ describe("App Integration Tests", () => {
 
   test("app.node() should return node.", async () => {
     expect(await page.evaluate("window.app.node() instanceof HTMLCanvasElement")).toBe(true);
-    expect(await page.evaluate("window.app.node().classList[0]")).toBe("charming-canvas");
+    expect(await page.evaluate("window.app.node().classList[0]")).toBe("charming-terminal");
   });
 });

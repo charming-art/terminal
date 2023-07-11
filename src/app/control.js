@@ -1,5 +1,5 @@
 export function app$node() {
-  return this._canvas.node();
+  return this._terminal.node();
 }
 
 export function app$cols() {

@@ -1,5 +1,5 @@
 import { color as rgb } from "d3-color";
-import { NULL_VALUE } from "./constant";
+import { NULL_VALUE } from "./constants";
 
 export function app$canvasFill(color) {
   this._fill = color;

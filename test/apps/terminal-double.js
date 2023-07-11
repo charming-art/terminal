@@ -1,6 +1,6 @@
-import { createCanvas } from "./utils";
+import { createTerminal } from "./utils";
 
-export function canvasDouble() {
+export function terminalDouble() {
   const chars = [
     ["💯", undefined, undefined, true],
     ["a", "#fff", "steelblue"],
@@ -14,22 +14,22 @@ export function canvasDouble() {
   ];
   const n = 3;
 
-  const canvas = createCanvas({
+  const terminal = createTerminal({
     cols: n,
     rows: n,
     mode: "double",
     fontFamily: '"Fira Code", courier-new, courier, monospace, "Powerline Extra Symbols"',
   });
-  canvas.background("#000");
+  terminal.background("#000");
 
   for (let i = 0; i < chars.length; i++) {
     const [char, fg, bg, wide] = chars[i];
     const x = i % n;
     const y = (i / n) | 0;
-    canvas.char(char, x, y, fg, bg, wide);
+    terminal.char(char, x, y, fg, bg, wide);
   }
 
-  return canvas.node();
+  return terminal.node();
 }
 
-canvasDouble.snap = true;
+terminalDouble.snap = true;
