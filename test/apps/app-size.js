@@ -3,7 +3,7 @@ import { createApp } from "./utils";
 export async function appSize() {
   const app = await createApp();
 
-  app.size("100px", "60px").canvasFill("#000");
+  app.size("100px", "60px").scene("#000");
 
   app.stroke("+", "#fff");
   for (let i = 0; i < app.cols(); i++) {

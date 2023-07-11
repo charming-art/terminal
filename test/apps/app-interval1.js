@@ -14,7 +14,7 @@ export async function appInterval1() {
   let x = 0;
   app.size(10, 3);
   app.stroke("@", "#fff");
-  app.canvasFill("#000");
+  app.scene("#000");
 
   // Draw
   timer = setInterval(() => {

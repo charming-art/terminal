@@ -19,7 +19,7 @@ export async function appInterval() {
   timer = setInterval(() => {
     const i = x % app.cols();
     const j = (x / app.cols()) | 0;
-    app.canvasFill("#000");
+    app.scene("#000");
     app.point(i, j);
     app.render();
     x += 1;

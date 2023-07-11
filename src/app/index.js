@@ -1,5 +1,5 @@
 import { app$render, app$size } from "./structure.js";
-import { app$canvasFill, app$stroke } from "./setting.js";
+import { app$scene, app$stroke } from "./setting.js";
 import { app$point } from "./primitives.js";
 import { app$cols, app$rows, app$node } from "./control.js";
 
@@ -19,7 +19,7 @@ Object.defineProperties(App.prototype, {
   size: { value: app$size, writable: true, configurable: true },
   render: { value: app$render, writable: true, configurable: true },
   stroke: { value: app$stroke, writable: true, configurable: true },
-  canvasFill: { value: app$canvasFill, writable: true, configurable: true },
+  scene: { value: app$scene, writable: true, configurable: true },
   point: { value: app$point, writable: true, configurable: true },
   cols: { value: app$cols, writable: true, configurable: true },
   rows: { value: app$rows, writable: true, configurable: true },
