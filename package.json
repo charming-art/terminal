@@ -25,13 +25,15 @@
     "dist/**/*.wasm"
   ],
   "scripts": {
-    "dev": "npm run build:wasm && vite",
-    "test": "npm run build:wasm && vitest && npm run test:lint && npm run test:format",
+    "dev": "npm run build:rust && vite",
+    "test": "npm run test:rust && npm run test:js && npm run test:lint && npm run test:format",
+    "test:js": "npm run build:rust && vitest",
+    "test:rust": "cargo test --manifest-path ./rust/Cargo.toml",
     "test:lint": "eslint src test",
     "test:format": "prettier --check src test && cargo fmt --manifest-path ./rust/Cargo.toml --check",
-    "build": "npm run build:wasm && npm run build:js",
+    "build": "npm run build:rust && npm run build:js",
     "build:js": "rm -rf dist && rollup -c",
-    "build:wasm": "rm -rf ./src/wasm && wasm-pack build ./rust --out-dir ../src/wasm --out-name index --target web",
+    "build:rust": "rm -rf ./src/wasm && wasm-pack build ./rust --out-dir ../src/wasm --out-name index --target web",
     "preview": "npm run build && vite preview",
     "prepublishOnly": "npm run build"
   },

@@ -25,3 +25,16 @@ impl Renderer {
         self.buffer.as_ptr()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Renderer;
+
+    #[test]
+    fn should_clear_shapes() {
+        let mut renderer: Renderer = Renderer::new(10, 10);
+        renderer.point(0, 0);
+        renderer.render();
+        assert_eq!(renderer.shapes.len(), 0);
+    }
+}
