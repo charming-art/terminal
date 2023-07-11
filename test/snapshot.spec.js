@@ -6,7 +6,7 @@ import { createBrowser, createPage, app } from "./utils.js";
 import { frameOf } from "./common.js";
 
 async function screenshot(page, path) {
-  const string = await page.evaluate(`"" + (window.app ? window.app._renderer : window.canvas)`);
+  const string = await page.evaluate(`"" + (window.app ? window.app._canvas : window.canvas)`);
   if (string === "undefined") throw new Error(`Nothing to compare: ${path}`);
   fs.writeFileSync(path, string, { encoding: "utf-8" });
 }
