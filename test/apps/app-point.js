@@ -10,7 +10,7 @@ export async function appPoint() {
 
   const app = await createApp();
 
-  app.size(3, 3).canvasFill("#000");
+  app.size(3, 3).scene("#000");
 
   for (const [x, y, ch, fg, bg] of points) {
     app.stroke(ch, fg, bg);

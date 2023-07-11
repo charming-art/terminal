@@ -24,8 +24,8 @@ describe("App Integration Tests", () => {
     expect(await page.evaluate("window.app.stroke('@', 'yellow', 'red') === window.app")).toBe(true);
   });
 
-  test("app.canvasFill(color) should return this.", async () => {
-    expect(await page.evaluate("window.app.canvasFill('yellow') === window.app")).toBe(true);
+  test("app.scene(color) should return this.", async () => {
+    expect(await page.evaluate("window.app.scene('yellow') === window.app")).toBe(true);
   });
 
   test("app.render() should return this.", async () => {
