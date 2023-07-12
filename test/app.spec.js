@@ -16,6 +16,13 @@ describe("App Integration Tests", () => {
     await browser.close();
   });
 
+  test("new App() should have expected defaults.", async () => {
+    const defaults = { fill: "#000000" };
+    for (const [key, value] of Object.entries(defaults)) {
+      expect(await page.evaluate(`window.app._${key}`)).toBe(value);
+    }
+  });
+
   test("app.point(x, y) should return this.", async () => {
     expect(await page.evaluate("window.app.point(0, 0) === window.app")).toBe(true);
   });
