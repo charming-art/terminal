@@ -1,7 +1,8 @@
-import { chromium } from "playwright";
+import { chromium, firefox } from "playwright";
 
-export async function createBrowser() {
-  return await chromium.launch();
+export async function createBrowser({ type = "chromium" } = {}) {
+  const browser = type === "chromium" ? chromium : firefox;
+  return await browser.launch();
 }
 
 export async function createPage(browser) {

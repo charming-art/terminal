@@ -1,6 +1,7 @@
-// TODO Set text baseline conditionally by browser.
+import { isFireFox, isLegacyEdge } from "./platform";
+
 // https://github.com/xtermjs/xterm.js/blob/096fe171356fc9519e0a6b737a98ca82d0587e91/src/browser/renderer/shared/Constants.ts#LL14C1-L14C1
-export const TEXT_BASELINE = "ideographic";
+export const TEXT_BASELINE = isFireFox || isLegacyEdge ? "bottom" : "ideographic";
 
 export const CELL_SIZE = 3;
 
