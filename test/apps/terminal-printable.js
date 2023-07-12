@@ -8,6 +8,7 @@ export function terminalPrintable() {
     cols,
     rows,
     fontSize: 15,
+    fontWeight: "bold",
     fontFamily: '"Fira Code", courier-new, courier, monospace, "Powerline Extra Symbols"',
   });
   terminal.background("#4e79a7");
