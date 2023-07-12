@@ -81,7 +81,7 @@ function terminal$char(char, i, j, fg, bg, wide = false) {
   }
 
   if (!char) return;
-  this._context.font = `${this._fontSize}px ${this._fontFamily}`;
+  this._context.font = `${this._fontWeight} ${this._fontSize}px ${this._fontFamily}`;
   this._context.textBaseline = TEXT_BASELINE;
   this._context.fillText(char, x, y + this._cellHeight);
   this._buffer[index] = char;
