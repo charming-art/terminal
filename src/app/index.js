@@ -7,7 +7,7 @@ export function App({ memory, cols, rows, terminal = null, renderer = null, ...o
   Object.defineProperties(this, {
     _memory: { value: memory },
     _options: { value: options },
-    _fill: { value: null, writable: true },
+    _fill: { value: "#000000", writable: true },
     _cols: { value: cols, writable: true },
     _rows: { value: rows, writable: true },
     _terminal: { value: terminal, writable: true },

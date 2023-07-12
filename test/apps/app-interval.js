@@ -13,7 +13,7 @@ export async function appInterval() {
   // Setup
   let x = 0;
   app.size(10, 3);
-  app.stroke("@", "#fff");
+  app.stroke("@");
 
   // Draw
   timer = setInterval(() => {
