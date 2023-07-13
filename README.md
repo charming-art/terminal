@@ -2,19 +2,28 @@
 
 Charming is a creative code language for character art programming.
 
-```js
-import * as cm from "@charming-art/charming";
-
-const app = await cm.app({ width: 100, height: 100 });
-
-app.rect(0, 0, 20, 10);
-
-app.render();
-```
-
 ## Installing
 
 > TODO
+
+## A Simple Example
+
+```js
+import * as cm from "@charming-art/charming";
+
+const app = await cm.app({ mode: "double" });
+
+for (let t = 0; t <= Math.PI * 2; t += Math.PI / 120) {
+  const x = app.cols() / 2 + 10 * Math.cos(t) * Math.cos(t * 3);
+  const y = app.rows() / 2 + 10 * Math.sin(t) * Math.cos(t * 3);
+  app.stroke(cm.wide("🌟"));
+  app.point(x, y);
+}
+
+document.body.append(app.render().node());
+```
+
+<img src="./img/star.png" width="100%" alt="star">
 
 ## API Reference
 
