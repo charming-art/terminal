@@ -19,7 +19,8 @@ export default [
       dir: "dist/es",
       preserveModules: true,
     },
-    plugins: [wasm()],
+    external: [/node_modules/],
+    plugins: [wasm(), node()],
   },
   {
     ...umd,
