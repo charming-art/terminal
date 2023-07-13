@@ -21,6 +21,11 @@ describe("App Integration Tests", () => {
     for (const [key, value] of Object.entries(defaults)) {
       expect(await page.evaluate(`window.app._${key}`)).toBe(value);
     }
+
+    const defined = ["memory", "renderer", "terminal"];
+    for (const key of defined) {
+      expect(await page.evaluate(`window.app._${key}`)).toBeTruthy();
+    }
   });
 
   test("app.point(x, y) should return this.", async () => {
@@ -45,6 +50,34 @@ describe("App Integration Tests", () => {
 
   test("app.rows() should return rows.", async () => {
     expect(await page.evaluate("window.app.rows()")).toBe(24);
+  });
+
+  test("app.height() should return height.", async () => {
+    expect(await page.evaluate("window.app.height()")).toBeTypeOf("number");
+  });
+
+  test("app.width() should return width.", async () => {
+    expect(await page.evaluate("window.app.width()")).toBeTypeOf("number");
+  });
+
+  test("app.cellWidth() should return cellWidth.", async () => {
+    expect(await page.evaluate("window.app.cellWidth()")).toBeTypeOf("number");
+  });
+
+  test("app.cellHeight() should return cellHeight.", async () => {
+    expect(await page.evaluate("window.app.cellHeight()")).toBeTypeOf("number");
+  });
+
+  test("app.fontWeight() should return fontWeight.", async () => {
+    expect(await page.evaluate("window.app.fontWeight()")).toBe("normal");
+  });
+
+  test("app.fontSize() should return fontSize.", async () => {
+    expect(await page.evaluate("window.app.fontSize()")).toBe(15);
+  });
+
+  test("app.fontFamily() should return fontFamily.", async () => {
+    expect(await page.evaluate("window.app.fontFamily()")).toBe("courier-new, courier, monospace");
   });
 
   test("app.node() should return node.", async () => {

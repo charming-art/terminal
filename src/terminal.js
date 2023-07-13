@@ -54,8 +54,6 @@ Object.defineProperties(Terminal.prototype, {
   char: { value: terminal$char, writable: true, configurable: true },
   toString: { value: terminal$toString, writable: true, configurable: true },
   node: { value: terminal$node, writable: true, configurable: true },
-  cols: { value: terminal$cols, writable: true, configurable: true },
-  rows: { value: terminal$rows, writable: true, configurable: true },
 });
 
 function terminal$background(color) {
@@ -110,14 +108,6 @@ function terminal$toString() {
 
 function terminal$node() {
   return this._context.canvas;
-}
-
-function terminal$rows() {
-  return this._rows;
-}
-
-function terminal$cols() {
-  return this._cols;
 }
 
 function createContext(document, width = 640, height = 480, dpi = null) {

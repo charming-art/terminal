@@ -6,10 +6,10 @@ export function app$render() {
     this._fill = null;
   }
   const bufferPtr = this._renderer.render();
-  const buffer = new Uint32Array(this._memory.buffer, bufferPtr, this._cols * this._rows * CELL_SIZE);
-  for (let i = 0; i < this._rows; i++) {
-    for (let j = 0; j < this._cols; j++) {
-      const index = (this._cols * i + j) * CELL_SIZE;
+  const buffer = new Uint32Array(this._memory.buffer, bufferPtr, this.cols() * this.rows() * CELL_SIZE);
+  for (let i = 0; i < this.rows(); i++) {
+    for (let j = 0; j < this.cols(); j++) {
+      const index = (this.cols() * i + j) * CELL_SIZE;
       const [ch, wch] = decodeChar(buffer[index]);
       const [ch1, wch1] = decodeChar(buffer[index + 1]);
       const fg = decodeColor(buffer[index + 2]);

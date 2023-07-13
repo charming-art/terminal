@@ -3,19 +3,26 @@ import { Renderer } from "../wasm/index.js";
 import { app$render } from "./render.js";
 import { app$scene, app$stroke } from "./attributes.js";
 import { app$point } from "./primitives.js";
-import { app$cols, app$rows, app$node } from "./variables.js";
+import {
+  app$cols,
+  app$rows,
+  app$node,
+  app$fontFamily,
+  app$fontSize,
+  app$fontWeight,
+  app$height,
+  app$width,
+  app$cellHeight,
+  app$cellWidth,
+} from "./variables.js";
 
 export function App({ memory, ...options } = {}) {
   const terminal = new Terminal(options);
-  const cols = terminal.cols();
-  const rows = terminal.rows();
-  const renderer = Renderer.new(cols, rows);
+  const renderer = Renderer.new(terminal._cols, terminal._rows);
   Object.defineProperties(this, {
     _memory: { value: memory },
     _terminal: { value: terminal },
     _renderer: { value: renderer },
-    _cols: { value: cols },
-    _rows: { value: rows },
     _fill: { value: "#000000", writable: true },
   });
 }
@@ -27,5 +34,12 @@ Object.defineProperties(App.prototype, {
   point: { value: app$point, writable: true, configurable: true },
   cols: { value: app$cols, writable: true, configurable: true },
   rows: { value: app$rows, writable: true, configurable: true },
+  width: { value: app$width, writable: true, configurable: true },
+  height: { value: app$height, writable: true, configurable: true },
+  fontFamily: { value: app$fontFamily, writable: true, configurable: true },
+  fontSize: { value: app$fontSize, writable: true, configurable: true },
+  fontWeight: { value: app$fontWeight, writable: true, configurable: true },
+  cellWidth: { value: app$cellWidth, writable: true, configurable: true },
+  cellHeight: { value: app$cellHeight, writable: true, configurable: true },
   node: { value: app$node, writable: true, configurable: true },
 });
