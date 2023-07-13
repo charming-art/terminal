@@ -39,10 +39,10 @@ describe("Terminal Integration Tests", () => {
     expect(await page.evaluate("window.terminal.node().classList[0]")).toBe("charming-terminal");
   });
 
-  test("terminal.rows() and terminal.cols() should return dimensions.", async () => {
+  test("terminal._rows and terminal._cols should return dimensions.", async () => {
     await openTerminal(page);
-    expect(await page.evaluate("window.terminal.cols()")).toBe(80);
-    expect(await page.evaluate("window.terminal.rows()")).toBe(24);
+    expect(await page.evaluate("window.terminal._cols")).toBe(80);
+    expect(await page.evaluate("window.terminal._rows")).toBe(24);
   });
 
   test("terminal.char(ch, i, j, fg, bg) should apply fontSize, fontWeight and fontFamily.", async () => {
