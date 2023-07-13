@@ -9,23 +9,13 @@
     <script src="./dist/cm.umd.min.js" type="text/javascript"></script>
     <script>
       (async () => {
-        const chars = [
-          [" +", "-", "+ "],
-          [" |", cm.wide("🚀"), "| "],
-          [" +", "-", "+ "],
-        ];
+        const app = await cm.app({ mode: "double" });
 
-        const app = await cm.app({ mode: "double", cols: 3, rows: 3 });
-
-        app.scene("#000");
-
-        for (let i = 0; i < chars.length; i++) {
-          const row = chars[i];
-          for (let j = 0; j < row.length; j++) {
-            const ch = row[j];
-            app.stroke(ch, "#fff", "#000");
-            app.point(j, i);
-          }
+        for (let t = 0; t <= Math.PI * 2; t += Math.PI / 120) {
+          const x = app.cols() / 2 + 10 * Math.cos(t) * Math.cos(t * 3);
+          const y = app.rows() / 2 + 10 * Math.sin(t) * Math.cos(t * 3);
+          app.stroke(cm.wide("🌟"));
+          app.point(x, y);
         }
 
         document.body.append(app.render().node());
