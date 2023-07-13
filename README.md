@@ -2,8 +2,6 @@
 
 Charming is a creative code language for character art programming.
 
-## Get Started
-
 ```js
 import * as cm from "@charming-art/charming";
 
@@ -14,17 +12,64 @@ app.rect(0, 0, 20, 10);
 app.render();
 ```
 
-```js
-import * as cm from "@charming-art/charming";
+## Installing
 
-const app = await cm.app({ width: 100, height: 100 });
+> TODO
 
-let x = 0;
+## API Reference
 
-app.draw(() => {
-  app.rect(x, 0, 20, 20);
-  x += 1;
-});
+- [Creating Application](#creating-application)
+- [Adding Shapes](#adding-shapes)
+- [Setting Attributes](#setting-attributes)
+- [Binding Data](#binding-data)
+- [Manipulating Colors](#manipulating-colors)
+- [Applying Transformations](#applying-transformations)
+- [Organizing Context](#organizing-context)
+- [Handling Events](#handling-events)
+- [Control Flow](#control-flow)
+- [Getting Variables](#getting-variables)
+- [Math Extension](#math-extension)
 
-app.render();
-```
+### Creating Application
+
+> TODO
+
+### Adding Shapes
+
+> TODO
+
+### Setting Attributes
+
+> TODO
+
+### Binding Data
+
+> TODO
+
+### Manipulating Colors
+
+> TODO
+
+### Applying Transformations
+
+> TODO
+
+### Organizing Context
+
+> TODO
+
+### Handling Events
+
+> TODO
+
+### Control Flow
+
+> TODO
+
+### Getting Variables
+
+> TODO
+
+### Math Extension
+
+> TODO
