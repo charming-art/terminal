@@ -8,11 +8,10 @@ const [update, clear] = useFrame(TARGET_FRAME, () => {
 });
 
 export async function appInterval1() {
-  const app = await createApp();
+  const app = await createApp({ cols: 10, rows: 3 });
 
   // Setup
   let x = 0;
-  app.size(10, 3);
   app.stroke("@");
 
   // Draw

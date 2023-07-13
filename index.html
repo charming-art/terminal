@@ -15,9 +15,9 @@
           [" +", "-", "+ "],
         ];
 
-        const app = await cm.app({ mode: "double" });
+        const app = await cm.app({ mode: "double", cols: 3, rows: 3 });
 
-        app.size(3, 3).scene("#000");
+        app.scene("#000");
 
         for (let i = 0; i < chars.length; i++) {
           const row = chars[i];

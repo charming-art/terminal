@@ -1,22 +1,26 @@
-import { app$render, app$size } from "./structure.js";
-import { app$scene, app$stroke } from "./setting.js";
+import { Terminal } from "../terminal.js";
+import { Renderer } from "../wasm/index.js";
+import { app$render } from "./render.js";
+import { app$scene, app$stroke } from "./attributes.js";
 import { app$point } from "./primitives.js";
-import { app$cols, app$rows, app$node } from "./control.js";
+import { app$cols, app$rows, app$node } from "./variables.js";
 
-export function App({ memory, cols, rows, terminal = null, renderer = null, ...options } = {}) {
+export function App({ memory, ...options } = {}) {
+  const terminal = new Terminal(options);
+  const cols = terminal.cols();
+  const rows = terminal.rows();
+  const renderer = Renderer.new(cols, rows);
   Object.defineProperties(this, {
     _memory: { value: memory },
-    _options: { value: options },
+    _terminal: { value: terminal },
+    _renderer: { value: renderer },
+    _cols: { value: cols },
+    _rows: { value: rows },
     _fill: { value: "#000000", writable: true },
-    _cols: { value: cols, writable: true },
-    _rows: { value: rows, writable: true },
-    _terminal: { value: terminal, writable: true },
-    _renderer: { value: renderer, writable: true },
   });
 }
 
 Object.defineProperties(App.prototype, {
-  size: { value: app$size, writable: true, configurable: true },
   render: { value: app$render, writable: true, configurable: true },
   stroke: { value: app$stroke, writable: true, configurable: true },
   scene: { value: app$scene, writable: true, configurable: true },

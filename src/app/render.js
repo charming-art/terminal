@@ -1,16 +1,4 @@
 import { NULL_VALUE, CELL_SIZE } from "./constants";
-import { Terminal } from "../terminal.js";
-import { Renderer } from "../wasm/index.js";
-
-export function app$size(cols = 80, rows = 24) {
-  const [_cols, width] = maybePixel(cols);
-  const [_rows, height] = maybePixel(rows);
-  this._terminal = new Terminal({ ...this._options, cols: _cols, rows: _rows, width, height });
-  this._cols = this._terminal.cols();
-  this._rows = this._terminal.rows();
-  this._renderer = Renderer.new(this._cols, this._rows);
-  return this;
-}
 
 export function app$render() {
   if (this._fill) {
@@ -48,9 +36,4 @@ function decodeChar(n) {
   const n1 = n & 0x0fffffff;
   const w = first === 0 ? 1 : 2;
   return [String.fromCodePoint(n1), w];
-}
-
-function maybePixel(size) {
-  if (typeof size === "number") return [size, undefined];
-  return [undefined, parseFloat(size)];
 }
