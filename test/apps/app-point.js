@@ -8,9 +8,7 @@ export async function appPoint() {
     [3, 3, "@"],
   ];
 
-  const app = await createApp();
-
-  app.size(3, 3);
+  const app = await createApp({ cols: 3, rows: 3 });
 
   for (const [x, y, ch, fg, bg] of points) {
     app.stroke(ch, fg, bg);

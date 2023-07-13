@@ -15,7 +15,6 @@ export function app(name) {
 
 export async function openApp(page, options = {}) {
   await page.evaluate(`(async () => window.app = await createApp(${JSON.stringify(options)}))()`);
-  await page.evaluate("window.app.size()");
   await page.evaluate("document.body.appendChild(window.app.node())");
   await page.waitForSelector(".charming-terminal");
 }
