@@ -1,4 +1,4 @@
-import { NULL_VALUE, CELL_SIZE } from "./constants";
+import { NULL_VALUE, CELL_SIZE } from "./constants.js";
 
 export function app$render() {
   if (this._fill) {

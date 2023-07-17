@@ -1,5 +1,5 @@
 import { color as rgb } from "d3-color";
-import { NULL_VALUE } from "./constants";
+import { NULL_VALUE } from "./constants.js";
 
 export function app$scene(color) {
   this._fill = color;

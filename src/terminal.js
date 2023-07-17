@@ -1,4 +1,4 @@
-import { isFireFox, isLegacyEdge } from "./platform";
+import { isFireFox, isLegacyEdge } from "./platform.js";
 
 // https://github.com/xtermjs/xterm.js/blob/096fe171356fc9519e0a6b737a98ca82d0587e91/src/browser/renderer/shared/Constants.ts#LL14C1-L14C1
 export const TEXT_BASELINE = isFireFox || isLegacyEdge ? "bottom" : "ideographic";
