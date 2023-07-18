@@ -17,11 +17,6 @@ describe("App Integration Tests", () => {
   });
 
   test("new App() should have expected defaults.", async () => {
-    const defaults = { fill: "#000000" };
-    for (const [key, value] of Object.entries(defaults)) {
-      expect(await page.evaluate(`window.app._${key}`)).toBe(value);
-    }
-
     const defined = ["memory", "renderer", "terminal"];
     for (const key of defined) {
       expect(await page.evaluate(`window.app._${key}`)).toBeTruthy();
@@ -83,5 +78,9 @@ describe("App Integration Tests", () => {
   test("app.node() should return node.", async () => {
     expect(await page.evaluate("window.app.node() instanceof HTMLCanvasElement")).toBe(true);
     expect(await page.evaluate("window.app.node().classList[0]")).toBe("charming-terminal");
+  });
+
+  test("app.pixels(x, y, render) should return app.", async () => {
+    expect(await page.evaluate(`window.app.pixels(0, 0, () => {}) === window.app`)).toBe(true);
   });
 });

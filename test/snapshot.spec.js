@@ -50,14 +50,14 @@ describe("Snapshots", () => {
   const onlys = Object.entries(apps).filter(([, render]) => render.only === true);
   if (process.env.CI === "true" && onlys.length) throw new Error("Remove .only for tests.");
 
-  const tests = onlys.length ? onlys : Object.entries(apps).filter(([, render]) => render.snap !== undefined);
+  const tests = onlys.length ? onlys : Object.entries(apps).filter(([, render]) => !render.skip);
   for (const [name, render] of tests) {
     const { snap } = render;
     test(name, async () => {
       await page.goto(app(name));
       if (typeof snap === "number") await page.getByText(frameOf(snap)).click();
       else await page.waitForSelector(".charming-terminal");
-      await expectMatchSnapshot(page, name);
+      if (snap) await expectMatchSnapshot(page, name);
     });
   }
 });

@@ -1,10 +1,10 @@
 import { color as rgb } from "d3-color";
+import { before } from "./hook.js";
 import { NULL_VALUE } from "./constants.js";
 
-export function app$scene(color) {
-  this._fill = color;
-  return this;
-}
+export const app$scene = before(function (color) {
+  this._terminal.background(color);
+});
 
 export function app$stroke(ch, fg = "#ffffff", bg = null) {
   const [n, n1 = NULL_VALUE] = encodeChar(ch);
