@@ -2,7 +2,7 @@ import { Terminal } from "../terminal.js";
 import { Renderer } from "../wasm/index.js";
 import { app$render } from "./render.js";
 import { app$scene, app$stroke } from "./attributes.js";
-import { app$point } from "./primitives.js";
+import { app$point, app$pixels } from "./shapes.js";
 import {
   app$cols,
   app$rows,
@@ -23,8 +23,10 @@ export function App({ memory, ...options } = {}) {
     _memory: { value: memory },
     _terminal: { value: terminal },
     _renderer: { value: renderer },
-    _fill: { value: "#000000", writable: true },
+    _after: { value: [], writable: true },
+    _before: { value: [], writable: true },
   });
+  this.scene("#000000");
 }
 
 Object.defineProperties(App.prototype, {
@@ -32,6 +34,7 @@ Object.defineProperties(App.prototype, {
   stroke: { value: app$stroke, writable: true, configurable: true },
   scene: { value: app$scene, writable: true, configurable: true },
   point: { value: app$point, writable: true, configurable: true },
+  pixels: { value: app$pixels, writable: true, configurable: true },
   cols: { value: app$cols, writable: true, configurable: true },
   rows: { value: app$rows, writable: true, configurable: true },
   width: { value: app$width, writable: true, configurable: true },

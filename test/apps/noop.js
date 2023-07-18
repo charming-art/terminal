@@ -6,3 +6,5 @@ export function noop() {
   window.Terminal = Terminal;
   return null;
 }
+
+noop.skip = true;

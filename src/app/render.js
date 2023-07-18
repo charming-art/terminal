@@ -1,10 +1,8 @@
 import { NULL_VALUE, CELL_SIZE } from "./constants.js";
 
 export function app$render() {
-  if (this._fill) {
-    this._terminal.background(this._fill);
-    this._fill = null;
-  }
+  const app = this;
+  this._before.forEach(([hook, ...params]) => hook.call(app, ...params));
   const bufferPtr = this._renderer.render();
   const buffer = new Uint32Array(this._memory.buffer, bufferPtr, this.cols() * this.rows() * CELL_SIZE);
   for (let i = 0; i < this.rows(); i++) {
@@ -19,6 +17,9 @@ export function app$render() {
       if (ch2 || fg) this._terminal.char(ch2, j, i, fg, bg, wide);
     }
   }
+  this._after.forEach(([hook, ...params]) => hook.call(app, ...params));
+  this._before = [];
+  this._after = [];
   return this;
 }
 
