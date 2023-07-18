@@ -29,25 +29,81 @@ document.body.append(app.render().node());
 
 - [Creating Application](#creating-application)
 - [Setting Attributes](#setting-attributes)
-- [Adding Shapes](#adding-shapes)
+- [Drawing Shapes](#drawing-shapes)
 - [Control Flow](#control-flow)
 - [Getting Variables](#getting-variables)
 
 ### Creating Application
 
-> TODO
+<a name="app" href="#app">#</a> cm.**app**(_options_)
+
+```js
+const app = await cm.app(options);
+```
+
+- **cols**
+- **rows**
+- **width**
+- **height**
+- **fontSize**
+- **fontWeight**
+- **fontFamily**
+- **mode**
+
+<a name="render" href="#render">#</a> app.**render**()
+
+```js
+app.render();
+```
 
 ### Setting Attributes
 
-> TODO
+<a name="scene" href="#scene">#</a> app.**scene**(_color_)
 
-### Adding Shapes
+```js
+app.scene("#000000");
+```
 
-> TODO
+<a name="scene" href="#stroke">#</a> app.**stroke**(_ch[, fg[, bg]]_)
+
+```js
+app.stroke("@", "steelblue", "orange");
+```
+
+<a name="wide" href="#wide">#</a> cm.**wide**(_ch_)
+
+```js
+cm.wide("🚀");
+```
+
+### Drawing Shapes
+
+<a name="point" href="#point">#</a> app.**point**(_x, y_)
+
+```js
+app.point(0, 0);
+```
+
+<a name="pixels" href="#pixels">#</a> app.**pixels**(_x, y, render_)
+
+```js
+app.pixels(0, 0, (context) => {});
+```
 
 ### Control Flow
 
-> TODO
+<a name="each" href="#each">#</a> app.**each**(_data, iteratee_)
+
+```js
+app.each(data, (d, i, array) => {});
+```
+
+<a name="call" href="#call">#</a> app.**call**(_function[, arguments…]_)
+
+```js
+function draw(x, y) {}
+app.call(draw, 0, 0);
+```
 
 ### Getting Variables
 
