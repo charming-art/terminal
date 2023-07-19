@@ -1,16 +1,59 @@
-# Charming: Character Art Programming
+# Charming: Character Terminal Art Programming
 
-Charming is a creative code language for character art programming.
+**Charming** is a free, open-source, creative code language for character terminal art programming, which means drawing shapes in a terminal-like application with characters. It is embedded in JavaScript and uses a software rendering renderer written in Rust compiled to WASM, to gain high performance hopefully. It has a accessible, inclusive, yet expressive API inspired by [Processing](https://processing.org/) or [P5.js](https://p5js.org/). And there are [a plenty of examples](https://github.com/charming-art/charming/tree/next) to get started.
 
 ## Installing
 
-> TODO
+Charming is typically installed via a package manager such as Yarn or npm.
 
-## A Simple Example
+```bash
+npm install @charming-art/charming
+```
+
+```bash
+yarn add @charming-art/charming
+```
+
+Charming can then imported as a namespace:
 
 ```js
 import * as cm from "@charming-art/charming";
+```
 
+In vanilla HTML, Charming can be imported as an ES module, say from jsDelivr:
+
+```html
+<script type="module">
+  import * as cm from "https://cdn.jsdelivr.net/npm/@charming-art/charming@0.1/+esm";
+
+  const app = await cm.app();
+
+  // ...
+
+  document.body.append(app.render().node());
+</script>
+```
+
+Charming is also available as a UMD bundle for legacy browsers.
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@charming-art/charming@0.1"></script>
+<script>
+  (async () => {
+    const app = await cm.app();
+
+    // ...
+
+    document.body.append(app.render().node());
+  })();
+</script>
+```
+
+## A Simple Example
+
+Here is a simple Charming example:
+
+```js
 const app = await cm.app({ mode: "double" });
 
 for (let t = 0; t <= Math.PI * 2; t += Math.PI / 120) {
@@ -23,6 +66,8 @@ for (let t = 0; t <= Math.PI * 2; t += Math.PI / 120) {
 document.body.append(app.render().node());
 ```
 
+If Charming is properly installed, you should get a _lucky clove_ as below 🎉:
+
 <img src="./img/star.png" width="100%" alt="star">
 
 ## API Reference
@@ -30,6 +75,7 @@ document.body.append(app.render().node());
 - [Creating Application](#creating-application)
 - [Setting Attributes](#setting-attributes)
 - [Drawing Shapes](#drawing-shapes)
+- [Applying Transformations](#applying-transformations)
 - [Control Flow](#control-flow)
 - [Getting Variables](#getting-variables)
 
@@ -56,6 +102,34 @@ const app = await cm.app(options);
 app.render();
 ```
 
+<a name="frame" href="#frame">#</a> app.**frame**()
+
+> WIP
+
+```js
+let x = 0;
+app.frame(() => {
+  app.point(x, x);
+  x++;
+});
+```
+
+<a name="run" href="#run">#</a> app.**run**()
+
+> WIP
+
+```js
+app.run();
+```
+
+<a name="stop" href="#stop">#</a> app.**stop**()
+
+> WIP
+
+```js
+app.stop();
+```
+
 ### Setting Attributes
 
 <a name="scene" href="#scene">#</a> app.**scene**(_color_)
@@ -64,10 +138,42 @@ app.render();
 app.scene("#000000");
 ```
 
-<a name="scene" href="#stroke">#</a> app.**stroke**(_ch[, fg[, bg]]_)
+<a name="background" href="#background">#</a> app.**background**(_ch[, fg[, bg]]_)
+
+> WIP
+
+```js
+app.background("@", "steelblue", "orange");
+```
+
+<a name="stroke" href="#stroke">#</a> app.**stroke**(_ch[, fg[, bg]]_)
 
 ```js
 app.stroke("@", "steelblue", "orange");
+```
+
+<a name="nostroke" href="#nostroke">#</a> app.**noStroke**()
+
+> WIP
+
+```js
+app.noStroke();
+```
+
+<a name="fill" href="#fill">#</a> app.**fill**(_ch[, fg[, bg]]_)
+
+> WIP
+
+```js
+app.fill("@", "steelblue", "orange");
+```
+
+<a name="nofill" href="#nofill">#</a> app.**noFill**()
+
+> WIP
+
+```js
+app.noFill();
 ```
 
 <a name="wide" href="#wide">#</a> cm.**wide**(_ch_)
@@ -84,10 +190,62 @@ cm.wide("🚀");
 app.point(0, 0);
 ```
 
+<a name="line" href="#line">#</a> app.**line**(_x, y, x1, y1_)
+
+> WIP
+
+```js
+app.line(0, 0, 10, 10);
+```
+
+<a name="rect" href="#rect">#</a> app.**rect**(_x, y, width, height_)
+
+> WIP
+
+```js
+app.rect(0, 0, 10, 10);
+```
+
 <a name="pixels" href="#pixels">#</a> app.**pixels**(_x, y, render_)
 
 ```js
-app.pixels(0, 0, (context) => {});
+for (let i = 0; i < app.cols() * app.rows(); i++) {
+  app.stroke(" ", "#fff", i % 2 === 0 ? "#000" : "#fff");
+  app.point(i % app.cols(), (i / app.cols()) | 0);
+}
+
+app.pixels(5, 5, (context) => {
+  const r = Math.max(app.cellWidth(), app.cellHeight()) / 2;
+  context.fillStyle = "orange";
+  context.beginPath();
+  context.arc(-r, -r, r, 0, 2 * Math.PI);
+  context.closePath();
+  context.fill();
+});
+```
+
+### Applying Transformations
+
+<a name="translate" href="#translate">#</a> app.**translate**(_x, y_)
+
+> WIP
+
+```js
+app.translate(10, 10);
+```
+
+<a name="scale" href="#scale">#</a> app.**scale**(_sx, sy_)
+
+> WIP
+
+```js
+app.scale(2, 2);
+```
+
+<a name="rotate" href="#rotate">#</a> app.**rotate**(_theta_)
+
+```js
+app.rotate(Math.PI / 2);
 ```
 
 ### Control Flow
