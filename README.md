@@ -1,6 +1,17 @@
 # Charming: Character Terminal Art Programming
 
-**Charming** is a free, open-source, creative code language for character terminal art programming, which means drawing shapes in a terminal-like application with characters. It is embedded in JavaScript and uses a software rendering renderer written in Rust compiled to WASM, to gain high performance hopefully. It has a accessible, inclusive, yet expressive API inspired by [Processing](https://processing.org/) or [P5.js](https://p5js.org/). And there are [a plenty of examples](https://github.com/charming-art/charming/tree/next) to get started.
+**Charming** is a free, open-source, creative code language for character terminal art programming, which means drawing shapes in a terminal-like application with characters. It is embedded in JavaScript and uses a software rendering renderer written in Rust compiled to WASM, to gain high performance hopefully. It has an accessible, inclusive, yet expressive API inspired by [Processing](https://processing.org/) or [P5.js](https://p5js.org/).
+
+If you are new to Charming, we highly recommend first reading these tutorials to introduce Charming's core concepts:
+
+- [Creating Application](#creating-application-1) - Rendering app into DOM and animate it.
+- [Setting Attributes](#setting-attributes-1) - Controlling the aesthetic appearance of the shapes.
+- [Drawing Shapes](#drawing-shapes-1) - Adding primitives, vertices, and curves to app.
+- [Applying Transformations](#applying-transformations-1) - Transforming shapes.
+- [Control Flow](#control-flow-1) - A more declarative programming style.
+- [Getting Variables](#getting-variables-1) - State of the app.
+
+And there are [a plenty of examples](https://github.com/charming-art/charming/tree/next) to get started with.
 
 ## Installing
 
@@ -72,16 +83,70 @@ If Charming is properly installed, you should get a _lucky clove_ as below 🎉:
 
 ## API Reference
 
-- [Creating Application](#creating-application)
-- [Setting Attributes](#setting-attributes)
-- [Drawing Shapes](#drawing-shapes)
-- [Applying Transformations](#applying-transformations)
-- [Control Flow](#control-flow)
-- [Getting Variables](#getting-variables)
+### [Creating Application](#creating-application-1)
 
-### Creating Application
+Rendering app into DOM and animate it.
 
-<a name="app" href="#app">#</a> cm.**app**(_options_)
+- [cm.**app**](#cm-app)
+- [app.**render**](#app-render)
+- [app.**frame**](#app-frame)
+- [app.**run**](#app-run)
+- [app.**stop**](#app-stop)
+
+### [Setting Attributes](#setting-attributes-1)
+
+Controlling the aesthetic appearance of the shapes.
+
+- [app.**scene**](#app-scene)
+- [app.**background**](#app-background)
+- [app.**stroke**](#app-stroke)
+- [app.**noStroke**](#app-nostroke)
+- [app.**strokeWidth**](#app-strokewidth)
+- [app.**fill**](#app-fill)
+- [app.**noFill**](#app-nofill)
+- [cm.**wide**](#cm-wide)
+
+### [Drawing Shapes](#drawing-shapes-1)
+
+Adding primitives, vertices, and curves to app.
+
+- [app.**point**](#app-point)
+- [app.**line**](#app-line)
+- [app.**rect**](#app-rect)
+- [app.**pixels**](#app-pixels)
+
+### [Applying Transformations](#applying-transformations-1)
+
+Transforming shapes.
+
+- [app.**translate**](#app-translate)
+- [app.**scale**](#app-scale)
+- [app.**rotate**](#app-rotate)
+
+### [Control Flow](#control-flow-1)
+
+A more declarative programming style.
+
+- [app.**call**](#app-call)
+
+### [Getting Variables](#getting-variables-1)
+
+State of the app.
+
+- [app.**node**](#app-node)
+- [app.**cols**](#app-cols)
+- [app.**rows**](#app-rows)
+- [app.**width**](#app-width)
+- [app.**height**](#app-height)
+- [app.**cellWidth**](#app-cellwidth)
+- [app.**cellHeight**](#app-cellheight)
+- [app.**fontSize**](#app-fontsize)
+- [app.**fontFamily**](#app-fontfamily)
+- [app.**fontWeight**](#app-fontweight)
+
+## Creating Application
+
+<a name="cm-app" href="#cm-app">#</a> cm.**app**(_[options]_)
 
 ```js
 const app = await cm.app(options);
@@ -96,13 +161,13 @@ const app = await cm.app(options);
 - **fontFamily**
 - **mode**
 
-<a name="render" href="#render">#</a> app.**render**()
+<a name="app-render" href="#app-render">#</a> app.**render**()
 
 ```js
 app.render();
 ```
 
-<a name="frame" href="#frame">#</a> app.**frame**()
+<a name="app-frame" href="#app-frame">#</a> app.**frame**()
 
 > WIP
 
@@ -114,7 +179,7 @@ app.frame(() => {
 });
 ```
 
-<a name="run" href="#run">#</a> app.**run**()
+<a name="app-run" href="#app-run">#</a> app.**run**()
 
 > WIP
 
@@ -122,7 +187,7 @@ app.frame(() => {
 app.run();
 ```
 
-<a name="stop" href="#stop">#</a> app.**stop**()
+<a name="app-stop" href="#app-stop">#</a> app.**stop**()
 
 > WIP
 
@@ -130,15 +195,15 @@ app.run();
 app.stop();
 ```
 
-### Setting Attributes
+## Setting Attributes
 
-<a name="scene" href="#scene">#</a> app.**scene**(_color_)
+<a name="app-scene" href="#app-scene">#</a> app.**scene**(_color_)
 
 ```js
 app.scene("#000000");
 ```
 
-<a name="background" href="#background">#</a> app.**background**(_ch[, fg[, bg]]_)
+<a name="app-background" href="#app-background">#</a> app.**background**(_ch[, fg[, bg]]_)
 
 > WIP
 
@@ -146,13 +211,13 @@ app.scene("#000000");
 app.background("@", "steelblue", "orange");
 ```
 
-<a name="stroke" href="#stroke">#</a> app.**stroke**(_ch[, fg[, bg]]_)
+<a name="app-stroke" href="#app-stroke">#</a> app.**stroke**(_ch[, fg[, bg]]_)
 
 ```js
 app.stroke("@", "steelblue", "orange");
 ```
 
-<a name="nostroke" href="#nostroke">#</a> app.**noStroke**()
+<a name="app-nostroke" href="#app-nostroke">#</a> app.**noStroke**()
 
 > WIP
 
@@ -160,7 +225,15 @@ app.stroke("@", "steelblue", "orange");
 app.noStroke();
 ```
 
-<a name="fill" href="#fill">#</a> app.**fill**(_ch[, fg[, bg]]_)
+<a name="app-strokewidth" href="#app-strokewidth">#</a> app.**strokeWidth**(_width_)
+
+> WIP
+
+```js
+app.strokeWidth(2);
+```
+
+<a name="app-fill" href="#app-fill">#</a> app.**fill**(_ch[, fg[, bg]]_)
 
 > WIP
 
@@ -168,7 +241,7 @@ app.noStroke();
 app.fill("@", "steelblue", "orange");
 ```
 
-<a name="nofill" href="#nofill">#</a> app.**noFill**()
+<a name="app-nofill" href="#app-nofill">#</a> app.**noFill**()
 
 > WIP
 
@@ -176,21 +249,21 @@ app.fill("@", "steelblue", "orange");
 app.noFill();
 ```
 
-<a name="wide" href="#wide">#</a> cm.**wide**(_ch_)
+<a name="cm-wide" href="#cm-wide">#</a> cm.**wide**(_ch_)
 
 ```js
 cm.wide("🚀");
 ```
 
-### Drawing Shapes
+## Drawing Shapes
 
-<a name="point" href="#point">#</a> app.**point**(_x, y_)
+<a name="app-point" href="#app-point">#</a> app.**point**(_x, y_)
 
 ```js
 app.point(0, 0);
 ```
 
-<a name="line" href="#line">#</a> app.**line**(_x, y, x1, y1_)
+<a name="app-line" href="#app-line">#</a> app.**line**(_x, y, x1, y1_)
 
 > WIP
 
@@ -198,7 +271,7 @@ app.point(0, 0);
 app.line(0, 0, 10, 10);
 ```
 
-<a name="rect" href="#rect">#</a> app.**rect**(_x, y, width, height_)
+<a name="app-rect" href="#app-rect">#</a> app.**rect**(_x, y, width, height_)
 
 > WIP
 
@@ -206,7 +279,7 @@ app.line(0, 0, 10, 10);
 app.rect(0, 0, 10, 10);
 ```
 
-<a name="pixels" href="#pixels">#</a> app.**pixels**(_x, y, render_)
+<a name="app-pixels" href="#app-pixels">#</a> app.**pixels**(_x, y, render_)
 
 ```js
 for (let i = 0; i < app.cols() * app.rows(); i++) {
@@ -224,9 +297,9 @@ app.pixels(5, 5, (context) => {
 });
 ```
 
-### Applying Transformations
+## Applying Transformations
 
-<a name="translate" href="#translate">#</a> app.**translate**(_x, y_)
+<a name="app-translate" href="#app-translate">#</a> app.**translate**(_x, y_)
 
 > WIP
 
@@ -234,7 +307,7 @@ app.pixels(5, 5, (context) => {
 app.translate(10, 10);
 ```
 
-<a name="scale" href="#scale">#</a> app.**scale**(_sx, sy_)
+<a name="app-scale" href="#app-scale">#</a> app.**scale**(_sx, sy_)
 
 > WIP
 
@@ -242,17 +315,17 @@ app.translate(10, 10);
 app.scale(2, 2);
 ```
 
-<a name="rotate" href="#rotate">#</a> app.**rotate**(_theta_)
+<a name="app-rotate" href="#app-rotate">#</a> app.**rotate**(_theta_)
 
 ```js
 app.rotate(Math.PI / 2);
 ```
 
-### Control Flow
+## Control Flow
 
 For advance usage, apps provide methods for custom control flow.
 
-<a name="call" href="#call">#</a> app.**call**(_function[, arguments…]_)
+<a name="app-call" href="#app-call">#</a> app.**call**(_function[, arguments…]_)
 
 Calls the specified _function_ on this app with any optional _arguments_ and returns this app. This is equivalent to calling the function by hand but avoids to break method chaining. For example, to set the color of every cells in a reusable function:
 
@@ -284,11 +357,11 @@ app
   .render();
 ```
 
-### Getting Variables
+## Getting Variables
 
 For convince, apps provide methods to get some of internal variables.
 
-<a name="node" href="#node">#</a> app.**node**()
+<a name="app-node" href="#app-node">#</a> app.**node**()
 
 Returns the canvas used to render the app. For example, to mount the rendered app to a specific DOM.
 
@@ -297,7 +370,7 @@ const root = document.getElementById("id");
 root.append(app.node());
 ```
 
-<a name="cols" href="#cols">#</a> app.**cols**()
+<a name="app-cols" href="#app-cols">#</a> app.**cols**()
 
 Returns the number of columns in the terminal. For example, to draw a point at the center of the terminal:
 
@@ -305,7 +378,7 @@ Returns the number of columns in the terminal. For example, to draw a point at t
 app.point(app.cols() / 2, app.rows() / 2);
 ```
 
-<a name="rows" href="#rows">#</a> app.**rows**()
+<a name="app-rows" href="#app-rows">#</a> app.**rows**()
 
 Returns the number of rows in the terminal. For example, to draw a point at th center of the terminal:
 
@@ -313,7 +386,7 @@ Returns the number of rows in the terminal. For example, to draw a point at th c
 app.point(app.cols() / 2, app.rows() / 2);
 ```
 
-<a name="width" href="#width">#</a> app.**width**()
+<a name="app-width" href="#app-width">#</a> app.**width**()
 
 Returns the computed width of the terminal, which satisfies the following constraint:
 
@@ -321,7 +394,7 @@ Returns the computed width of the terminal, which satisfies the following constr
 app.width() === app.cols() * app.cellWidth();
 ```
 
-<a name="height" href="#height">#</a> app.**height**()
+<a name="app-height" href="#app-height">#</a> app.**height**()
 
 Returns the computed height of the terminal, which satisfies the following constraint:
 
@@ -329,7 +402,7 @@ Returns the computed height of the terminal, which satisfies the following const
 app.height() === app.rows() * app.cellHeight();
 ```
 
-<a name="cellWidth" href="#cellWidth">#</a> app.**cellWidth**()
+<a name="app-cellwidth" href="#app-cellwidth">#</a> app.**cellWidth**()
 
 Returns the computed width of the cells, which satisfies the following constraint:
 
@@ -337,7 +410,7 @@ Returns the computed width of the cells, which satisfies the following constrain
 app.cellWidth() === app.width() / app.cols();
 ```
 
-<a name="cellHeight" href="#cellHeight">#</a> app.**cellHeight**()
+<a name="app-cellheight" href="#app-cellheight">#</a> app.**cellHeight**()
 
 Returns the computed height of the cells, which satisfies the following constraint:
 
@@ -345,7 +418,7 @@ Returns the computed height of the cells, which satisfies the following constrai
 app.cellHeight() === app.height() / app.rows();
 ```
 
-<a name="fontSize" href="#fontSize">#</a> app.**fontSize**()
+<a name="app-fontsize" href="#app-fontsize">#</a> app.**fontSize**()
 
 Returns the font size used to render text. For example, to get the default font size:
 
@@ -354,7 +427,7 @@ const app = await cm.app();
 app.fontSize(); // 15
 ```
 
-<a name="fontWeight" href="#fontWeight">#</a> app.**fontWeight**()
+<a name="app-fontweight" href="#app-fontweight">#</a> app.**fontWeight**()
 
 Returns the font weight used to render text. For example, to get the default font weight:
 
@@ -363,7 +436,7 @@ const app = await cm.app();
 app.fontWeight(); // "normal"
 ```
 
-<a name="fontFamily" href="#fontFamily">#</a> app.**fontFamily**()
+<a name="app-fontfamily" href="#app-fontfamily">#</a> app.**fontFamily**()
 
 Returns the font family used to render text. For example, to get the default font family:
 
