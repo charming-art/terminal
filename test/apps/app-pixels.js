@@ -11,6 +11,7 @@ export async function appPixels() {
   app.pixels(5, 5, (context) => {
     const r = Math.max(app.cellWidth(), app.cellHeight()) / 2;
     context.fillStyle = "orange";
+    context.beginPath();
     context.arc(-r, -r, r, 0, 2 * Math.PI);
     context.closePath();
     context.fill();

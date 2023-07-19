@@ -1,5 +1,5 @@
 import { color as rgb } from "d3-color";
-import { before } from "./hook.js";
+import { before } from "./hooks.js";
 import { NULL_VALUE } from "./constants.js";
 
 export const app$scene = before(function (color) {

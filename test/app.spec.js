@@ -83,4 +83,8 @@ describe("App Integration Tests", () => {
   test("app.pixels(x, y, render) should return app.", async () => {
     expect(await page.evaluate(`window.app.pixels(0, 0, () => {}) === window.app`)).toBe(true);
   });
+
+  test("app.call(function[, ...arguments]) should return app.", async () => {
+    expect(await page.evaluate("window.app.call(() => {}, 0, 0) === window.app")).toBe(true);
+  });
 });

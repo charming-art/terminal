@@ -1,4 +1,4 @@
-import { after } from "./hook.js";
+import { after } from "./hooks.js";
 
 export function app$point(x, y) {
   this._renderer.point(x, y);
