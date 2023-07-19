@@ -13,7 +13,7 @@ import * as cm from "@charming-art/charming";
 
 const app = await cm.app({ mode: "double" });
 
-for (let t = 0; t <= Math.PI * 2; t += Math.PI / 60) {
+for (let t = 0; t <= Math.PI * 2; t += Math.PI / 120) {
   const x = app.cols() / 2 + 10 * Math.cos(t) * Math.cos(t * 3);
   const y = app.rows() / 2 + 10 * Math.sin(t) * Math.cos(t * 3);
   app.stroke(cm.wide("🌟"));
@@ -92,17 +92,38 @@ app.pixels(0, 0, (context) => {});
 
 ### Control Flow
 
-<a name="each" href="#each">#</a> app.**each**(_data, iteratee_)
-
-```js
-app.each(data, (d, i, array) => {});
-```
+For advance usage, apps provide methods for custom control flow.
 
 <a name="call" href="#call">#</a> app.**call**(_function[, arguments…]_)
 
+Calls the specified _function_ on this app with any optional _arguments_ and returns this app. This is equivalent to calling the function by hand but avoids to break method chaining. For example, to set the color of every cells in a reusable function:
+
 ```js
-function draw(x, y) {}
-app.call(draw, 0, 0);
+function background(app, ch, fg) {
+  app.stroke(ch, fg);
+  for (let i = 0; i < app.cols(); i++) {
+    for (let j = 0; j < app.rows(); j++) {
+      app.point(i, j);
+    }
+  }
+}
+```
+
+It breaks the method chaining between _app.scene_ and _app.render_:
+
+```js
+app.scene("#4e79a7");
+background(app, "+", "#76b7b2"); // Breaks method chaining!
+app.render();
+```
+
+Now say:
+
+```js
+app
+  .scene("#4e79a7")
+  .call(background, "+", "#76b7b2") // Facilitates the method chaining.
+  .render();
 ```
 
 ### Getting Variables

@@ -3,6 +3,7 @@ import { Renderer } from "../wasm/index.js";
 import { app$render } from "./render.js";
 import { app$scene, app$stroke } from "./attributes.js";
 import { app$point, app$pixels } from "./shapes.js";
+import { app$call } from "./control.js";
 import {
   app$cols,
   app$rows,
@@ -35,6 +36,7 @@ Object.defineProperties(App.prototype, {
   scene: { value: app$scene, writable: true, configurable: true },
   point: { value: app$point, writable: true, configurable: true },
   pixels: { value: app$pixels, writable: true, configurable: true },
+  call: { value: app$call, writable: true, configurable: true },
   cols: { value: app$cols, writable: true, configurable: true },
   rows: { value: app$rows, writable: true, configurable: true },
   width: { value: app$width, writable: true, configurable: true },
