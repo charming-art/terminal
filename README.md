@@ -1,6 +1,8 @@
-# Charming: Character Terminal Art Programming
+# Charming: Character Computing
 
-**Charming** is a free, open-source, creative code language for character terminal art programming, which means drawing shapes in a terminal-like application with characters. It is embedded in JavaScript and uses a software rendering renderer written in Rust compiled to WASM, to gain high performance hopefully. It has an accessible, inclusive, yet expressive API inspired by [Processing](https://processing.org/) or [P5.js](https://p5js.org/).
+**Charming** is a free, open-source, creative code language for character computing, which means drawing characters in a terminal-like application driven by computational algorithm. It is embedded in JavaScript and uses a software renderer written in Rust compiled to WASM, to gain high performance hopefully. It has an concise, inclusive, yet expressive API inspired by [Processing](https://processing.org/) or [P5.js](https://p5js.org/).
+
+Charming focus on making the _charm_ of [_character_](<https://en.wikipedia.org/wiki/Character_(symbol)>) and [_computing_](https://en.wikipedia.org/wiki/Computing) accessible for artists, designers, educators, beginners, and anyone else! Our hope with Charming is that you spend less time wrangling the machinery of programming and more time "using character and computing to tell stories". Or put more simply: **with Charming, you'll express more, more easily.**
 
 If you are new to Charming, we highly recommend first reading these tutorials to introduce Charming's core concepts:
 
@@ -15,14 +17,14 @@ And there are [a plenty of examples](https://github.com/charming-art/charming/tr
 
 ## Installing
 
-Charming is typically installed via a package manager such as Yarn or npm.
-
-```bash
-npm install @charming-art/charming
-```
+Charming is typically installed via a package manager such as Yarn or NPM.
 
 ```bash
 yarn add @charming-art/charming
+```
+
+```bash
+npm install @charming-art/charming
 ```
 
 Charming can then imported as a namespace:
@@ -101,7 +103,6 @@ Controlling the aesthetic appearance of the shapes.
 - [app.**background**](#app-background)
 - [app.**stroke**](#app-stroke)
 - [app.**noStroke**](#app-nostroke)
-- [app.**strokeWidth**](#app-strokewidth)
 - [app.**fill**](#app-fill)
 - [app.**noFill**](#app-nofill)
 - [cm.**wide**](#cm-wide)
@@ -223,14 +224,6 @@ app.stroke("@", "steelblue", "orange");
 
 ```js
 app.noStroke();
-```
-
-<a name="app-strokewidth" href="#app-strokewidth">#</a> app.**strokeWidth**(_width_)
-
-> WIP
-
-```js
-app.strokeWidth(2);
 ```
 
 <a name="app-fill" href="#app-fill">#</a> app.**fill**(_ch[, fg[, bg]]_)
