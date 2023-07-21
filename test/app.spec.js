@@ -17,6 +17,14 @@ describe("App Integration Tests", () => {
   });
 
   test("new App() should have expected defaults.", async () => {
+    const defaults = {
+      frameRate: 30,
+      frameCount: 0,
+    };
+    for (const [key, value] of Object.entries(defaults)) {
+      expect(await page.evaluate(`window.app._${key}`)).toBe(value);
+    }
+
     const defined = ["memory", "renderer", "terminal"];
     for (const key of defined) {
       expect(await page.evaluate(`window.app._${key}`)).toBeTruthy();
@@ -35,8 +43,29 @@ describe("App Integration Tests", () => {
     expect(await page.evaluate("window.app.scene('yellow') === window.app")).toBe(true);
   });
 
+  test("app.start() should return app.", async () => {
+    expect(await page.evaluate("window.app.start() === window.app")).toBe(true);
+  });
+
+  test("app.stop() should return app.", async () => {
+    expect(await page.evaluate("window.app.stop() === window.app")).toBe(true);
+  });
+
+  test("app.frame(tick) should return app.", async () => {
+    expect(await page.evaluate("window.app.frame(() => {}) === window.app")).toBe(true);
+  });
+
   test("app.render() should return this.", async () => {
     expect(await page.evaluate("window.app.render() === window.app")).toBe(true);
+  });
+
+  test("app.frameCount() should return frameCount.", async () => {
+    expect(await page.evaluate("window.app.frameCount()")).toBeTypeOf("number");
+  });
+
+  test("app.frameRate([frameRate]) should set or get frameCount.", async () => {
+    expect(await page.evaluate("window.app.frameRate(10) === window.app")).toBeTruthy();
+    expect(await page.evaluate("window.app.frameRate()")).toBe(10);
   });
 
   test("app.cols() should return cols.", async () => {

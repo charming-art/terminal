@@ -5,6 +5,6 @@ export { terminalSize } from "./terminal-size.js";
 export { appPoint } from "./app-point.js";
 export { appSize } from "./app-size.js";
 export { appDouble } from "./app-double.js";
-export { appInterval } from "./app-interval.js";
-export { appInterval1 } from "./app-interval1.js";
+export { appSchedule } from "./app-schedule";
+export { appSchedule1 } from "./app-schedule1";
 export { appPixels } from "./app-pixels";

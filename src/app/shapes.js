@@ -1,11 +1,11 @@
-import { after } from "./hooks.js";
+import { hook } from "./hooks.js";
 
 export function app$point(x, y) {
   this._renderer.point(x, y);
   return this;
 }
 
-export const app$pixels = after(function (x, y, render) {
+export const app$pixels = hook(function (x, y, render) {
   const context = this._terminal._context;
   const px = x * this.cellWidth();
   const py = y * this.cellHeight();
@@ -14,4 +14,4 @@ export const app$pixels = after(function (x, y, render) {
   render(context, this);
   context.restore();
   return this;
-});
+}, "after");

@@ -92,7 +92,7 @@ Rendering app into DOM and animate it.
 - [cm.**app**](#cm-app)
 - [app.**render**](#app-render)
 - [app.**frame**](#app-frame)
-- [app.**run**](#app-run)
+- [app.**start**](#app-start)
 - [app.**stop**](#app-stop)
 
 ### [Setting Attributes](#setting-attributes-1)
@@ -180,12 +180,12 @@ app.frame(() => {
 });
 ```
 
-<a name="app-run" href="#app-run">#</a> app.**run**()
+<a name="app-start" href="#app-start">#</a> app.**start**()
 
 > WIP
 
 ```js
-app.run();
+app.start();
 ```
 
 <a name="app-stop" href="#app-stop">#</a> app.**stop**()

@@ -37,3 +37,11 @@ export function app$cellWidth() {
 export function app$cellHeight() {
   return this._terminal._cellHeight;
 }
+
+export function app$frameCount() {
+  return this._frameCount;
+}
+
+export function app$frameRate(frameRate) {
+  return arguments.length ? ((this._frameRate = frameRate), (this._reschedule = true), this) : this._frameRate;
+}
