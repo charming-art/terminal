@@ -11,7 +11,7 @@ If you are new to Charming, we highly recommend first reading these tutorials to
 - [Drawing Shapes](#drawing-shapes-1) - Adding primitives, vertices, and curves to app.
 - [Applying Transformations](#applying-transformations-1) - Transforming shapes.
 - [Control Flow](#control-flow-1) - A more declarative programming style.
-- [Getting Variables](#getting-variables-1) - State of the app.
+- [Instance Properties](#instance-properties-1) - State of the app.
 
 And there are [a plenty of examples](https://github.com/charming-art/charming/tree/next) to get started with.
 
@@ -130,7 +130,7 @@ A more declarative programming style.
 
 - [app.**call**](#app-call)
 
-### [Getting Variables](#getting-variables-1)
+### [Instance Properties](#instance-properties-1)
 
 State of the app.
 
@@ -350,9 +350,9 @@ app
   .render();
 ```
 
-## Getting Variables
+## Instance Properties
 
-For convince, apps provide methods to get some of internal variables.
+For convince, apps provide methods to get some of instance properties.
 
 <a name="app-node" href="#app-node">#</a> app.**node**()
 

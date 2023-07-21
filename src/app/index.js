@@ -15,7 +15,7 @@ import {
   app$width,
   app$cellHeight,
   app$cellWidth,
-} from "./variables.js";
+} from "./properties.js";
 
 export function App({ memory, ...options } = {}) {
   const terminal = new Terminal(options);
