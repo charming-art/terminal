@@ -17,18 +17,25 @@ export function createTerminal(options) {
 export function useFrame(TARGET_FRAME, stop) {
   let frame = 0;
   let div;
-  const update = () => {
+  const update = (text) => {
+    frame++;
     if (!div) {
       div = document.createElement("div");
       document.body.insertBefore(div, null);
-      div.innerText = frameOf(frame);
     }
-    frame++;
-    if (frame >= TARGET_FRAME && import.meta.env.MODE !== "development") stop();
-    div.innerText = `frame: ${frame}`;
+    if (frame > TARGET_FRAME && import.meta.env.MODE !== "development") stop();
+    div.innerText = frameOf(text || frame);
   };
   const clear = () => {
     if (div) div.remove();
   };
   return [update, clear];
+}
+
+export function clearable(app, ...clears) {
+  const node = app.node();
+  node.clear = () => {
+    app.stop();
+    clears.forEach((d) => d());
+  };
 }

@@ -1,13 +1,9 @@
-export function after(hook) {
-  return function (...params) {
-    this._after.push([hook, ...params]);
-    return this;
-  };
-}
+export const app$frame = hook("frame");
 
-export function before(hook) {
+export function hook(hook, name) {
+  [hook, name] = typeof hook === "string" ? [() => {}, hook] : [hook, name];
   return function (...params) {
-    this._before.push([hook, ...params]);
+    this[`_${name}`].push([hook, ...params]);
     return this;
   };
 }
