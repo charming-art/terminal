@@ -116,4 +116,24 @@ describe("App Integration Tests", () => {
   test("app.call(function[, ...arguments]) should return app.", async () => {
     expect(await page.evaluate("window.app.call(() => {}, 0, 0) === window.app")).toBe(true);
   });
+
+  test("app.translate(x, y) should return app.", async () => {
+    expect(await page.evaluate("window.app.translate(0, 0) === window.app")).toBe(true);
+  });
+
+  test("app.rotate(rad) should return app.", async () => {
+    expect(await page.evaluate("window.app.rotate(0) === window.app")).toBe(true);
+  });
+
+  test("app.scale(sx, sy) should return app.", async () => {
+    expect(await page.evaluate("window.app.scale(2, 2) === window.app")).toBe(true);
+  });
+
+  test("app.pushMatrix() should return app.", async () => {
+    expect(await page.evaluate("window.app.pushMatrix() === window.app")).toBe(true);
+  });
+
+  test("app.popMatrix() should return app.", async () => {
+    expect(await page.evaluate("window.app.popMatrix() === window.app")).toBe(true);
+  });
 });

@@ -1,5 +1,8 @@
 extern crate wasm_bindgen;
-use crate::{globals::Color, globals::Shape, globals::CELL_SIZE, globals::NULL_VALUE};
+use crate::{
+    globals::{Color, Matrix3, Shape, Vector3, CELL_SIZE, NULL_VALUE},
+    matrix3::matrix3_identity,
+};
 use std::vec;
 use wasm_bindgen::prelude::*;
 
@@ -10,6 +13,9 @@ pub struct Renderer {
     pub(crate) stroke_color: Color,
     pub(crate) buffer: Vec<u32>,
     pub(crate) shapes: Vec<Shape>,
+    pub(crate) mode_view: Matrix3,
+    pub(crate) out: Vector3,
+    pub(crate) stacks: Vec<Matrix3>,
 }
 
 #[wasm_bindgen]
@@ -20,8 +26,11 @@ impl Renderer {
             cols,
             rows,
             buffer,
-            stroke_color: Color(NULL_VALUE, NULL_VALUE, NULL_VALUE, NULL_VALUE),
+            stroke_color: [NULL_VALUE, NULL_VALUE, NULL_VALUE, NULL_VALUE],
+            mode_view: matrix3_identity(),
+            stacks: vec![],
             shapes: vec![],
+            out: [0.0, 0.0, 0.0],
         }
     }
 }
