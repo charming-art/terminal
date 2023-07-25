@@ -146,6 +146,8 @@ State of the app.
 - [app.**fontSize**](#app-fontsize)
 - [app.**fontFamily**](#app-fontfamily)
 - [app.**fontWeight**](#app-fontweight)
+- [app.**frameCount**](#app-frameCount)
+- [app.**frameRate**](#app-frameRate)
 
 ## Creating Application
 
@@ -172,8 +174,6 @@ app.render();
 
 <a name="app-frame" href="#app-frame">#</a> app.**frame**()
 
-> WIP
-
 ```js
 let x = 0;
 app.frame(() => {
@@ -184,15 +184,11 @@ app.frame(() => {
 
 <a name="app-start" href="#app-start">#</a> app.**start**()
 
-> WIP
-
 ```js
 app.start();
 ```
 
 <a name="app-stop" href="#app-stop">#</a> app.**stop**()
-
-> WIP
 
 ```js
 app.stop();
@@ -312,13 +308,13 @@ app.scale(2, 2);
 app.rotate(Math.PI / 2);
 ```
 
-<a name="app-pushMatrix" href="#app-pushMatrix">#</a> app.**pushMatrix**(_theta_)
+<a name="app-pushMatrix" href="#app-pushMatrix">#</a> app.**pushMatrix**()
 
 ```js
 app.pushMatrix();
 ```
 
-<a name="app-popMatrix" href="#app-popMatrix">#</a> app.**popMatrix**(_theta_)
+<a name="app-popMatrix" href="#app-popMatrix">#</a> app.**popMatrix**()
 
 ```js
 app.popMatrix();
@@ -446,4 +442,17 @@ Returns the font family used to render text. For example, to get the default fon
 ```js
 const app = await cm.app();
 app.fontFamily(); // "courier-new, courier, monospace"
+```
+
+<a name="app-frameCount" href="#app-frameCount">#</a> app.**frameCount**()
+
+```js
+app.frameCount();
+```
+
+<a name="app-frameRate" href="#app-frameRate">#</a> app.**frameRate**(_[rate]_)
+
+```js
+app.frameRate(10);
+app.frameRate(); // 10
 ```
