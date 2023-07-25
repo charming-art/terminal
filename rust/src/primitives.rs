@@ -8,16 +8,15 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 impl Renderer {
     pub fn point(&mut self, x: f64, y: f64) {
-        let vertices: Vec<Vertex> = vec![Vertex {
+        let v: Vertex = Vertex {
             color: self.stroke_color,
-            x: x,
-            y: y,
-        }];
-        let point: Shape = Shape {
-            vertices,
-            matrix: self.mode_view,
+            x,
+            y,
         };
-        self.shapes.push(point);
+        self.shapes.push(Shape {
+            vertices: vec![v],
+            matrix: self.mode_view,
+        });
     }
 }
 
