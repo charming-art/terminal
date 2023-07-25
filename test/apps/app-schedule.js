@@ -15,7 +15,8 @@ export async function appSchedule() {
       const i = x % app.cols();
       const j = (x / app.cols()) | 0;
       app.scene("#000");
-      app.point(i, j);
+      app.translate(i, j);
+      app.point(0, 0);
       x += 1;
       if (x > app.cols() * app.rows() - 1) app.stop();
     })

@@ -5,13 +5,17 @@ export function app$point(x, y) {
   return this;
 }
 
-export const app$pixels = hook(function (x, y, render) {
-  const context = this._terminal._context;
-  const px = x * this.cellWidth();
-  const py = y * this.cellHeight();
-  context.save();
-  context.translate(px, py);
-  render(context, this);
-  context.restore();
-  return this;
-}, "after");
+export const app$pixels = function (x, y, render) {
+  const bufferPtr = this._renderer.transform(x, y);
+  const buffer = new Float64Array(this._memory.buffer, bufferPtr, 3);
+  const [tx, ty] = buffer;
+  return hook(function () {
+    const context = this._terminal._context;
+    const px = tx * this.cellWidth();
+    const py = ty * this.cellHeight();
+    context.save();
+    context.translate(px, py);
+    render(context, this);
+    context.restore();
+  }, "after").call(this);
+};

@@ -20,6 +20,7 @@ import {
 } from "./properties.js";
 import { app$frame } from "./hooks.js";
 import { app$start, app$stop } from "./schedule.js";
+import { app$translate, app$rotate, app$scale, app$pushMatrix, app$popMatrix } from "./transform.js";
 
 export function App({ memory, frameRate = 30, ...options } = {}) {
   const terminal = new Terminal(options);
@@ -45,6 +46,11 @@ Object.defineProperties(App.prototype, {
   start: { value: app$start, writable: true, configurable: true },
   stop: { value: app$stop, writable: true, configurable: true },
   frame: { value: app$frame, writable: true, configurable: true },
+  translate: { value: app$translate, writable: true, configurable: true },
+  scale: { value: app$scale, writable: true, configurable: true },
+  rotate: { value: app$rotate, writable: true, configurable: true },
+  pushMatrix: { value: app$pushMatrix, writable: true, configurable: true },
+  popMatrix: { value: app$popMatrix, writable: true, configurable: true },
   stroke: { value: app$stroke, writable: true, configurable: true },
   scene: { value: app$scene, writable: true, configurable: true },
   point: { value: app$point, writable: true, configurable: true },

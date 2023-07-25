@@ -123,6 +123,8 @@ Transforming shapes.
 - [app.**translate**](#app-translate)
 - [app.**scale**](#app-scale)
 - [app.**rotate**](#app-rotate)
+- [app.**popMatrix**](#app-popMatrix)
+- [app.**pushMatrix**](#app-pushMatrix)
 
 ### [Control Flow](#control-flow-1)
 
@@ -294,15 +296,11 @@ app.pixels(5, 5, (context) => {
 
 <a name="app-translate" href="#app-translate">#</a> app.**translate**(_x, y_)
 
-> WIP
-
 ```js
 app.translate(10, 10);
 ```
 
 <a name="app-scale" href="#app-scale">#</a> app.**scale**(_sx, sy_)
-
-> WIP
 
 ```js
 app.scale(2, 2);
@@ -312,6 +310,18 @@ app.scale(2, 2);
 
 ```js
 app.rotate(Math.PI / 2);
+```
+
+<a name="app-pushMatrix" href="#app-pushMatrix">#</a> app.**pushMatrix**(_theta_)
+
+```js
+app.pushMatrix();
+```
+
+<a name="app-popMatrix" href="#app-popMatrix">#</a> app.**popMatrix**(_theta_)
+
+```js
+app.popMatrix();
 ```
 
 ## Control Flow
