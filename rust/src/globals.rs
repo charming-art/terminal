@@ -8,6 +8,8 @@ pub struct Vertex {
     pub(crate) y: f64,
 }
 
+pub type Edge<'a> = [&'a Vertex; 2];
+
 pub type Color = [u32; CELL_SIZE];
 
 pub struct Shape {
