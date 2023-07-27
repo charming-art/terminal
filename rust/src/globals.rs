@@ -15,6 +15,7 @@ pub type Color = [u32; CELL_SIZE];
 pub struct Shape {
     pub(crate) vertices: Vec<Vertex>,
     pub(crate) matrix: Matrix3,
+    pub(crate) closed: bool,
 }
 
 pub type Matrix3 = [f64; 9];

@@ -22,7 +22,7 @@ fn vertex_processing(vertices: &Vec<Vertex>, m: &Matrix3) -> Vec<Vertex> {
     transformed
 }
 
-fn primitive_assembly(vertices: &Vec<Vertex>) -> Vec<Edge> {
+fn primitive_assembly(vertices: &Vec<Vertex>, closed: bool) -> Vec<Edge> {
     if vertices.len() == 0 {
         vec![]
     } else if vertices.len() == 1 {
@@ -36,13 +36,20 @@ fn primitive_assembly(vertices: &Vec<Vertex>) -> Vec<Edge> {
             let edge: Edge = [from, to];
             edges.push(edge);
         }
+        if closed {
+            let from: &Vertex = &vertices[0];
+            let to: &Vertex = &vertices[vertices.len() - 1];
+            let edge: Edge = [from, to];
+            edges.push(edge);
+        }
         edges
     }
 }
 
 fn rasterization(edges: &Vec<Edge>) -> Vec<Vertex> {
     let mut vertices: Vec<Vertex> = vec![];
-    for edge in edges {
+    for i in 0..edges.len() {
+        let edge: [&Vertex; 2] = edges[i];
         let from: &Vertex = edge[0];
         let to: &Vertex = edge[1];
         if ptr::eq(from, to) {
@@ -52,13 +59,23 @@ fn rasterization(edges: &Vec<Edge>) -> Vec<Vertex> {
                 y: from.y,
             })
         } else {
-            vertices.append(&mut rasterize_line(from, to));
+            if i == edges.len() - 1 {
+                vertices.append(&mut rasterize_line(from, to, true));
+            } else {
+                let next: [&Vertex; 2] = edges[i + 1];
+                let next_from: &Vertex = next[0];
+                if next_from.x == to.x && next_from.y == to.y {
+                    vertices.append(&mut rasterize_line(from, to, false));
+                } else {
+                    vertices.append(&mut rasterize_line(from, to, true));
+                }
+            }
         }
     }
     vertices
 }
 
-fn rasterize_line(from: &Vertex, to: &Vertex) -> Vec<Vertex> {
+fn rasterize_line(from: &Vertex, to: &Vertex, trailing: bool) -> Vec<Vertex> {
     if from.x == to.x && from.y == to.y {
         return vec![Vertex {
             color: from.color,
@@ -73,7 +90,12 @@ fn rasterize_line(from: &Vertex, to: &Vertex) -> Vec<Vertex> {
         let mut x0: f64 = from.x.round();
         let mut x1: f64 = to.x.round();
         ascending(&mut x0, &mut x1);
-        for x in (x0 as isize)..(x1 as isize + 1) {
+        let end: isize = if trailing {
+            x1 as isize + 1
+        } else {
+            x1 as isize
+        };
+        for x in (x0 as isize)..end {
             let y: f64 = map(x as f64, from.x, to.x, from.y, to.y);
             vertices.push(Vertex {
                 x: x as f64,
@@ -85,7 +107,12 @@ fn rasterize_line(from: &Vertex, to: &Vertex) -> Vec<Vertex> {
         let mut y0: f64 = from.y.round();
         let mut y1: f64 = to.y.round();
         ascending(&mut y0, &mut y1);
-        for y in (y0 as isize)..(y1 as isize + 1) {
+        let end: isize = if trailing {
+            y1 as isize + 1
+        } else {
+            y1 as isize
+        };
+        for y in (y0 as isize)..end {
             let x: f64 = map(y as f64, from.y, to.y, from.x, to.x);
             vertices.push(Vertex {
                 x,
@@ -134,7 +161,7 @@ impl Renderer {
         self.buffer.fill(NULL_VALUE);
         for shape in &self.shapes {
             let transformed: Vec<Vertex> = vertex_processing(&shape.vertices, &shape.matrix);
-            let primitive: Vec<Edge> = primitive_assembly(&transformed);
+            let primitive: Vec<Edge> = primitive_assembly(&transformed, shape.closed);
             let fragment: Vec<Vertex> = rasterization(&primitive);
             let clipped: Vec<usize> = clipping(&fragment, self.cols as isize, self.rows as isize);
             fragment_processing(&clipped, &fragment, &mut self.buffer, self.cols as isize);

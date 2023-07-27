@@ -10,3 +10,4 @@ export { appSchedule1 } from "./app-schedule1.js";
 export { appPixels } from "./app-pixels.js";
 export { appTransform } from "./app-transform.js";
 export { appLine } from "./app-line.js";
+export { appRect } from "./app-rect.js";

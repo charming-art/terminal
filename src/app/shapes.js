@@ -10,6 +10,11 @@ export function app$line(x, y, x1, y1) {
   return this;
 }
 
+export function app$rect(x, y, width, height) {
+  this._renderer.rect(x, y, width, height);
+  return this;
+}
+
 export const app$pixels = function (x, y, render) {
   const bufferPtr = this._renderer.transform(x, y);
   const buffer = new Float64Array(this._memory.buffer, bufferPtr, 3);
