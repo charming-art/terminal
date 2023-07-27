@@ -39,3 +39,12 @@ export function clearable(app, ...clears) {
     clears.forEach((d) => d());
   };
 }
+
+export function background(app, ch, fg) {
+  app.stroke(ch, fg);
+  for (let i = 0; i < app.cols(); i++) {
+    for (let j = 0; j < app.rows(); j++) {
+      app.point(i, j);
+    }
+  }
+}

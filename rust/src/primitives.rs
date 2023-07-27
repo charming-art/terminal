@@ -18,6 +18,22 @@ impl Renderer {
             matrix: self.mode_view,
         });
     }
+    pub fn line(&mut self, x: f64, y: f64, x1: f64, y1: f64) {
+        let v: Vertex = Vertex {
+            color: self.stroke_color,
+            x,
+            y,
+        };
+        let v1: Vertex = Vertex {
+            color: self.stroke_color,
+            x: x1,
+            y: y1,
+        };
+        self.shapes.push(Shape {
+            vertices: vec![v, v1],
+            matrix: self.mode_view,
+        })
+    }
 }
 
 #[cfg(test)]
