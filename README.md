@@ -262,8 +262,6 @@ app.line(0, 0, 10, 10);
 
 <a name="app-rect" href="#app-rect">#</a> app.**rect**(_x, y, width, height_)
 
-> WIP
-
 ```js
 app.rect(0, 0, 10, 10);
 ```
