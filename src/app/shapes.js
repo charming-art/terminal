@@ -5,6 +5,11 @@ export function app$point(x, y) {
   return this;
 }
 
+export function app$line(x, y, x1, y1) {
+  this._renderer.line(x, y, x1, y1);
+  return this;
+}
+
 export const app$pixels = function (x, y, render) {
   const bufferPtr = this._renderer.transform(x, y);
   const buffer = new Float64Array(this._memory.buffer, bufferPtr, 3);

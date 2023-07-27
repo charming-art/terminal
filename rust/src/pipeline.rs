@@ -3,6 +3,7 @@ use crate::{
     globals::{Edge, Matrix3, Vector3, Vertex, CELL_SIZE, NULL_VALUE},
     matrix3::{matrix3_identity, matrix3_transform},
     renderer::Renderer,
+    utils::{ascending, map},
 };
 use std::ptr;
 use wasm_bindgen::prelude::*;
@@ -49,6 +50,47 @@ fn rasterization(edges: &Vec<Edge>) -> Vec<Vertex> {
                 color: from.color,
                 x: from.x,
                 y: from.y,
+            })
+        } else {
+            vertices.append(&mut rasterize_line(from, to));
+        }
+    }
+    vertices
+}
+
+fn rasterize_line(from: &Vertex, to: &Vertex) -> Vec<Vertex> {
+    if from.x == to.x && from.y == to.y {
+        return vec![Vertex {
+            color: from.color,
+            x: from.x,
+            y: from.y,
+        }];
+    }
+    let mut vertices: Vec<Vertex> = vec![];
+    let dx: f64 = (to.x - from.x).abs();
+    let dy: f64 = (to.y - from.y).abs();
+    if dx >= dy {
+        let mut x0: f64 = from.x.round();
+        let mut x1: f64 = to.x.round();
+        ascending(&mut x0, &mut x1);
+        for x in (x0 as isize)..(x1 as isize + 1) {
+            let y: f64 = map(x as f64, from.x, to.x, from.y, to.y);
+            vertices.push(Vertex {
+                x: x as f64,
+                y,
+                color: from.color,
+            })
+        }
+    } else {
+        let mut y0: f64 = from.y.round();
+        let mut y1: f64 = to.y.round();
+        ascending(&mut y0, &mut y1);
+        for y in (y0 as isize)..(y1 as isize + 1) {
+            let x: f64 = map(y as f64, from.y, to.y, from.x, to.x);
+            vertices.push(Vertex {
+                x,
+                y: y as f64,
+                color: from.color,
             })
         }
     }

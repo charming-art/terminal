@@ -256,8 +256,6 @@ app.point(0, 0);
 
 <a name="app-line" href="#app-line">#</a> app.**line**(_x, y, x1, y1_)
 
-> WIP
-
 ```js
 app.line(0, 0, 10, 10);
 ```

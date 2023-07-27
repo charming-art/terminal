@@ -2,7 +2,7 @@ import { Terminal } from "../terminal.js";
 import { Renderer } from "../wasm/index.js";
 import { app$render } from "./render.js";
 import { app$scene, app$stroke } from "./attributes.js";
-import { app$point, app$pixels } from "./shapes.js";
+import { app$point, app$line, app$pixels } from "./shapes.js";
 import { app$call } from "./control.js";
 import {
   app$cols,
@@ -54,6 +54,7 @@ Object.defineProperties(App.prototype, {
   stroke: { value: app$stroke, writable: true, configurable: true },
   scene: { value: app$scene, writable: true, configurable: true },
   point: { value: app$point, writable: true, configurable: true },
+  line: { value: app$line, writable: true, configurable: true },
   pixels: { value: app$pixels, writable: true, configurable: true },
   call: { value: app$call, writable: true, configurable: true },
   cols: { value: app$cols, writable: true, configurable: true },

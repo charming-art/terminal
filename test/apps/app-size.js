@@ -1,13 +1,4 @@
-import { createApp } from "./utils";
-
-function background(app, ch, fg) {
-  app.stroke(ch, fg);
-  for (let i = 0; i < app.cols(); i++) {
-    for (let j = 0; j < app.rows(); j++) {
-      app.point(i, j);
-    }
-  }
-}
+import { createApp, background } from "./utils";
 
 export async function appSize() {
   const app = await createApp({ width: 100, height: 60 });
