@@ -12,6 +12,12 @@ export function app$stroke(ch, fg = "#ffffff", bg = null) {
   return this;
 }
 
+export function app$background(ch, fg = "#ffffff", bg = null) {
+  const [n, n1 = NULL_VALUE] = encodeChar(ch);
+  this._renderer.background(n, n1, encodeColor(fg), encodeColor(bg));
+  return this;
+}
+
 function encodeColor(color) {
   if (color === NULL_VALUE || color === null) return NULL_VALUE;
   const { r, g, b } = rgb(color);

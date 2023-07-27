@@ -1,7 +1,7 @@
 import { Terminal } from "../terminal.js";
 import { Renderer } from "../wasm/index.js";
 import { app$render } from "./render.js";
-import { app$scene, app$stroke } from "./attributes.js";
+import { app$scene, app$stroke, app$background } from "./attributes.js";
 import { app$point, app$line, app$rect, app$pixels } from "./shapes.js";
 import { app$call } from "./control.js";
 import {
@@ -52,6 +52,7 @@ Object.defineProperties(App.prototype, {
   pushMatrix: { value: app$pushMatrix, writable: true, configurable: true },
   popMatrix: { value: app$popMatrix, writable: true, configurable: true },
   stroke: { value: app$stroke, writable: true, configurable: true },
+  background: { value: app$background, writable: true, configurable: true },
   scene: { value: app$scene, writable: true, configurable: true },
   point: { value: app$point, writable: true, configurable: true },
   line: { value: app$line, writable: true, configurable: true },

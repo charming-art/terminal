@@ -1,6 +1,6 @@
 extern crate wasm_bindgen;
 use crate::{
-    globals::{Edge, Matrix3, Vector3, Vertex, CELL_SIZE, NULL_VALUE},
+    globals::{Color, Edge, Matrix3, Vector3, Vertex, CELL_SIZE, NULL_VALUE},
     matrix3::{matrix3_identity, matrix3_transform},
     renderer::Renderer,
     utils::{ascending, map},
@@ -155,10 +155,38 @@ fn fragment_processing(
     }
 }
 
+fn background_processing(
+    has_background: bool,
+    color: Color,
+    buffer: &mut Vec<u32>,
+    rows: isize,
+    cols: isize,
+) {
+    if has_background {
+        for x in 0..cols {
+            for y in 0..rows {
+                let index: usize = ((x + y * cols) as usize) * CELL_SIZE;
+                buffer[index] = color[0];
+                buffer[index + 1] = color[1];
+                buffer[index + 2] = color[2];
+                buffer[index + 3] = color[3];
+            }
+        }
+    } else {
+        buffer.fill(NULL_VALUE);
+    }
+}
+
 #[wasm_bindgen]
 impl Renderer {
     pub fn render(&mut self) -> *const u32 {
-        self.buffer.fill(NULL_VALUE);
+        background_processing(
+            self.has_background,
+            self.background_color,
+            &mut self.buffer,
+            self.rows as isize,
+            self.cols as isize,
+        );
         for shape in &self.shapes {
             let transformed: Vec<Vertex> = vertex_processing(&shape.vertices, &shape.matrix);
             let primitive: Vec<Edge> = primitive_assembly(&transformed, shape.closed);
@@ -166,6 +194,7 @@ impl Renderer {
             let clipped: Vec<usize> = clipping(&fragment, self.cols as isize, self.rows as isize);
             fragment_processing(&clipped, &fragment, &mut self.buffer, self.cols as isize);
         }
+        self.has_background = false;
         self.shapes.clear();
         self.stacks.clear();
         self.mode_view = matrix3_identity();
@@ -184,6 +213,7 @@ mod tests {
         renderer.render();
         assert_eq!(renderer.shapes.len(), 0);
         assert_eq!(renderer.stacks.len(), 0);
+        assert_eq!(renderer.has_background, false);
         assert_eq!(renderer.mode_view[0], 1.0);
         assert_eq!(renderer.mode_view[4], 1.0);
         assert_eq!(renderer.mode_view[8], 1.0);
