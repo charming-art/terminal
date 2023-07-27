@@ -1,10 +1,10 @@
-import { createApp, background } from "./utils";
+import { createApp } from "./utils";
 
 export async function appLine() {
   const app = await createApp({ cols: 15, rows: 15 });
 
   app
-    .call(background, "·", "#aaa")
+    .call((app) => app.background("·", "#aaa"))
     .call((app) => app.translate(Math.floor(app.cols() / 2), Math.floor(app.rows() / 2)))
     .call((app) => {
       const count = 16;

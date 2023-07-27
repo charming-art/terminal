@@ -7,6 +7,10 @@ impl Renderer {
     pub fn stroke(&mut self, ch: u32, ch1: u32, fg: u32, bg: u32) {
         self.stroke_color = [ch, ch1, fg, bg];
     }
+    pub fn background(&mut self, ch: u32, ch1: u32, fg: u32, bg: u32) {
+        self.has_background = true;
+        self.background_color = [ch, ch1, fg, bg];
+    }
 }
 
 #[cfg(test)]

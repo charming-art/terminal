@@ -204,8 +204,6 @@ app.scene("#000000");
 
 <a name="app-background" href="#app-background">#</a> app.**background**(_ch[, fg[, bg]]_)
 
-> WIP
-
 ```js
 app.background("@", "steelblue", "orange");
 ```
