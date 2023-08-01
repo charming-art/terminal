@@ -216,23 +216,17 @@ app.stroke("@", "steelblue", "orange");
 
 <a name="app-nostroke" href="#app-nostroke">#</a> app.**noStroke**()
 
-> WIP
-
 ```js
 app.noStroke();
 ```
 
 <a name="app-fill" href="#app-fill">#</a> app.**fill**(_ch[, fg[, bg]]_)
 
-> WIP
-
 ```js
 app.fill("@", "steelblue", "orange");
 ```
 
 <a name="app-nofill" href="#app-nofill">#</a> app.**noFill**()
-
-> WIP
 
 ```js
 app.noFill();

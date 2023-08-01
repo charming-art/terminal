@@ -11,6 +11,9 @@ pub struct Renderer {
     pub(crate) cols: usize,
     pub(crate) rows: usize,
     pub(crate) stroke_color: Color,
+    pub(crate) fill_color: Color,
+    pub(crate) has_stroke: bool,
+    pub(crate) has_fill: bool,
     pub(crate) has_background: bool,
     pub(crate) background_color: Color,
     pub(crate) buffer: Vec<u32>,
@@ -29,6 +32,9 @@ impl Renderer {
             rows,
             buffer,
             stroke_color: [NULL_VALUE, NULL_VALUE, NULL_VALUE, NULL_VALUE],
+            fill_color: [NULL_VALUE, NULL_VALUE, NULL_VALUE, NULL_VALUE],
+            has_fill: false,
+            has_stroke: true,
             has_background: false,
             background_color: [NULL_VALUE, NULL_VALUE, NULL_VALUE, NULL_VALUE],
             mode_view: matrix3_identity(),
@@ -50,5 +56,9 @@ mod tests {
         assert_eq!(renderer.rows, 10);
         assert_eq!(renderer.buffer.len(), 400);
         assert_eq!(renderer.shapes.len(), 0);
+        assert_eq!(renderer.stacks.len(), 0);
+        assert_eq!(renderer.has_stroke, true);
+        assert_eq!(renderer.has_background, false);
+        assert_eq!(renderer.has_fill, false);
     }
 }

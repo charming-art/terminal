@@ -6,16 +6,28 @@ export const app$scene = hook(function (color) {
   this._terminal.background(color);
 }, "before");
 
-export function app$stroke(ch, fg = "#ffffff", bg = null) {
-  const [n, n1 = NULL_VALUE] = encodeChar(ch);
-  this._renderer.stroke(n, n1, encodeColor(fg), encodeColor(bg));
+export const app$stroke = attribute("stroke");
+
+export const app$background = attribute("background");
+
+export const app$fill = attribute("fill");
+
+export function app$noStroke() {
+  this._renderer.noStroke();
   return this;
 }
 
-export function app$background(ch, fg = "#ffffff", bg = null) {
-  const [n, n1 = NULL_VALUE] = encodeChar(ch);
-  this._renderer.background(n, n1, encodeColor(fg), encodeColor(bg));
+export function app$noFill() {
+  this._renderer.noFill();
   return this;
+}
+
+export function attribute(name) {
+  return function (ch, fg = "#ffffff", bg = null) {
+    const [n, n1 = NULL_VALUE] = encodeChar(ch);
+    this._renderer[name](n, n1, encodeColor(fg), encodeColor(bg));
+    return this;
+  };
 }
 
 function encodeColor(color) {
