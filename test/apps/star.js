@@ -1,9 +1,6 @@
-# Charming Cell
-
-```js
 import * as Cell from "@charming-art/cell";
 
-function Star(ctx) {
+export function Star(ctx) {
   return {
     mode: "double",
     width: 520,
@@ -18,6 +15,3 @@ function Star(ctx) {
     },
   };
 }
-
-document.body.append(await Cell.render(Star));
-```
