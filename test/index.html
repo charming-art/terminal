@@ -3,7 +3,7 @@
   <meta charset="utf-8" />
 </head>
 <script type="module">
-  import * as Cell from "@charming-art/cell";
+  import * as cm from "@charming-art/cell";
   import * as apps from "./apps/index.js";
 
   // UI
@@ -42,7 +42,7 @@
     if (typeof preClear === "function") preClear();
     if (isNode(preNode)) preNode.remove();
     const App = apps[select.value];
-    preNode = await Cell.render(App);
+    preNode = await cm.cell(App);
     if (isNode(preNode)) {
       document.body.appendChild(preNode);
     }

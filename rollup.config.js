@@ -6,7 +6,7 @@ const umd = {
   input: "src/index.js",
   output: {
     format: "umd",
-    name: "Cell",
+    name: "cm",
   },
   plugins: [wasm({targetEnv: "auto-inline"}), node()],
 };
@@ -26,14 +26,14 @@ export default [
     ...umd,
     output: {
       ...umd.output,
-      file: "dist/cell.umd.js",
+      file: "dist/charming-cell.umd.js",
     },
   },
   {
     ...umd,
     output: {
       ...umd.output,
-      file: "dist/cell.umd.min.js",
+      file: "dist/charming-cell.umd.min.js",
     },
     plugins: [...umd.plugins, terser()],
   },
