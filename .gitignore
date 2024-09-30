@@ -4,3 +4,4 @@ node_modules
 src/wasm
 dist
 **/*-actual.txt
+cache

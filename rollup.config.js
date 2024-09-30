@@ -20,7 +20,7 @@ export default [
       preserveModules: true,
     },
     external: [/node_modules/],
-    plugins: [wasm(), node()],
+    plugins: [wasm({targetEnv: "auto-inline"}), node()],
   },
   {
     ...umd,
