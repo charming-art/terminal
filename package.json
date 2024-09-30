@@ -35,7 +35,10 @@
     "build:js": "rm -rf dist && rollup -c",
     "build:rust": "rm -rf ./src/wasm && wasm-pack build ./rust --out-dir ../src/wasm --out-name index --target web",
     "preview": "npm run build && vite preview",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "npm run build && vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "sideEffects": false,
   "devDependencies": {
@@ -44,9 +47,11 @@
     "@rollup/plugin-wasm": "^6.1.3",
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
+    "genji-theme-vitepress": "^0.2.6",
     "prettier": "^2.8.8",
     "rollup": "^3.26.0",
     "vite": "^4.3.9",
+    "vitepress": "^1.3.4",
     "vitest": "^0.32.1",
     "wasm-pack": "^0.13.0"
   },
