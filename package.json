@@ -37,7 +37,7 @@
     "preview": "npm run build && vite preview",
     "prepublishOnly": "npm run build",
     "docs:dev": "vitepress dev docs",
-    "docs:build": "npm run build && vitepress build docs",
+    "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
   },
   "sideEffects": false,
