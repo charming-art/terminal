@@ -1,23 +1,16 @@
 # Charming Cell
 
-```js
-import * as Cell from "@charming-art/cell";
+The P5 like JavaScript API for ASCII art.
 
-function Star(ctx) {
-  return {
-    mode: "double",
-    width: 520,
-    height: 520,
-    setup() {
-      for (let t = 0; t <= Math.PI * 2; t += Math.PI / 120) {
-        const x = ctx.cols() / 2 + 12 * Math.cos(t) * Math.cos(t * 3);
-        const y = ctx.rows() / 2 + 12 * Math.sin(t) * Math.cos(t * 3);
-        ctx.stroke(cm.wide("🌟"));
-        ctx.point(x, y);
-      }
-    },
-  };
-}
+> [!NOTE]
+> The current next branch is implementing the new proposal API for production use. Please refer to the [python branch](https://github.com/charming-art/charming-cell/tree/python) for the released Python version.
 
-document.body.append(await cm.cell(Star));
-```
+
+## Resources 📚
+
+- Documentation - https://charmingjs.org/cell/
+- Examples - https://observablehq.com/d/18b3d6f3affff5bb
+
+## License 📄
+
+ISC@Bairui SU
