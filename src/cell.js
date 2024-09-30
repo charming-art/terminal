@@ -1,6 +1,6 @@
 import {Context} from "./context/index.js";
 
-export async function render(App) {
+export async function cell(App) {
   const ctx = new Context();
   const {setup, ...options} = App(ctx);
   await ctx.init(options);
