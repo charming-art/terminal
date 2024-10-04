@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@charming-art/lodash':
-        specifier: 0.0.1
-        version: 0.0.1
       d3-color:
         specifier: ^3.1.0
         version: 3.1.0
@@ -50,9 +47,6 @@ importers:
         version: 0.13.0
 
 packages:
-
-  '@charming-art/lodash@0.0.1':
-    resolution: {integrity: sha512-w3XbtAVk1tvZGoc/OwusujsLdhpbJWp45Ab8xV5f46iE3coERdFzU/tRvNagsmXjRWXNH/krFUkeS170oN+MIw==}
 
   '@esbuild/android-arm64@0.18.20':
     resolution: {integrity: sha512-Nz4rJcchGDtENV0eMKUNa6L12zz2zBDXuhj/Vjh18zGqB44Bi7MBMSXjgunJgjRhCmKOjnPuZp4Mb6OKqtMHLQ==}
@@ -1017,8 +1011,6 @@ packages:
     engines: {node: '>=12.20'}
 
 snapshots:
-
-  '@charming-art/lodash@0.0.1': {}
 
   '@esbuild/android-arm64@0.18.20':
     optional: true

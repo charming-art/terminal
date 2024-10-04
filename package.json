@@ -14,7 +14,7 @@
   "unpkg": "dist/cell.umd.min.js",
   "exports": {
     "umd": "./dist/cell.umd.min.js",
-    "default": "./src/index.js"
+    "default": "./dist/es/index.js"
   },
   "repository": {
     "type": "git",
