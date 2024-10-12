@@ -9,7 +9,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@charming-art/cell": path.resolve("./src/index.js"),
+      "@charming-art/terminal": path.resolve("./src/index.js"),
       "../wasm/index_bg.wasm": "../wasm/index_bg.wasm?url",
     },
   },

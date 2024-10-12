@@ -12,4 +12,5 @@ export async function context_init(options = {}) {
   this._terminal = terminal;
   this._renderer = renderer;
   this._terminal.background("#000");
+  return this;
 }

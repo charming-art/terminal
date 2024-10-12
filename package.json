@@ -1,6 +1,6 @@
 {
-  "name": "@charming-art/cell",
-  "description": "The creative coding language for ASCII Art.",
+  "name": "@charming-art/terminal",
+  "description": "The terminal renderer for Charming.",
   "version": "0.0.1",
   "author": {
     "name": "pearmini",
