@@ -1,5 +1,5 @@
 import {context_init} from "./init.js";
-import {context_run} from "./run.js";
+import {context_render} from "./render.js";
 import {context_stroke} from "./stroke.js";
 import {context_point} from "./point.js";
 import {context_setup} from "./setup.js";
@@ -19,7 +19,7 @@ export function Context() {
 Object.defineProperties(Context.prototype, {
   setup: {value: context_setup, writable: true, configurable: true},
   init: {value: context_init, writable: true, configurable: true},
-  run: {value: context_run, writable: true, configurable: true},
+  render: {value: context_render, writable: true, configurable: true},
   stroke: {value: context_stroke, writable: true, configurable: true},
   point: {value: context_point, writable: true, configurable: true},
   rows: {value: context_rows, writable: true, configurable: true},

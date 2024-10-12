@@ -33,7 +33,7 @@ function draw() {
   }
 }
 
-export function context_run() {
+export function context_render() {
   this._setup?.(this);
   draw.call(this);
   return this._terminal.node();
