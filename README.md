@@ -8,14 +8,18 @@ The creative language for ASCII art based on Basic.
 ## Get Started
 
 ```bash
-$ cell hello.bas
+$ cell hello.cll
 ```
 
-```basic
-DO
-  POINT mouseX, mouseY
-  PAUSE 10
-LOOP
+```
+LET x = 0
+
+Draw:
+  BACKGROUND 0
+  STROKE '0', YELLOW, RED
+  FILL 'X', GREEN, BLUE
+  RECT x, 0, 0
+  LET x = x + 1
 ```
 
 ## License 📄
